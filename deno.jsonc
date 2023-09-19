@@ -1,0 +1,25 @@
+{
+  "fmt": {
+    /*
+    "include": [
+    ],
+    */
+    "exclude": ["node_modules", "dist"],
+    "semiColons": false,
+    "singleQuote": true
+  },
+  "lint": {
+    /*
+    "include": [
+    ],
+    */
+    "exclude": ["node_modules", "dist"]
+    /*
+    "rules": {
+      "tags": ["recommended"],
+      "exclude": [
+      ]
+    }
+    */
+  }
+}

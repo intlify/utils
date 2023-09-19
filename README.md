@@ -1,5 +1,5 @@
 # @intilfy/utils
 
-Common utilities for i18n
+Collection of i18n utilities
 
 **NOTICE: This is a work in progress 👷**
