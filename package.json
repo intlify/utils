@@ -1,8 +1,13 @@
 {
   "name": "@intlify/utils",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Collection of i18n utilities",
-  "keywords": ["i18n", "internationalization", "intlify", "utilities"],
+  "keywords": [
+    "i18n",
+    "internationalization",
+    "intlify",
+    "utilities"
+  ],
   "author": {
     "name": "kazuya kawaguchi",
     "email": "kawakazu80@gmail.com"
