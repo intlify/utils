@@ -1,6 +1,6 @@
 {
   "name": "@intlify/utils",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Collection of i18n utilities",
   "keywords": [
     "i18n",
