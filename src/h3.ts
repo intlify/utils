@@ -1,4 +1,4 @@
-import { getAcceptLanguagesFromGetter } from './http.ts'
+import { getAcceptLanguagesFromGetter, getLocaleWithGetter } from './http.ts'
 import { getHeaders } from 'h3'
 
 import type { H3Event } from 'h3'
@@ -18,4 +18,18 @@ export function getAcceptLanguages(event: H3Event): string[] {
     return headers['accept-language']
   }
   return getAcceptLanguagesFromGetter(getter)
+}
+
+/**
+ * get locale
+ *
+ * @param {H3Event} event The {@link H3Event | H3} event
+ * @param {string} lang The default language tag, default is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
+ *
+ * @throws {RangeError} Throws a {@link RangeError} if `lang` option or `accpet-languages` are not a well-formed BCP 47 language tag.
+ *
+ * @returns {Intl.Locale} The locale that resolved from `accept-language` header string, first language tag is used. if `*` (any language) or empty string is detected, return `en-US`.
+ */
+export function getLocale(event: H3Event, lang = 'en-US'): Intl.Locale {
+  return getLocaleWithGetter(() => getAcceptLanguages(event)[0] || lang)
 }

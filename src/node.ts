@@ -1,5 +1,5 @@
 import { IncomingMessage } from 'node:http'
-import { getAcceptLanguagesFromGetter } from './http.ts'
+import { getAcceptLanguagesFromGetter, getLocaleWithGetter } from './http.ts'
 
 /**
  * get accpet languages
@@ -13,4 +13,18 @@ import { getAcceptLanguagesFromGetter } from './http.ts'
 export function getAcceptLanguages(req: IncomingMessage) {
   const getter = () => req.headers['accept-language']
   return getAcceptLanguagesFromGetter(getter)
+}
+
+/**
+ * get locale
+ *
+ * @param {IncomingMessage} event The {@link IncomingMessage | request}
+ * @param {string} lang The default language tag, default is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
+ *
+ * @throws {RangeError} Throws a {@link RangeError} if `lang` option or `accpet-languages` are not a well-formed BCP 47 language tag.
+ *
+ * @returns {Intl.Locale} The locale that resolved from `accept-language` header string, first language tag is used. if `*` (any language) or empty string is detected, return `en-US`.
+ */
+export function getLocale(req: IncomingMessage, lang = 'en-US'): Intl.Locale {
+  return getLocaleWithGetter(() => getAcceptLanguages(req)[0] || lang)
 }
