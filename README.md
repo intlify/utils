@@ -2,4 +2,8 @@
 
 Collection of i18n utilities
 
-**NOTICE: This is a work in progress 👷**
+> NOTICE: ⚠️ The documentation is under construction.
+
+## License
+
+[MIT](http://opensource.org/licenses/MIT)
