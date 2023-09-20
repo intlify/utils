@@ -1,9 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import {
-  isLocale,
-  parseAcceptLanguage,
-  validateLanguageTag,
-} from '../src/index.ts'
+import { isLocale, parseAcceptLanguage, validateLanguageTag } from './shared.ts'
 
 describe('isLocale', () => {
   test('Locale instance', () => {

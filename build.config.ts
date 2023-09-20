@@ -5,5 +5,19 @@ export default defineBuildConfig({
   rollup: {
     emitCJS: true,
   },
-  entries: ['./src/index.ts'],
+  entries: [
+    {
+      input: './src/index.ts',
+    },
+    {
+      input: './src/h3.ts',
+    },
+    {
+      input: './src/node.ts',
+    },
+    {
+      input: './src/web.ts',
+    },
+  ],
+  externals: ['h3'],
 })
