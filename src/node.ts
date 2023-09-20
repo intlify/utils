@@ -6,6 +6,19 @@ import { getAcceptLanguagesFromGetter, getLocaleWithGetter } from './http.ts'
  *
  * @description parse `accept-language` header string
  *
+ * @example
+ * example for Node.js request:
+ *
+ * ```ts
+ * import { createServer } from 'node:http'
+ * import { getAcceptLanguages } from '@intlify/utils/node'
+ *
+ * const server = createServer((req, res) => {
+ *   const acceptLanguages = getAcceptLanguages(req)
+ *   // ...
+ * })
+ * ```
+ *
  * @param {IncomingMessage} event The {@link IncomingMessage | request}
  *
  * @returns {Array<string>} The array of language tags, if `*` (any language) or empty string is detected, return an empty array.
@@ -18,12 +31,26 @@ export function getAcceptLanguages(req: IncomingMessage) {
 /**
  * get locale
  *
+ * @example
+ * example for Node.js request:
+ *
+ * ```ts
+ * import { createServer } from 'node:http'
+ * import { getAcceptLanguages } from '@intlify/utils/node'
+ *
+ * const server = createServer((req, res) => {
+ *   const locale = getLocale(req)
+ *   console.log(locale) // output `Intl.Locale` instance
+ *   // ...
+ * })
+ * ```
+ *
  * @param {IncomingMessage} event The {@link IncomingMessage | request}
  * @param {string} lang The default language tag, default is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
  *
  * @throws {RangeError} Throws a {@link RangeError} if `lang` option or `accpet-languages` are not a well-formed BCP 47 language tag.
  *
- * @returns {Intl.Locale} The locale that resolved from `accept-language` header string, first language tag is used. if `*` (any language) or empty string is detected, return `en-US`.
+ * @returns {Intl.Locale} The first locale that resolved from `accept-language` header string, first language tag is used. if `*` (any language) or empty string is detected, return `en-US`.
  */
 export function getLocale(req: IncomingMessage, lang = 'en-US'): Intl.Locale {
   return getLocaleWithGetter(() => getAcceptLanguages(req)[0] || lang)
