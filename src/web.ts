@@ -1,6 +1,13 @@
-import { parse } from 'cookie-es'
-import { getAcceptLanguagesWithGetter, getLocaleWithGetter } from './http.ts'
+import { parse, serialize } from 'cookie-es'
+import {
+  getAcceptLanguagesWithGetter,
+  getExistCookies,
+  getLocaleWithGetter,
+  validateLocale,
+} from './http.ts'
 import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
+
+import type { CookieOptions } from './http.ts'
 
 /**
  * get accpet languages
@@ -95,4 +102,47 @@ export function getCookieLocale(
     return cookie[name] || lang
   }
   return getLocaleWithGetter(getter)
+}
+
+/**
+ * set locale to the response `Set-Cookie` header.
+ *
+ * @example
+ * example for Web API response on Bun:
+ *
+ * ```ts
+ * import { setCookieLocale } from '@intlify/utils/web'
+ *
+ * Bun.serve({
+ *   port: 8080,
+ *   fetch(req) {
+ *     const res = new Response('こんにちは、世界！')
+ *     setCookieLocale(res, 'ja-JP')
+ *     // ...
+ *     return res
+ *   },
+ * })
+ * ```
+ *
+ * @param {Response} res The {@link Response | response}
+ * @param {string | Intl.Locale} locale The locale value
+ * @param {CookieOptions} options The cookie options, `name` option is `i18n_locale` as default, and `path` option is `/` as default.
+ *
+ * @throws {SyntaxError} Throws the {@link SyntaxError} if `locale` is invalid.
+ */
+export function setCookieLocale(
+  res: Response,
+  locale: string | Intl.Locale,
+  options: CookieOptions = { name: DEFAULT_COOKIE_NAME },
+): void {
+  validateLocale(locale)
+  const setCookies = getExistCookies(
+    options.name!,
+    () => res.headers.getSetCookie(),
+  )
+  const target = serialize(options.name!, locale.toString(), {
+    path: '/',
+    ...options,
+  })
+  res.headers.set('set-cookie', [...setCookies, target].join('; '))
 }

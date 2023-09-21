@@ -1,6 +1,12 @@
 import { describe, expect, test } from 'vitest'
-import { getAcceptLanguages, getCookieLocale, getLocale } from './node.ts'
-import { IncomingMessage } from 'node:http'
+import supertest from 'supertest'
+import {
+  getAcceptLanguages,
+  getCookieLocale,
+  getLocale,
+  setCookieLocale,
+} from './node.ts'
+import { createServer, IncomingMessage, OutgoingMessage } from 'node:http'
 import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 
 describe('getAcceptLanguages', () => {
@@ -130,5 +136,54 @@ describe('getCookieLocale', () => {
 
     expect(() => getCookieLocale(mockRequest, { name: 'intlify_locale' }))
       .toThrowError(RangeError)
+  })
+})
+
+describe('setCookieLocale', () => {
+  test('specify Locale instance', async () => {
+    const server = createServer((_req, res) => {
+      const locale = new Intl.Locale('ja-JP')
+      setCookieLocale(res, locale)
+      res.writeHead(200)
+      res.end('hello world!')
+    })
+    const request = supertest(server)
+    const result = await request.get('/')
+    expect(result.headers['set-cookie']).toEqual([
+      `${DEFAULT_COOKIE_NAME}=ja-JP; Path=/`,
+    ])
+  })
+
+  test('specify language tag', async () => {
+    const server = createServer((_req, res) => {
+      setCookieLocale(res, 'ja-JP')
+      res.writeHead(200)
+      res.end('hello world!')
+    })
+    const request = supertest(server)
+    const result = await request.get('/')
+    expect(result.headers['set-cookie']).toEqual([
+      `${DEFAULT_COOKIE_NAME}=ja-JP; Path=/`,
+    ])
+  })
+
+  test('specify cookie name', async () => {
+    const server = createServer((_req, res) => {
+      setCookieLocale(res, 'ja-JP', { name: 'intlify_locale' })
+      res.writeHead(200)
+      res.end('hello world!')
+    })
+    const request = supertest(server)
+    const result = await request.get('/')
+    expect(result.headers['set-cookie']).toEqual([
+      'intlify_locale=ja-JP; Path=/',
+    ])
+  })
+
+  test('Syntax Error', () => {
+    const mockRes = {} as OutgoingMessage
+
+    expect(() => setCookieLocale(mockRes, 'j'))
+      .toThrowError(/locale is invalid: j/)
   })
 })

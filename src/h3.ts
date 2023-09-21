@@ -1,8 +1,13 @@
-import { getAcceptLanguagesWithGetter, getLocaleWithGetter } from './http.ts'
-import { getCookie, getHeaders } from 'h3'
+import {
+  getAcceptLanguagesWithGetter,
+  getLocaleWithGetter,
+  validateLocale,
+} from './http.ts'
+import { getCookie, getHeaders, setCookie } from 'h3'
 import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 
 import type { H3Event } from 'h3'
+import type { CookieOptions } from './http.ts'
 
 /**
  * get accpet languages
@@ -96,4 +101,35 @@ export function getCookieLocale(
   { lang = DEFAULT_LANG_TAG, name = DEFAULT_COOKIE_NAME } = {},
 ): Intl.Locale {
   return getLocaleWithGetter(() => getCookie(event, name) || lang)
+}
+
+/**
+ * set locale to the response `Set-Cookie` header.
+ *
+ * @example
+ * example for h3:
+ *
+ * ```ts
+ * import { createApp, eventHandler } from 'h3'
+ * import { getCookieLocale } from '@intlify/utils/h3'
+ *
+ * app.use(eventHandler(event) => {
+ *   setCookieLocale(event, 'ja-JP')
+ *   // ...
+ * })
+ * ```
+ *
+ * @param {H3Event} event The {@link H3Event | H3} event
+ * @param {string | Intl.Locale} locale The locale value
+ * @param {CookieOptions} options The cookie options, `name` option is `i18n_locale` as default, and `path` option is `/` as default.
+ *
+ * @throws {SyntaxError} Throws the {@link SyntaxError} if `locale` is invalid.
+ */
+export function setCookieLocale(
+  event: H3Event,
+  locale: string | Intl.Locale,
+  options: CookieOptions = { name: DEFAULT_COOKIE_NAME, path: '/' },
+): void {
+  validateLocale(locale)
+  setCookie(event, options.name!, locale.toString(), options)
 }

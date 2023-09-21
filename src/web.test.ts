@@ -1,5 +1,10 @@
 import { describe, expect, test } from 'vitest'
-import { getAcceptLanguages, getCookieLocale, getLocale } from './web.ts'
+import {
+  getAcceptLanguages,
+  getCookieLocale,
+  getLocale,
+  setCookieLocale,
+} from './web.ts'
 import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 
 describe('getAcceptLanguages', () => {
@@ -94,5 +99,38 @@ describe('getCookieLocale', () => {
     mockRequest.headers.set('cookie', 'intlify_locale=f')
     expect(() => getCookieLocale(mockRequest, { name: 'intlify_locale' }))
       .toThrowError(RangeError)
+  })
+})
+
+describe('setCookieLocale', () => {
+  test('specify Locale instance', () => {
+    const res = new Response('hello world!')
+    const locale = new Intl.Locale('ja-JP')
+    setCookieLocale(res, locale)
+    expect(res.headers.getSetCookie()).toEqual([
+      `${DEFAULT_COOKIE_NAME}=ja-JP; Path=/`,
+    ])
+  })
+
+  test('specify language tag', () => {
+    const res = new Response('hello world!')
+    setCookieLocale(res, 'ja-JP')
+    expect(res.headers.getSetCookie()).toEqual([
+      `${DEFAULT_COOKIE_NAME}=ja-JP; Path=/`,
+    ])
+  })
+
+  test('specify cookie name', () => {
+    const res = new Response('hello world!')
+    setCookieLocale(res, 'ja-JP', { name: 'intlify_locale' })
+    expect(res.headers.getSetCookie()).toEqual([
+      'intlify_locale=ja-JP; Path=/',
+    ])
+  })
+
+  test('Syntax Error', () => {
+    const res = new Response('hello world!')
+    expect(() => setCookieLocale(res, 'j'))
+      .toThrowError(/locale is invalid: j/)
   })
 })

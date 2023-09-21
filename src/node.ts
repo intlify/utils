@@ -1,7 +1,14 @@
-import { IncomingMessage } from 'node:http'
-import { parse } from 'cookie-es'
-import { getAcceptLanguagesWithGetter, getLocaleWithGetter } from './http.ts'
+import { IncomingMessage, OutgoingMessage } from 'node:http'
+import { parse, serialize } from 'cookie-es'
+import {
+  getAcceptLanguagesWithGetter,
+  getExistCookies,
+  getLocaleWithGetter,
+  validateLocale,
+} from './http.ts'
 import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
+
+import type { CookieOptions } from './http.ts'
 
 /**
  * get accpet languages
@@ -96,4 +103,43 @@ export function getCookieLocale(
     return cookie[name] || lang
   }
   return getLocaleWithGetter(getter)
+}
+
+/**
+ * set locale to the response `Set-Cookie` header.
+ *
+ * @example
+ * example for Node.js response:
+ *
+ * ```ts
+ * import { createServer } from 'node:http'
+ * import { setCookieLocale } from '@intlify/utils/node'
+ *
+ * const server = createServer((req, res) => {
+ *   setCookieLocale(res, 'ja-JP')
+ *   // ...
+ * })
+ * ```
+ *
+ * @param {OutgoingMessage} res The {@link OutgoingMessage | response}
+ * @param {string | Intl.Locale} locale The locale value
+ * @param {CookieOptions} options The cookie options, `name` option is `i18n_locale` as default, and `path` option is `/` as default.
+ *
+ * @throws {SyntaxError} Throws the {@link SyntaxError} if `locale` is invalid.
+ */
+export function setCookieLocale(
+  res: OutgoingMessage,
+  locale: string | Intl.Locale,
+  options: CookieOptions = { name: DEFAULT_COOKIE_NAME },
+): void {
+  validateLocale(locale)
+  const setCookies = getExistCookies(
+    options.name!,
+    () => res.getHeader('set-cookie'),
+  )
+  const target = serialize(options.name!, locale.toString(), {
+    path: '/',
+    ...options,
+  })
+  res.setHeader('set-cookie', [...setCookies, target])
 }
