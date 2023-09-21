@@ -7,8 +7,6 @@
 downloads][npm-downloads-src]][npm-downloads-href]
 -->
 
-> ⚠️ NOTICE: documentation is under construction 👷
-
 Collection of i18n utilities
 
 ## 🌟 Features
