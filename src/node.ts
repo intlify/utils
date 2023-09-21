@@ -1,6 +1,7 @@
 import { IncomingMessage } from 'node:http'
 import { parse } from 'cookie-es'
 import { getAcceptLanguagesWithGetter, getLocaleWithGetter } from './http.ts'
+import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 
 /**
  * get accpet languages
@@ -53,7 +54,10 @@ export function getAcceptLanguages(req: IncomingMessage) {
  *
  * @returns {Intl.Locale} The first locale that resolved from `accept-language` header string, first language tag is used. if `*` (any language) or empty string is detected, return `en-US`.
  */
-export function getLocale(req: IncomingMessage, lang = 'en-US'): Intl.Locale {
+export function getLocale(
+  req: IncomingMessage,
+  lang = DEFAULT_LANG_TAG,
+): Intl.Locale {
   return getLocaleWithGetter(() => getAcceptLanguages(req)[0] || lang)
 }
 
@@ -84,7 +88,7 @@ export function getLocale(req: IncomingMessage, lang = 'en-US'): Intl.Locale {
  */
 export function getCookieLocale(
   req: IncomingMessage,
-  { lang = 'en-US', name = 'i18n_locale' } = {},
+  { lang = DEFAULT_LANG_TAG, name = DEFAULT_COOKIE_NAME } = {},
 ): Intl.Locale {
   const getter = () => {
     const cookieRaw = req.headers.cookie

@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import { getAcceptLanguages, getCookieLocale, getLocale } from './web.ts'
+import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 
 describe('getAcceptLanguages', () => {
   test('basic', () => {
@@ -36,7 +37,7 @@ describe('getLocale', () => {
     mockRequest.headers.set('accept-language', '*')
     const locale = getLocale(mockRequest)
 
-    expect(locale.baseName).toEqual('en-US')
+    expect(locale.baseName).toEqual(DEFAULT_LANG_TAG)
   })
 
   test('specify default language', () => {
@@ -57,7 +58,7 @@ describe('getLocale', () => {
 describe('getCookieLocale', () => {
   test('basic', () => {
     const mockRequest = new Request('https://example.com')
-    mockRequest.headers.set('cookie', 'i18n_locale=ja-US')
+    mockRequest.headers.set('cookie', `${DEFAULT_COOKIE_NAME}=ja-US`)
     const locale = getCookieLocale(mockRequest)
 
     expect(locale.baseName).toEqual('ja-US')
@@ -70,7 +71,7 @@ describe('getCookieLocale', () => {
     mockRequest.headers.set('cookie', '')
     const locale = getCookieLocale(mockRequest)
 
-    expect(locale.baseName).toEqual('en-US')
+    expect(locale.baseName).toEqual(DEFAULT_LANG_TAG)
   })
 
   test('specify default language', () => {

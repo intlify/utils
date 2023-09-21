@@ -1,5 +1,6 @@
 import { getAcceptLanguagesWithGetter, getLocaleWithGetter } from './http.ts'
 import { getCookie, getHeaders } from 'h3'
+import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 
 import type { H3Event } from 'h3'
 
@@ -58,7 +59,10 @@ export function getAcceptLanguages(event: H3Event): string[] {
  *
  * @returns {Intl.Locale} The first locale that resolved from `accept-language` header string, first language tag is used. if `*` (any language) or empty string is detected, return `en-US`.
  */
-export function getLocale(event: H3Event, lang = 'en-US'): Intl.Locale {
+export function getLocale(
+  event: H3Event,
+  lang = DEFAULT_LANG_TAG,
+): Intl.Locale {
   return getLocaleWithGetter(() => getAcceptLanguages(event)[0] || lang)
 }
 
@@ -89,7 +93,7 @@ export function getLocale(event: H3Event, lang = 'en-US'): Intl.Locale {
  */
 export function getCookieLocale(
   event: H3Event,
-  { lang = 'en-US', name = 'i18n_locale' } = {},
+  { lang = DEFAULT_LANG_TAG, name = DEFAULT_COOKIE_NAME } = {},
 ): Intl.Locale {
   return getLocaleWithGetter(() => getCookie(event, name) || lang)
 }

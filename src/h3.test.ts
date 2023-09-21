@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import { getAcceptLanguages, getCookieLocale, getLocale } from './h3.ts'
+import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 
 import type { H3Event } from 'h3'
 
@@ -77,7 +78,7 @@ describe('getLocale', () => {
     } as H3Event
     const locale = getLocale(eventMock)
 
-    expect(locale.baseName).toEqual('en-US')
+    expect(locale.baseName).toEqual(DEFAULT_LANG_TAG)
   })
 
   test('specify default language', () => {
@@ -119,7 +120,7 @@ describe('getCookieLocale', () => {
         req: {
           method: 'GET',
           headers: {
-            cookie: 'i18n_locale=ja-US',
+            cookie: `${DEFAULT_COOKIE_NAME}=ja-US`,
           },
         },
       },
@@ -142,7 +143,7 @@ describe('getCookieLocale', () => {
     } as H3Event
     const locale = getCookieLocale(eventMock)
 
-    expect(locale.baseName).toEqual('en-US')
+    expect(locale.baseName).toEqual(DEFAULT_LANG_TAG)
   })
 
   test('specify default language', () => {
