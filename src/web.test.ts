@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { getAcceptLanguages, getLocale } from './web.ts'
+import { getAcceptLanguages, getCookieLocale, getLocale } from './web.ts'
 
 describe('getAcceptLanguages', () => {
   test('basic', () => {
@@ -51,5 +51,47 @@ describe('getLocale', () => {
     const mockRequest = new Request('https://example.com')
     mockRequest.headers.set('accept-language', 's')
     expect(() => getLocale(mockRequest, 'ja-JP')).toThrowError(RangeError)
+  })
+})
+
+describe('getCookieLocale', () => {
+  test('basic', () => {
+    const mockRequest = new Request('https://example.com')
+    mockRequest.headers.set('cookie', 'i18n_locale=ja-US')
+    const locale = getCookieLocale(mockRequest)
+
+    expect(locale.baseName).toEqual('ja-US')
+    expect(locale.language).toEqual('ja')
+    expect(locale.region).toEqual('US')
+  })
+
+  test('cookie is empty', () => {
+    const mockRequest = new Request('https://example.com')
+    mockRequest.headers.set('cookie', '')
+    const locale = getCookieLocale(mockRequest)
+
+    expect(locale.baseName).toEqual('en-US')
+  })
+
+  test('specify default language', () => {
+    const mockRequest = new Request('https://example.com')
+    const locale = getCookieLocale(mockRequest, { lang: 'ja-JP' })
+
+    expect(locale.baseName).toEqual('ja-JP')
+  })
+
+  test('specify cookie name', () => {
+    const mockRequest = new Request('https://example.com')
+    mockRequest.headers.set('cookie', 'intlify_locale=fr-FR')
+    const locale = getCookieLocale(mockRequest, { name: 'intlify_locale' })
+
+    expect(locale.baseName).toEqual('fr-FR')
+  })
+
+  test('RangeError', () => {
+    const mockRequest = new Request('https://example.com')
+    mockRequest.headers.set('cookie', 'intlify_locale=f')
+    expect(() => getCookieLocale(mockRequest, { name: 'intlify_locale' }))
+      .toThrowError(RangeError)
   })
 })

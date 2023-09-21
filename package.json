@@ -81,6 +81,7 @@
     "@types/node": "^20.6.0",
     "@vitest/coverage-v8": "^0.34.4",
     "bumpp": "^9.2.0",
+    "cookie-es": "^1.0.0",
     "gh-changelogen": "^0.2.8",
     "h3": "^1.8.1",
     "lint-staged": "^14.0.0",

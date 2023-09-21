@@ -1,5 +1,5 @@
 import { getAcceptLanguagesFromGetter, getLocaleWithGetter } from './http.ts'
-import { getHeaders } from 'h3'
+import { getCookie, getHeaders } from 'h3'
 
 import type { H3Event } from 'h3'
 
@@ -9,7 +9,7 @@ import type { H3Event } from 'h3'
  * @description parse `accept-language` header string
  *
  * @example
- * example for h3 event:
+ * example for h3:
  *
  * ```ts
  * import { createApp, eventHandler } from 'h3'
@@ -38,11 +38,11 @@ export function getAcceptLanguages(event: H3Event): string[] {
  * get locale
  *
  * @example
- * example for h3 event:
+ * example for h3:
  *
  * ```ts
  * import { createApp, eventHandler } from 'h3'
- * import { getAcceptLanguages } from '@intlify/utils/h3'
+ * import { getLocale } from '@intlify/utils/h3'
  *
  * app.use(eventHandler(event) => {
  *   const locale = getLocale(event)
@@ -60,4 +60,36 @@ export function getAcceptLanguages(event: H3Event): string[] {
  */
 export function getLocale(event: H3Event, lang = 'en-US'): Intl.Locale {
   return getLocaleWithGetter(() => getAcceptLanguages(event)[0] || lang)
+}
+
+/**
+ * get locale from cookie
+ *
+ * @example
+ * example for h3:
+ *
+ * ```ts
+ * import { createApp, eventHandler } from 'h3'
+ * import { getCookieLocale } from '@intlify/utils/h3'
+ *
+ * app.use(eventHandler(event) => {
+ *   const locale = getCookieLocale(event)
+ *   console.log(locale) // output `Intl.Locale` instance
+ *   // ...
+ * })
+ * ```
+ *
+ * @param {H3Event} event The {@link H3Event | H3} event
+ * @param {string} options.lang The default language tag, default is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
+ * @param {string} options.name The cookie name, default is `i18n_locale`
+ *
+ * @throws {RangeError} Throws a {@link RangeError} if `lang` option or cookie name value are not a well-formed BCP 47 language tag.
+ *
+ * @returns The locale that resolved from cookie
+ */
+export function getCookieLocale(
+  event: H3Event,
+  { lang = 'en-US', name = 'i18n_locale' } = {},
+): Intl.Locale {
+  return getLocaleWithGetter(() => getCookie(event, name) || lang)
 }
