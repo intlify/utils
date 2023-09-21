@@ -5,7 +5,7 @@ import { isLocale } from 'https://esm.sh/@intlify/utils'
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div>
-    <a href="https://gihtub.com/intlify/utils" target="_blank">
+    <a href="https://github.com/intlify/utils" target="_blank">
       <img src="${intlifyLogo}" class="logo" alt="Intlify logo" />
     </a>
     <h1>Browser example</h1>
