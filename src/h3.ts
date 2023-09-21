@@ -128,7 +128,7 @@ export function getCookieLocale(
 export function setCookieLocale(
   event: H3Event,
   locale: string | Intl.Locale,
-  options: CookieOptions = { name: DEFAULT_COOKIE_NAME, path: '/' },
+  options: CookieOptions = { name: DEFAULT_COOKIE_NAME },
 ): void {
   validateLocale(locale)
   setCookie(event, options.name!, locale.toString(), options)
