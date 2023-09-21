@@ -57,15 +57,56 @@ avoid hoisting issues.
 
 ### Deno
 
-TODO:
+You can install via `import`.
+
+```sh
+touch mod.ts
+edit mod.ts
+```
+
+mod.ts:
+
+```ts
+/**
+ * you can install via other CDN URL such skypack,
+ * or, you can also use import maps
+ * https://docs.deno.com/runtime/manual/basics/import_maps
+ */
+import { ... } from 'https://esm.sh/@intlify/utils'
+
+// something todo
+// ...
+```
+
+<details>
+  <summary>Using Edge Releases</summary>
+
+```ts
+import { ... } from 'https://esm.sh/@intlify/utils-edge'
+
+// something todo
+// ...
+```
+
+</details>
 
 ### Bun
 
-TODO:
+```sh
+bun install @intlify/utils
+```
 
 ### Browser
 
-TODO:
+```html
+<script type="module">
+/**
+ * you can install via other CDN URL such skypack,
+ * or, you can also use import maps
+ */
+import { isLocale } from 'https://esm.sh/@intlify/utils'
+</script>
+```
 
 ## 🚀 Usage
 
@@ -93,10 +134,14 @@ You can do `import { ... } from '@intlify/utils/{ENV}'` the above utilities.
 `ENV` is one of the following:
 
 - `node`: Node.js
-- `web`: JS environments (Deno and Bun) supporting Web APIs such as
-  [Request](https://developer.mozilla.org/en-US/docs/Web/API/Request) and
-  [Respose](https://developer.mozilla.org/en-US/docs/Web/API/Response)
+- `web`: JS environments (such as Deno, Bun, and Browser) supporting Web APIs
+  such as [Request](https://developer.mozilla.org/en-US/docs/Web/API/Request)
+  and [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response)
 - `h3`: HTTP framework [h3](https://github.com/unjs/h3)
+
+### Browser
+
+TODO: WIP
 
 ## 🙌 Contributing guidelines
 
