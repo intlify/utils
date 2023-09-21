@@ -67,7 +67,11 @@
     "format": "deno fmt",
     "build": "unbuild",
     "test": "vitest run",
-    "test:coverage": "npm test -- --reporter verbose --coverage"
+    "test:coverage": "npm test -- --reporter verbose --coverage",
+    "play:browser": "npm run -w example-browser dev",
+    "play:node": "npm run -w example-node dev",
+    "play:deno": "cd examples/deno && deno run --allow-net main.ts",
+    "play:bun": "npm run -w example-bun dev"
   },
   "lint-staged": {
     "*.{js,ts,jsx,tsx,md,json,jsonc}": [
@@ -90,5 +94,8 @@
     "typescript": "^5.2.2",
     "unbuild": "^2.0.0",
     "vitest": "^0.34.4"
-  }
+  },
+  "workspaces": [
+    "examples/*"
+  ]
 }

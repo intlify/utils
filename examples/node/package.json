@@ -1,0 +1,14 @@
+{
+  "name": "example-node",
+  "private": true,
+  "scripts": {
+    "dev": "npx tsx index.ts"
+  },
+  "dependencies": {
+    "@intlify/utils": "npm:@intlify/utils-edge@0.2.0-28254719.6209414"
+  },
+  "devDependencies": {
+    "@types/node": "^20.6.0",
+    "typescript": "^5.2.2"
+  }
+}

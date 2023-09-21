@@ -1,6 +1,7 @@
 dist
 node_modules
 coverage
+deno.lock
 .DS_Store
 .idea
 

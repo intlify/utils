@@ -1,4 +1,6 @@
 coverage
+examples
+deno.lock
 .*
 *.log
 *.swp
