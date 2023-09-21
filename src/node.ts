@@ -1,6 +1,6 @@
 import { IncomingMessage } from 'node:http'
 import { parse } from 'cookie-es'
-import { getAcceptLanguagesFromGetter, getLocaleWithGetter } from './http.ts'
+import { getAcceptLanguagesWithGetter, getLocaleWithGetter } from './http.ts'
 
 /**
  * get accpet languages
@@ -26,7 +26,7 @@ import { getAcceptLanguagesFromGetter, getLocaleWithGetter } from './http.ts'
  */
 export function getAcceptLanguages(req: IncomingMessage) {
   const getter = () => req.headers['accept-language']
-  return getAcceptLanguagesFromGetter(getter)
+  return getAcceptLanguagesWithGetter(getter)
 }
 
 /**

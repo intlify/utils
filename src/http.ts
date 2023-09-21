@@ -1,6 +1,6 @@
 import { parseAcceptLanguage } from './shared.ts'
 
-export function getAcceptLanguagesFromGetter(
+export function getAcceptLanguagesWithGetter(
   getter: () => string | null | undefined,
 ): string[] {
   const acceptLanguage = getter()

@@ -1,4 +1,4 @@
-import { getAcceptLanguagesFromGetter, getLocaleWithGetter } from './http.ts'
+import { getAcceptLanguagesWithGetter, getLocaleWithGetter } from './http.ts'
 import { getCookie, getHeaders } from 'h3'
 
 import type { H3Event } from 'h3'
@@ -31,7 +31,7 @@ export function getAcceptLanguages(event: H3Event): string[] {
     const headers = getHeaders(event)
     return headers['accept-language']
   }
-  return getAcceptLanguagesFromGetter(getter)
+  return getAcceptLanguagesWithGetter(getter)
 }
 
 /**
