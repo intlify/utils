@@ -103,12 +103,11 @@ bun install @intlify/utils
  * or, you can also use import maps
  */
 import { isLocale } from 'https://esm.sh/@intlify/utils'
+
+// Somothing todo
+// ...
 </script>
 ```
-
-## 🚀 Usage
-
-TODO:
 
 ## 🔨 Utilities
 
