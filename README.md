@@ -22,7 +22,7 @@ Internationalization API
 
 ## 💿 Installation
 
-### Node.js
+### 🐢 Node.js
 
 ```sh
 # Using npm
@@ -53,7 +53,7 @@ avoid hoisting issues.
 
 </details>
 
-### Deno
+### 🦕 Deno
 
 You can install via `import`.
 
@@ -66,7 +66,7 @@ mod.ts:
 
 ```ts
 /**
- * you can install via other CDN URL such skypack,
+ * you can install via other CDN URL such as skypack,
  * or, you can also use import maps
  * https://docs.deno.com/runtime/manual/basics/import_maps
  */
@@ -88,26 +88,39 @@ import { ... } from 'https://esm.sh/@intlify/utils-edge'
 
 </details>
 
-### Bun
+### 🥟 Bun
 
 ```sh
 bun install @intlify/utils
 ```
 
-### Browser
+### 🌍 Browser
 
 ```html
 <script type="module">
 /**
- * you can install via other CDN URL such skypack,
+ * you can install via other CDN URL such as skypack,
  * or, you can also use import maps
  */
 import { isLocale } from 'https://esm.sh/@intlify/utils'
 
-// Somothing todo
+// something todo
 // ...
 </script>
 ```
+
+## 🍭 Playground
+
+You can play the below examples:
+
+- 🐢 [Node.js](https://github.com/intlify/utils/tree/main/examples/node):
+  `npm run play:node`
+- 🦕 [Deno](https://github.com/intlify/utils/tree/main/examples/deno):
+  `npm run play:deno`
+- 🥟 [Bun](https://github.com/intlify/utils/tree/main/examples/bun):
+  `npm run play:bun`
+- 🌍 [Browser](https://github.com/intlify/utils/tree/main/examples/browser):
+  `npm run play:browser`
 
 ## 🔨 Utilities
 
@@ -128,7 +141,7 @@ You can do `import { ... } from '@intlify/utils'` the above utilities
 
 You can do `import { ... } from '@intlify/utils/{ENV}'` the above utilities.
 
-`ENV` is one of the following:
+The namespace `{ENV}` is one of the following:
 
 - `node`: Node.js
 - `web`: JS environments (such as Deno, Bun, and Browser) supporting Web APIs
