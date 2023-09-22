@@ -23,8 +23,10 @@ import type { CookieOptions } from './http.ts'
  * import { getAcceptLanguages } from '@intlify/utils/node'
  *
  * const server = createServer((req, res) => {
- *   const acceptLanguages = getAcceptLanguages(req)
+ *   const langTags = getAcceptLanguages(req)
  *   // ...
+ *   res.writeHead(200)
+ *   res.end(`detect accpect-languages: ${langTags.join(', ')}`)
  * })
  * ```
  *
@@ -32,20 +34,37 @@ import type { CookieOptions } from './http.ts'
  *
  * @returns {Array<string>} The array of language tags, if `*` (any language) or empty string is detected, return an empty array.
  */
-export function getAcceptLanguages(req: IncomingMessage): string[] {
-  const getter = () => req.headers['accept-language']
+export function getAcceptLanguages(request: IncomingMessage): string[] {
+  const getter = () => request.headers['accept-language']
   return getAcceptLanguagesWithGetter(getter)
 }
 
 /**
  * get accept language
  *
+ * @description parse `accept-language` header string, this function retuns the **first language tag** of `accept-language` header.
+ *
+ * @example
+ * example for Node.js request:
+ *
+ * ```ts
+ * import { createServer } from 'node:http'
+ * import { getAcceptLanguage } from '@intlify/utils/node'
+ *
+ * const server = createServer((req, res) => {
+ *   const langTag = getAcceptLanguage(req)
+ *   // ...
+ *   res.writeHead(200)
+ *   res.end(`detect accpect-language: ${langTag}`)
+ * })
+ * ```
+ *
  * @param {IncomingMessage} request The {@link IncomingMessage | request}
  *
  * @returns {string} The **first language tag** of `accept-language` header, if `accept-language` header is not exists, or `*` (any language), return empty string.
  */
-export function getAcceptLanguage(req: IncomingMessage): string {
-  return getAcceptLanguages(req)[0] || ''
+export function getAcceptLanguage(request: IncomingMessage): string {
+  return getAcceptLanguages(request)[0] || ''
 }
 
 /**
@@ -73,10 +92,10 @@ export function getAcceptLanguage(req: IncomingMessage): string {
  * @returns {Intl.Locale} The first locale that resolved from `accept-language` header string, first language tag is used. if `*` (any language) or empty string is detected, return `en-US`.
  */
 export function getLocale(
-  req: IncomingMessage,
+  request: IncomingMessage,
   lang = DEFAULT_LANG_TAG,
 ): Intl.Locale {
-  return getLocaleWithGetter(() => getAcceptLanguages(req)[0] || lang)
+  return getLocaleWithGetter(() => getAcceptLanguages(request)[0] || lang)
 }
 
 /**
@@ -105,11 +124,11 @@ export function getLocale(
  * @returns The locale that resolved from cookie
  */
 export function getCookieLocale(
-  req: IncomingMessage,
+  request: IncomingMessage,
   { lang = DEFAULT_LANG_TAG, name = DEFAULT_COOKIE_NAME } = {},
 ): Intl.Locale {
   const getter = () => {
-    const cookieRaw = req.headers.cookie
+    const cookieRaw = request.headers.cookie
     const cookie = parse(cookieRaw || '')
     return cookie[name] || lang
   }
@@ -132,25 +151,25 @@ export function getCookieLocale(
  * })
  * ```
  *
- * @param {OutgoingMessage} res The {@link OutgoingMessage | response}
+ * @param {OutgoingMessage} response The {@link OutgoingMessage | response}
  * @param {string | Intl.Locale} locale The locale value
  * @param {CookieOptions} options The cookie options, `name` option is `i18n_locale` as default, and `path` option is `/` as default.
  *
  * @throws {SyntaxError} Throws the {@link SyntaxError} if `locale` is invalid.
  */
 export function setCookieLocale(
-  res: OutgoingMessage,
+  response: OutgoingMessage,
   locale: string | Intl.Locale,
   options: CookieOptions = { name: DEFAULT_COOKIE_NAME },
 ): void {
   validateLocale(locale)
   const setCookies = getExistCookies(
     options.name!,
-    () => res.getHeader('set-cookie'),
+    () => response.getHeader('set-cookie'),
   )
   const target = serialize(options.name!, locale.toString(), {
     path: '/',
     ...options,
   })
-  res.setHeader('set-cookie', [...setCookies, target])
+  response.setHeader('set-cookie', [...setCookies, target])
 }

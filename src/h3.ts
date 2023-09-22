@@ -23,8 +23,9 @@ import type { CookieOptions } from './http.ts'
  *
  * const app = createApp()
  * app.use(eventHandler(event) => {
- *   const acceptLanguages = getAcceptLanguages(event)
+ *   const langTags = getAcceptLanguages(event)
  *   // ...
+ *   return `accepted languages: ${acceptLanguages.join(', ')}`
  * })
  * ```
  *
@@ -42,6 +43,23 @@ export function getAcceptLanguages(event: H3Event): string[] {
 
 /**
  * get accept language
+ *
+ * @description parse `accept-language` header string, this function retuns the **first language tag** of `accept-language` header.
+ *
+ * @example
+ * example for h3:
+ *
+ * ```ts
+ * import { createApp, eventHandler } from 'h3'
+ * import { getAcceptLanguage } from '@intlify/utils/h3'
+ *
+ * const app = createApp()
+ * app.use(eventHandler(event) => {
+ *   const langTag = getAcceptLanguage(event)
+ *   // ...
+ *   return `accepted language: ${langTag}`
+ * })
+ * ```
  *
  * @param {H3Event} event The {@link H3Event | H3} event
  *

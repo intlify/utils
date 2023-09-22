@@ -23,9 +23,9 @@ import type { CookieOptions } from './http.ts'
  * Deno.serve({
  *   port: 8080,
  * }, (req) => {
- *   const acceptLanguages = getAcceptLanguages(req)
+ *   const langTags = getAcceptLanguages(req)
  *   // ...
- *   return new Response('Hello World!')
+ *   return new Response(`accepted languages: ${langTags.join(', ')}`
  * })
  * ```
  *
@@ -33,20 +33,37 @@ import type { CookieOptions } from './http.ts'
  *
  * @returns {Array<string>} The array of language tags, if `*` (any language) or empty string is detected, return an empty array.
  */
-export function getAcceptLanguages(req: Request): string[] {
-  const getter = () => req.headers.get('accept-language')
+export function getAcceptLanguages(request: Request): string[] {
+  const getter = () => request.headers.get('accept-language')
   return getAcceptLanguagesWithGetter(getter)
 }
 
 /**
  * get accept language
  *
+ * @description parse `accept-language` header string, this function retuns the **first language tag** of `accept-language` header.
+ *
+ * @example
+ * example for Web API request on Deno:
+ *
+ * ```ts
+ * import { getAcceptLanguage } from 'https://esm.sh/@intlify/utils/web'
+ *
+ * Deno.serve({
+ *   port: 8080,
+ * }, (req) => {
+ *   const langTag = getAcceptLanguage(req)
+ *   // ...
+ *   return new Response(`accepted language: ${langTag}`
+ * })
+ * ```
+ *
  * @param {Request} request The {@link Request | request}
  *
  * @returns {string} The **first language tag** of `accept-language` header, if `accept-language` header is not exists, or `*` (any language), return empty string.
  */
-export function getAcceptLanguage(req: Request): string {
-  return getAcceptLanguages(req)[0] || ''
+export function getAcceptLanguage(request: Request): string {
+  return getAcceptLanguages(request)[0] || ''
 }
 
 /**
@@ -73,8 +90,11 @@ export function getAcceptLanguage(req: Request): string {
  *
  * @returns {Intl.Locale} The first locale that resolved from `accept-language` header string, first language tag is used. if `*` (any language) or empty string is detected, return `en-US`.
  */
-export function getLocale(req: Request, lang = DEFAULT_LANG_TAG): Intl.Locale {
-  return getLocaleWithGetter(() => getAcceptLanguages(req)[0] || lang)
+export function getLocale(
+  request: Request,
+  lang = DEFAULT_LANG_TAG,
+): Intl.Locale {
+  return getLocaleWithGetter(() => getAcceptLanguages(request)[0] || lang)
 }
 
 /**
@@ -104,11 +124,11 @@ export function getLocale(req: Request, lang = DEFAULT_LANG_TAG): Intl.Locale {
  * @returns The locale that resolved from cookie
  */
 export function getCookieLocale(
-  req: Request,
+  request: Request,
   { lang = DEFAULT_LANG_TAG, name = DEFAULT_COOKIE_NAME } = {},
 ): Intl.Locale {
   const getter = () => {
-    const cookieRaw = req.headers.get('cookie')
+    const cookieRaw = request.headers.get('cookie')
     const cookie = parse(cookieRaw || '')
     return cookie[name] || lang
   }
@@ -135,25 +155,25 @@ export function getCookieLocale(
  * })
  * ```
  *
- * @param {Response} res The {@link Response | response}
+ * @param {Response} response The {@link Response | response}
  * @param {string | Intl.Locale} locale The locale value
  * @param {CookieOptions} options The cookie options, `name` option is `i18n_locale` as default, and `path` option is `/` as default.
  *
  * @throws {SyntaxError} Throws the {@link SyntaxError} if `locale` is invalid.
  */
 export function setCookieLocale(
-  res: Response,
+  response: Response,
   locale: string | Intl.Locale,
   options: CookieOptions = { name: DEFAULT_COOKIE_NAME },
 ): void {
   validateLocale(locale)
   const setCookies = getExistCookies(
     options.name!,
-    () => res.headers.getSetCookie(),
+    () => response.headers.getSetCookie(),
   )
   const target = serialize(options.name!, locale.toString(), {
     path: '/',
     ...options,
   })
-  res.headers.set('set-cookie', [...setCookies, target].join('; '))
+  response.headers.set('set-cookie', [...setCookies, target].join('; '))
 }
