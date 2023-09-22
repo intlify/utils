@@ -57,12 +57,7 @@ avoid hoisting issues.
 
 You can install via `import`.
 
-```sh
-touch mod.ts
-edit mod.ts
-```
-
-mod.ts:
+in your code:
 
 ```ts
 /**
@@ -95,6 +90,8 @@ bun install @intlify/utils
 ```
 
 ### 🌍 Browser
+
+in your HTML:
 
 ```html
 <script type="module">
