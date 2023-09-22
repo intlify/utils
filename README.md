@@ -132,6 +132,7 @@ You can do `import { ... } from '@intlify/utils'` the above utilities
 ### HTTP
 
 - `getAcceptLanguages`
+- `getAcceptLanguage`
 - `getLocale`
 - `getCookieLocale`
 - `setCookieLocale`

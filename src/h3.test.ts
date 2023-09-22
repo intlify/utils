@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, test } from 'vitest'
 import { createApp, eventHandler, toNodeListener } from 'h3'
 import supertest from 'supertest'
 import {
+  getAcceptLanguage,
   getAcceptLanguages,
   getCookieLocale,
   getLocale,
@@ -14,7 +15,7 @@ import type { SuperTest, Test } from 'supertest'
 
 describe('getAcceptLanguages', () => {
   test('basic', () => {
-    const eventMock = {
+    const mockEvent = {
       node: {
         req: {
           method: 'GET',
@@ -24,11 +25,11 @@ describe('getAcceptLanguages', () => {
         },
       },
     } as H3Event
-    expect(getAcceptLanguages(eventMock)).toEqual(['en-US', 'en', 'ja'])
+    expect(getAcceptLanguages(mockEvent)).toEqual(['en-US', 'en', 'ja'])
   })
 
   test('any language', () => {
-    const eventMock = {
+    const mockEvent = {
       node: {
         req: {
           method: 'GET',
@@ -38,11 +39,11 @@ describe('getAcceptLanguages', () => {
         },
       },
     } as H3Event
-    expect(getAcceptLanguages(eventMock)).toEqual([])
+    expect(getAcceptLanguages(mockEvent)).toEqual([])
   })
 
   test('empty', () => {
-    const eventMock = {
+    const mockEvent = {
       node: {
         req: {
           method: 'GET',
@@ -50,13 +51,13 @@ describe('getAcceptLanguages', () => {
         },
       },
     } as H3Event
-    expect(getAcceptLanguages(eventMock)).toEqual([])
+    expect(getAcceptLanguages(mockEvent)).toEqual([])
   })
 })
 
-describe('getLocale', () => {
+describe('getAcceptLanguage', () => {
   test('basic', () => {
-    const eventMock = {
+    const mockEvent = {
       node: {
         req: {
           method: 'GET',
@@ -66,7 +67,49 @@ describe('getLocale', () => {
         },
       },
     } as H3Event
-    const locale = getLocale(eventMock)
+    expect(getAcceptLanguage(mockEvent)).toEqual('en-US')
+  })
+
+  test('any language', () => {
+    const mockEvent = {
+      node: {
+        req: {
+          method: 'GET',
+          headers: {
+            'accept-language': '*',
+          },
+        },
+      },
+    } as H3Event
+    expect(getAcceptLanguage(mockEvent)).toEqual('')
+  })
+
+  test('empty', () => {
+    const mockEvent = {
+      node: {
+        req: {
+          method: 'GET',
+          headers: {},
+        },
+      },
+    } as H3Event
+    expect(getAcceptLanguage(mockEvent)).toEqual('')
+  })
+})
+
+describe('getLocale', () => {
+  test('basic', () => {
+    const mockEvent = {
+      node: {
+        req: {
+          method: 'GET',
+          headers: {
+            'accept-language': 'en-US,en;q=0.9,ja;q=0.8',
+          },
+        },
+      },
+    } as H3Event
+    const locale = getLocale(mockEvent)
 
     expect(locale.baseName).toEqual('en-US')
     expect(locale.language).toEqual('en')
@@ -74,7 +117,7 @@ describe('getLocale', () => {
   })
 
   test('accept-language is any language', () => {
-    const eventMock = {
+    const mockEvent = {
       node: {
         req: {
           method: 'GET',
@@ -84,13 +127,13 @@ describe('getLocale', () => {
         },
       },
     } as H3Event
-    const locale = getLocale(eventMock)
+    const locale = getLocale(mockEvent)
 
     expect(locale.baseName).toEqual(DEFAULT_LANG_TAG)
   })
 
   test('specify default language', () => {
-    const eventMock = {
+    const mockEvent = {
       node: {
         req: {
           method: 'GET',
@@ -100,13 +143,13 @@ describe('getLocale', () => {
         },
       },
     } as H3Event
-    const locale = getLocale(eventMock, 'ja-JP')
+    const locale = getLocale(mockEvent, 'ja-JP')
 
     expect(locale.baseName).toEqual('ja-JP')
   })
 
   test('RangeError', () => {
-    const eventMock = {
+    const mockEvent = {
       node: {
         req: {
           method: 'GET',
@@ -117,13 +160,13 @@ describe('getLocale', () => {
       },
     } as H3Event
 
-    expect(() => getLocale(eventMock, 'ja-JP')).toThrowError(RangeError)
+    expect(() => getLocale(mockEvent, 'ja-JP')).toThrowError(RangeError)
   })
 })
 
 describe('getCookieLocale', () => {
   test('basic', () => {
-    const eventMock = {
+    const mockEvent = {
       node: {
         req: {
           method: 'GET',
@@ -133,7 +176,7 @@ describe('getCookieLocale', () => {
         },
       },
     } as H3Event
-    const locale = getCookieLocale(eventMock)
+    const locale = getCookieLocale(mockEvent)
 
     expect(locale.baseName).toEqual('ja-US')
     expect(locale.language).toEqual('ja')
@@ -141,7 +184,7 @@ describe('getCookieLocale', () => {
   })
 
   test('cookie is empty', () => {
-    const eventMock = {
+    const mockEvent = {
       node: {
         req: {
           method: 'GET',
@@ -149,13 +192,13 @@ describe('getCookieLocale', () => {
         },
       },
     } as H3Event
-    const locale = getCookieLocale(eventMock)
+    const locale = getCookieLocale(mockEvent)
 
     expect(locale.baseName).toEqual(DEFAULT_LANG_TAG)
   })
 
   test('specify default language', () => {
-    const eventMock = {
+    const mockEvent = {
       node: {
         req: {
           method: 'GET',
@@ -163,13 +206,13 @@ describe('getCookieLocale', () => {
         },
       },
     } as H3Event
-    const locale = getCookieLocale(eventMock, { lang: 'ja-JP' })
+    const locale = getCookieLocale(mockEvent, { lang: 'ja-JP' })
 
     expect(locale.baseName).toEqual('ja-JP')
   })
 
   test('specify cookie name', () => {
-    const eventMock = {
+    const mockEvent = {
       node: {
         req: {
           method: 'GET',
@@ -179,13 +222,13 @@ describe('getCookieLocale', () => {
         },
       },
     } as H3Event
-    const locale = getCookieLocale(eventMock, { name: 'intlify_locale' })
+    const locale = getCookieLocale(mockEvent, { name: 'intlify_locale' })
 
     expect(locale.baseName).toEqual('fr-FR')
   })
 
   test('RangeError', () => {
-    const eventMock = {
+    const mockEvent = {
       node: {
         req: {
           method: 'GET',
@@ -196,7 +239,7 @@ describe('getCookieLocale', () => {
       },
     } as H3Event
 
-    expect(() => getCookieLocale(eventMock, { name: 'intlify_locale' }))
+    expect(() => getCookieLocale(mockEvent, { name: 'intlify_locale' }))
       .toThrowError(RangeError)
   })
 })
