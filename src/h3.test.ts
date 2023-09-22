@@ -5,6 +5,7 @@ import {
   getAcceptLanguage,
   getAcceptLanguages,
   getAcceptLocale,
+  getAcceptLocales,
   getCookieLocale,
   setCookieLocale,
 } from './h3.ts'
@@ -94,6 +95,49 @@ describe('getAcceptLanguage', () => {
       },
     } as H3Event
     expect(getAcceptLanguage(mockEvent)).toEqual('')
+  })
+})
+
+describe('getAcceptLocales', () => {
+  test('basic', () => {
+    const mockEvent = {
+      node: {
+        req: {
+          method: 'GET',
+          headers: {
+            'accept-language': 'en-US,en;q=0.9,ja;q=0.8',
+          },
+        },
+      },
+    } as H3Event
+    expect(getAcceptLocales(mockEvent).map((locale) => locale.baseName))
+      .toEqual(['en-US', 'en', 'ja'])
+  })
+
+  test('any language', () => {
+    const mockEvent = {
+      node: {
+        req: {
+          method: 'GET',
+          headers: {
+            'accept-language': '*',
+          },
+        },
+      },
+    } as H3Event
+    expect(getAcceptLocales(mockEvent)).toEqual([])
+  })
+
+  test('empty', () => {
+    const mockEvent = {
+      node: {
+        req: {
+          method: 'GET',
+          headers: {},
+        },
+      },
+    } as H3Event
+    expect(getAcceptLocales(mockEvent)).toEqual([])
   })
 })
 

@@ -123,6 +123,16 @@ export function validateLocale(locale: string | Intl.Locale): void {
   }
 }
 
+export function mapToLocaleFromLanguageTag(
+  // deno-lint-ignore no-explicit-any
+  getter: (...args: any[]) => string[],
+  arg: unknown,
+): Intl.Locale[] {
+  return (Reflect.apply(getter, null, [arg]) as string[]).map((lang) =>
+    getLocaleWithGetter(() => lang)
+  )
+}
+
 export function getExistCookies(
   name: string,
   getter: () => unknown,

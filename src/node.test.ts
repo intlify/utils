@@ -4,6 +4,7 @@ import {
   getAcceptLanguage,
   getAcceptLanguages,
   getAcceptLocale,
+  getAcceptLocales,
   getCookieLocale,
   setCookieLocale,
 } from './node.ts'
@@ -61,6 +62,34 @@ describe('getAcceptLanguage', () => {
       headers: {},
     } as IncomingMessage
     expect(getAcceptLanguage(mockRequest)).toBe('')
+  })
+})
+
+describe('getAcceptLocales', () => {
+  test('basic', () => {
+    const mockRequest = {
+      headers: {
+        'accept-language': 'en-US,en;q=0.9,ja;q=0.8',
+      },
+    } as IncomingMessage
+    expect(getAcceptLocales(mockRequest).map((locale) => locale.baseName))
+      .toEqual(['en-US', 'en', 'ja'])
+  })
+
+  test('any language', () => {
+    const mockRequest = {
+      headers: {
+        'accept-language': '*',
+      },
+    } as IncomingMessage
+    expect(getAcceptLocales(mockRequest)).toEqual([])
+  })
+
+  test('empty', () => {
+    const mockRequest = {
+      headers: {},
+    } as IncomingMessage
+    expect(getAcceptLocales(mockRequest)).toEqual([])
   })
 })
 
