@@ -1,6 +1,7 @@
 import {
   getAcceptLanguagesWithGetter,
   getLocaleWithGetter,
+  mapToLocaleFromLanguageTag,
   validateLocale,
 } from './http.ts'
 import { getCookie, getHeaders, setCookie } from 'h3'
@@ -70,28 +71,57 @@ export function getAcceptLanguage(event: H3Event): string {
 }
 
 /**
- * get {@link Intl.Locale | locale} from `accept-language` header
+ * get locales from `accept-language` header
  *
- * @description wrap with {@link Intl.Locale | locale}
+ * @description wrap language tags with {@link Intl.Locale | locale}
  *
  * @example
  * example for h3:
  *
  * ```ts
  * import { createApp, eventHandler } from 'h3'
- * import { getLocale } from '@intlify/utils/h3'
+ * import { getAcceptLocales } from '@intlify/utils/h3'
  *
  * app.use(eventHandler(event) => {
- *   const locale = getLocale(event)
- *   console.log(locale) // output `Intl.Locale` instance
+ *   const locales = getAcceptLocales(event)
  *   // ...
+ *   return `accepted locales: ${locales.map(locale => locale.toString()).join(', ')}`
  * })
  * ```
  *
  * @param {H3Event} event The {@link H3Event | H3} event
- * @param {string} lang The default language tag, default is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
  *
- * @throws {RangeError} Throws a {@link RangeError} if `lang` option or `accpet-languages` are not a well-formed BCP 47 language tag.
+ * @returns {Array<Intl.Locale>} The locales that wrapped from `accept-language` header, if `*` (any language) or empty string is detected, return an empty array.
+ */
+export function getAcceptLocales(
+  event: H3Event,
+): Intl.Locale[] {
+  return mapToLocaleFromLanguageTag(getAcceptLanguages, event)
+}
+
+/**
+ * get locale from `accept-language` header
+ *
+ * @description wrap language tag with {@link Intl.Locale | locale}
+ *
+ * @example
+ * example for h3:
+ *
+ * ```ts
+ * import { createApp, eventHandler } from 'h3'
+ * import { getAcceptLocale } from '@intlify/utils/h3'
+ *
+ * app.use(eventHandler(event) => {
+ *   const locale = getAcceptLocale(event)
+ *   // ...
+ *   return `accepted locale: ${locale.toString()}`
+ * })
+ * ```
+ *
+ * @param {H3Event} event The {@link H3Event | H3} event
+ * @param {string} lang The default language tag, Optional. default value is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
+ *
+ * @throws {RangeError} Throws the {@link RangeError} if `lang` option or `accpet-languages` are not a well-formed BCP 47 language tag.
  *
  * @returns {Intl.Locale} The first locale that resolved from `accept-language` header string, first language tag is used. if `*` (any language) or empty string is detected, return `en-US`.
  */

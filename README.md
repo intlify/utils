@@ -133,6 +133,7 @@ You can do `import { ... } from '@intlify/utils'` the above utilities
 
 - `getAcceptLanguages`
 - `getAcceptLanguage`
+- `getAcceptLocales`
 - `getAcceptLocale`
 - `getCookieLocale`
 - `setCookieLocale`

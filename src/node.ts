@@ -4,6 +4,7 @@ import {
   getAcceptLanguagesWithGetter,
   getExistCookies,
   getLocaleWithGetter,
+  mapToLocaleFromLanguageTag,
   validateLocale,
 } from './http.ts'
 import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
@@ -68,28 +69,59 @@ export function getAcceptLanguage(request: IncomingMessage): string {
 }
 
 /**
- * get {@link Intl.Locale | locale} from `accept-language` header
+ * get locales from `accept-language` header
  *
- * @description wrap with {@link Intl.Locale | locale}
+ * @description wrap language tags with {@link Intl.Locale | locale}
  *
  * @example
  * example for Node.js request:
  *
  * ```ts
  * import { createServer } from 'node:http'
- * import { getLocale } from '@intlify/utils/node'
+ * import { getAcceptLocales } from '@intlify/utils/node'
  *
  * const server = createServer((req, res) => {
- *   const locale = getLocale(req)
- *   console.log(locale) // output `Intl.Locale` instance
+ *   const locales = getAcceptLocales(req)
  *   // ...
+ *   res.writeHead(200)
+ *   res.end(`accpected locales: ${locales.map(locale => locale.toString()).join(', ')}`)
  * })
  * ```
  *
  * @param {IncomingMessage} request The {@link IncomingMessage | request}
- * @param {string} lang The default language tag, default is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
  *
- * @throws {RangeError} Throws a {@link RangeError} if `lang` option or `accpet-languages` are not a well-formed BCP 47 language tag.
+ * @returns {Array<Intl.Locale>} The locales that wrapped from `accept-language` header, if `*` (any language) or empty string is detected, return an empty array.
+ */
+export function getAcceptLocales(
+  request: IncomingMessage,
+): Intl.Locale[] {
+  return mapToLocaleFromLanguageTag(getAcceptLanguages, request)
+}
+
+/**
+ * get locale from `accept-language` header
+ *
+ * @description wrap language tag with {@link Intl.Locale | locale}
+ *
+ * @example
+ * example for Node.js request:
+ *
+ * ```ts
+ * import { createServer } from 'node:http'
+ * import { getAcceptLocale } from '@intlify/utils/node'
+ *
+ * const server = createServer((req, res) => {
+ *   const locale = getAcceptLocale(req)
+ *   // ...
+ *   res.writeHead(200)
+ *   res.end(`accpected locale: ${locale.toString()}`)
+ * })
+ * ```
+ *
+ * @param {IncomingMessage} request The {@link IncomingMessage | request}
+ * @param {string} lang The default language tag, Optional. default value is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
+ *
+ * @throws {RangeError} Throws the {@link RangeError} if `lang` option or `accpet-languages` are not a well-formed BCP 47 language tag.
  *
  * @returns {Intl.Locale} The first locale that resolved from `accept-language` header string, first language tag is used. if `*` (any language) or empty string is detected, return `en-US`.
  */

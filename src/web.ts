@@ -3,6 +3,7 @@ import {
   getAcceptLanguagesWithGetter,
   getExistCookies,
   getLocaleWithGetter,
+  mapToLocaleFromLanguageTag,
   validateLocale,
 } from './http.ts'
 import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
@@ -67,28 +68,58 @@ export function getAcceptLanguage(request: Request): string {
 }
 
 /**
- * get {@link Intl.Locale | locale} from `accept-language` header
+ * get locales from `accept-language` header
  *
- * @description wrap with {@link Intl.Locale | locale}
+ * @description wrap language tags with {@link Intl.Locale | locale}
  *
  * @example
  * example for Web API request on Bun:
  *
- * import { getLocale } from '@intlify/utils/web'
+ * import { getAcceptLocales } from '@intlify/utils/web'
  *
  * Bun.serve({
  *   port: 8080,
  *   fetch(req) {
- *     const locale = getLocale(req)
- *     console.log(locale) // output `Intl.Locale` instance
+ *     const locales = getAcceptLocales(req)
  *     // ...
+ *     return new Response(`accpected locales: ${locales.map(locale => locale.toString()).join(', ')}`)
+ *   },
+ * })
+ * ```
+ *
+ * @param {Request} request The {@link Request | request}
+ *
+ * @returns {Array<Intl.Locale>} The locales that wrapped from `accept-language` header, if `*` (any language) or empty string is detected, return an empty array.
+ */
+export function getAcceptLocales(
+  request: Request,
+): Intl.Locale[] {
+  return mapToLocaleFromLanguageTag(getAcceptLanguages, request)
+}
+
+/**
+ * get locale from `accept-language` header
+ *
+ * @description wrap language tag with {@link Intl.Locale | locale}
+ *
+ * @example
+ * example for Web API request on Bun:
+ *
+ * import { getAcceptLocale } from '@intlify/utils/web'
+ *
+ * Bun.serve({
+ *   port: 8080,
+ *   fetch(req) {
+ *     const locale = getAcceptLocale(req)
+ *     // ...
+ *     return new Response(`accpected locale: ${locale.toString()}`)
  *   },
  * })
  *
  * @param {Request} request The {@link Request | request}
- * @param {string} lang The default language tag, default is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
+ * @param {string} lang The default language tag, Optional. default value is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
  *
- * @throws {RangeError} Throws a {@link RangeError} if `lang` option or `accpet-languages` are not a well-formed BCP 47 language tag.
+ * @throws {RangeError} Throws the {@link RangeError} if `lang` option or `accpet-languages` are not a well-formed BCP 47 language tag.
  *
  * @returns {Intl.Locale} The first locale that resolved from `accept-language` header string, first language tag is used. if `*` (any language) or empty string is detected, return `en-US`.
  */
