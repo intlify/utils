@@ -33,9 +33,20 @@ import type { CookieOptions } from './http.ts'
  *
  * @returns {Array<string>} The array of language tags, if `*` (any language) or empty string is detected, return an empty array.
  */
-export function getAcceptLanguages(req: Request) {
+export function getAcceptLanguages(req: Request): string[] {
   const getter = () => req.headers.get('accept-language')
   return getAcceptLanguagesWithGetter(getter)
+}
+
+/**
+ * get accept language
+ *
+ * @param {Request} request The {@link Request | request}
+ *
+ * @returns {string} The **first language tag** of `accept-language` header, if `accept-language` header is not exists, or `*` (any language), return empty string.
+ */
+export function getAcceptLanguage(req: Request): string {
+  return getAcceptLanguages(req)[0] || ''
 }
 
 /**

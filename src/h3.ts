@@ -41,6 +41,17 @@ export function getAcceptLanguages(event: H3Event): string[] {
 }
 
 /**
+ * get accept language
+ *
+ * @param {H3Event} event The {@link H3Event | H3} event
+ *
+ * @returns {string} The **first language tag** of `accept-language` header, if `accept-language` header is not exists, or `*` (any language), return empty string.
+ */
+export function getAcceptLanguage(event: H3Event): string {
+  return getAcceptLanguages(event)[0] || ''
+}
+
+/**
  * get locale
  *
  * @example
