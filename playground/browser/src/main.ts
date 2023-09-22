@@ -1,6 +1,7 @@
 import './style.css'
 import intlifyLogo from '/intlify.svg'
 import { setupCounter } from './counter.ts'
+// @ts-expect-error: The URL format of import identifier is not allowd in TS as default.
 import { isLocale } from 'https://esm.sh/@intlify/utils'
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
