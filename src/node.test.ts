@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest'
+import { afterEach, beforeEach, describe, expect, test } from 'vitest'
 import supertest from 'supertest'
 import {
   getAcceptLanguage,
@@ -6,6 +6,8 @@ import {
   getAcceptLocale,
   getAcceptLocales,
   getCookieLocale,
+  getNavigatorLanguage,
+  getNavigatorLanguages,
   setCookieLocale,
 } from './node.ts'
 import { createServer, IncomingMessage, OutgoingMessage } from 'node:http'
@@ -242,5 +244,51 @@ describe('setCookieLocale', () => {
 
     expect(() => setCookieLocale(mockRes, 'j'))
       .toThrowError(/locale is invalid: j/)
+  })
+})
+
+describe('getNavigatorLanguages', () => {
+  let orgEnv = {}
+  beforeEach(() => {
+    orgEnv = process.env
+  })
+  afterEach(() => {
+    process.env = orgEnv
+  })
+
+  test('basic', () => {
+    process.env.LC_ALL = 'en-GB'
+    process.env.LC_MESSAGES = 'en-US'
+    process.env.LANG = 'ja-JP'
+    process.env.LANGUAGE = 'en'
+
+    const values = [
+      'en-GB',
+      'en-US',
+      'ja-JP',
+      'en',
+    ]
+    expect(getNavigatorLanguages()).toEqual(values)
+    expect(getNavigatorLanguages()).toEqual(values)
+  })
+})
+
+describe('getNavigatorLanguage', () => {
+  let orgEnv = {}
+  beforeEach(() => {
+    orgEnv = process.env
+  })
+  afterEach(() => {
+    process.env = orgEnv
+  })
+
+  test('basic', () => {
+    process.env.LC_ALL = 'en-GB'
+    process.env.LC_MESSAGES = 'en-US'
+    process.env.LANG = 'ja-JP'
+    process.env.LANGUAGE = 'en'
+
+    expect(getNavigatorLanguage()).toEqual('en-GB')
+    expect(getNavigatorLanguage()).toEqual('en-GB')
   })
 })

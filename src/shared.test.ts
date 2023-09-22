@@ -1,5 +1,10 @@
 import { describe, expect, test } from 'vitest'
-import { isLocale, parseAcceptLanguage, validateLanguageTag } from './shared.ts'
+import {
+  isLocale,
+  normalizeLanguageName,
+  parseAcceptLanguage,
+  validateLanguageTag,
+} from './shared.ts'
 
 describe('isLocale', () => {
   test('Locale instance', () => {
@@ -49,5 +54,23 @@ describe('validateLanguageTag', () => {
 
   test('invalid', () => {
     expect(validateLanguageTag('j')).toBe(false)
+  })
+})
+
+describe('normalizeLanguageName', () => {
+  test('basic: en_US', () => {
+    expect(normalizeLanguageName('en_US')).toBe('en-US')
+  })
+
+  test('language only: en', () => {
+    expect(normalizeLanguageName('en')).toBe('en')
+  })
+
+  test('has encoding: en_US.UTF-8', () => {
+    expect(normalizeLanguageName('en_US.UTF-8')).toBe('en-US')
+  })
+
+  test('empty', () => {
+    expect(normalizeLanguageName('')).toBe('')
   })
 })
