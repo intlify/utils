@@ -126,8 +126,22 @@ You can play the below examples:
 - `isLocale`
 - `parseAcceptLanguage`
 - `validateLanguageTag`
+- `normalizeLanguageName`
 
 You can do `import { ... } from '@intlify/utils'` the above utilities
+
+### Navigator
+
+- `getNavigatorLanguages`
+- `getNavigatorLanguage`
+
+You can do `import { ... } from '@intlify/utils/{ENV}'` the above utilities.
+
+The namespace `{ENV}` is one of the following:
+
+- `node`: Node.js
+- `web`: JS environments (such as Deno, Bun, and Browser) supporting Web APIs
+  (`navigator.language(s)`)
 
 ### HTTP
 
@@ -147,10 +161,6 @@ The namespace `{ENV}` is one of the following:
   such as [Request](https://developer.mozilla.org/en-US/docs/Web/API/Request)
   and [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response)
 - `h3`: HTTP framework [h3](https://github.com/unjs/h3)
-
-### Browser
-
-TODO: WIP
 
 ## 🙌 Contributing guidelines
 

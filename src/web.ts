@@ -210,3 +210,37 @@ export function setCookieLocale(
   })
   response.headers.set('set-cookie', [...setCookies, target].join('; '))
 }
+
+/**
+ * get navigator languages
+ *
+ * @description
+ * The value depends on the environments. if you use this function on the browser, you can get the languages, that are set in the browser, else if you use this function on the server side (Deno only), that value is the languages set in the server.
+ *
+ * @throws Throws the {@link Error} if the `navigator` is not exists.
+ *
+ * @returns {Array<string>} {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 language tags}
+ */
+export function getNavigatorLanguages(): readonly string[] {
+  if (typeof navigator === 'undefined') {
+    throw new Error('not support `navigator`')
+  }
+  return navigator.languages
+}
+
+/**
+ * get navigator language
+ *
+ * @description
+ * The value depends on the environments. if you use this function on the browser, you can get the languages, that are set in the browser, else if you use this function on the server side (Deno only), that value is the language set in the server.
+ *
+ * @throws Throws the {@link Error} if the `navigator` is not exists.
+ *
+ * @returns {string} {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 language tag}
+ */
+export function getNavigatorLanguage(): string {
+  if (typeof navigator === 'undefined') {
+    throw new Error('not support `navigator`')
+  }
+  return navigator.language
+}

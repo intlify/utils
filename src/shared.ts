@@ -41,3 +41,25 @@ export function validateLanguageTag(lang: string): boolean {
     return false
   }
 }
+
+/**
+ * nomralize the language name
+ *
+ * @description
+ * This function normalizes the locale name defined in {@link https://www.gnu.org/software/gettext/manual/gettext.html#Locale-Names | gettext(libc) style} to {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 language tag}
+ *
+ * @example
+ * ```ts
+ * const oldLangName = 'en_US'
+ * const langTag = nomralizeLanguageName(oldLangName)
+ * conosle.log(langTag) // en-US
+ * ```
+ *
+ * @param langName The target language name
+ *
+ * @returns {string} The normalized language tag
+ */
+export function normalizeLanguageName(langName: string): string {
+  const [lang] = langName.split('.')
+  return lang.replace(/_/g, '-')
+}

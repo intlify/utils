@@ -1,10 +1,12 @@
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
 import {
   getAcceptLanguage,
   getAcceptLanguages,
   getAcceptLocale,
   getAcceptLocales,
   getCookieLocale,
+  getNavigatorLanguage,
+  getNavigatorLanguages,
   setCookieLocale,
 } from './web.ts'
 import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
@@ -173,5 +175,41 @@ describe('setCookieLocale', () => {
     const res = new Response('hello world!')
     expect(() => setCookieLocale(res, 'j'))
       .toThrowError(/locale is invalid: j/)
+  })
+})
+
+describe('getNavigatorLanguages', () => {
+  test('basic', () => {
+    vi.stubGlobal('navigator', {
+      languages: ['en-US', 'en', 'ja'],
+    })
+
+    expect(getNavigatorLanguages()).toEqual(['en-US', 'en', 'ja'])
+  })
+
+  test('error', () => {
+    vi.stubGlobal('navigator', undefined)
+
+    expect(() => getNavigatorLanguages()).toThrowError(
+      /not support `navigator`/,
+    )
+  })
+})
+
+describe('getNavigatorLanguage', () => {
+  test('basic', () => {
+    vi.stubGlobal('navigator', {
+      language: 'en-US',
+    })
+
+    expect(getNavigatorLanguage()).toEqual('en-US')
+  })
+
+  test('error', () => {
+    vi.stubGlobal('navigator', undefined)
+
+    expect(() => getNavigatorLanguage()).toThrowError(
+      /not support `navigator`/,
+    )
   })
 })

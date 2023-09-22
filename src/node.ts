@@ -7,6 +7,7 @@ import {
   mapToLocaleFromLanguageTag,
   validateLocale,
 } from './http.ts'
+import { normalizeLanguageName } from './shared.ts'
 import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 
 import type { CookieOptions } from './http.ts'
@@ -206,4 +207,45 @@ export function setCookieLocale(
     ...options,
   })
   response.setHeader('set-cookie', [...setCookies, target])
+}
+
+let navigatorLanguages: string[] | undefined
+
+/**
+ * get navigator languages
+ *
+ * @description
+ * You can get the language tags from system environment variables.
+ *
+ * @returns {Array<string>} {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 language tags}, if you can't get the language tag, return an empty array.
+ */
+export function getNavigatorLanguages(): readonly string[] {
+  if (navigatorLanguages) {
+    return navigatorLanguages
+  }
+
+  const env = process.env
+  const langs = new Set<string>()
+
+  env.LC_ALL && langs.add(normalizeLanguageName(env.LC_ALL))
+  env.LC_MESSAGES && langs.add(normalizeLanguageName(env.LC_MESSAGES))
+  env.LANG && langs.add(normalizeLanguageName(env.LANG))
+  env.LANGUAGE && langs.add(normalizeLanguageName(env.LANGUAGE))
+
+  return navigatorLanguages = [...langs].filter(Boolean)
+}
+
+let navigatorLanguage: string | undefined
+
+/**
+ * get navigator languages
+ *
+ * @description
+ * You can get the language tag from system environment variables.
+ *
+ * @returns {string} {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 language tag}, if you can't get the language tag, return a enmpty string.
+ */
+export function getNavigatorLanguage(): string {
+  return navigatorLanguage ||
+    (navigatorLanguage = getNavigatorLanguages()[0] || '')
 }
