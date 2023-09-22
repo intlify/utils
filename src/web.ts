@@ -164,18 +164,18 @@ export function getCookieLocale(
  * @throws {SyntaxError} Throws the {@link SyntaxError} if `locale` is invalid.
  */
 export function setCookieLocale(
-  res: Response,
+  response: Response,
   locale: string | Intl.Locale,
   options: CookieOptions = { name: DEFAULT_COOKIE_NAME },
 ): void {
   validateLocale(locale)
   const setCookies = getExistCookies(
     options.name!,
-    () => res.headers.getSetCookie(),
+    () => response.headers.getSetCookie(),
   )
   const target = serialize(options.name!, locale.toString(), {
     path: '/',
     ...options,
   })
-  res.headers.set('set-cookie', [...setCookies, target].join('; '))
+  response.headers.set('set-cookie', [...setCookies, target].join('; '))
 }
