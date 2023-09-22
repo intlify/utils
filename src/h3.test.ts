@@ -4,8 +4,8 @@ import supertest from 'supertest'
 import {
   getAcceptLanguage,
   getAcceptLanguages,
+  getAcceptLocale,
   getCookieLocale,
-  getLocale,
   setCookieLocale,
 } from './h3.ts'
 import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
@@ -97,7 +97,7 @@ describe('getAcceptLanguage', () => {
   })
 })
 
-describe('getLocale', () => {
+describe('getAcceptLocale', () => {
   test('basic', () => {
     const mockEvent = {
       node: {
@@ -109,7 +109,7 @@ describe('getLocale', () => {
         },
       },
     } as H3Event
-    const locale = getLocale(mockEvent)
+    const locale = getAcceptLocale(mockEvent)
 
     expect(locale.baseName).toEqual('en-US')
     expect(locale.language).toEqual('en')
@@ -127,7 +127,7 @@ describe('getLocale', () => {
         },
       },
     } as H3Event
-    const locale = getLocale(mockEvent)
+    const locale = getAcceptLocale(mockEvent)
 
     expect(locale.baseName).toEqual(DEFAULT_LANG_TAG)
   })
@@ -143,7 +143,7 @@ describe('getLocale', () => {
         },
       },
     } as H3Event
-    const locale = getLocale(mockEvent, 'ja-JP')
+    const locale = getAcceptLocale(mockEvent, 'ja-JP')
 
     expect(locale.baseName).toEqual('ja-JP')
   })
@@ -160,7 +160,7 @@ describe('getLocale', () => {
       },
     } as H3Event
 
-    expect(() => getLocale(mockEvent, 'ja-JP')).toThrowError(RangeError)
+    expect(() => getAcceptLocale(mockEvent, 'ja-JP')).toThrowError(RangeError)
   })
 })
 

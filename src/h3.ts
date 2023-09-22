@@ -70,7 +70,9 @@ export function getAcceptLanguage(event: H3Event): string {
 }
 
 /**
- * get locale
+ * get {@link Intl.Locale | locale} from `accept-language` header
+ *
+ * @description wrap with {@link Intl.Locale | locale}
  *
  * @example
  * example for h3:
@@ -93,7 +95,7 @@ export function getAcceptLanguage(event: H3Event): string {
  *
  * @returns {Intl.Locale} The first locale that resolved from `accept-language` header string, first language tag is used. if `*` (any language) or empty string is detected, return `en-US`.
  */
-export function getLocale(
+export function getAcceptLocale(
   event: H3Event,
   lang = DEFAULT_LANG_TAG,
 ): Intl.Locale {

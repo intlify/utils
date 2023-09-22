@@ -3,8 +3,8 @@ import supertest from 'supertest'
 import {
   getAcceptLanguage,
   getAcceptLanguages,
+  getAcceptLocale,
   getCookieLocale,
-  getLocale,
   setCookieLocale,
 } from './node.ts'
 import { createServer, IncomingMessage, OutgoingMessage } from 'node:http'
@@ -64,14 +64,14 @@ describe('getAcceptLanguage', () => {
   })
 })
 
-describe('getLocale', () => {
+describe('getAcceptLocale', () => {
   test('basic', () => {
     const mockRequest = {
       headers: {
         'accept-language': 'en-US,en;q=0.9,ja;q=0.8',
       },
     } as IncomingMessage
-    const locale = getLocale(mockRequest)
+    const locale = getAcceptLocale(mockRequest)
 
     expect(locale.baseName).toEqual('en-US')
     expect(locale.language).toEqual('en')
@@ -84,7 +84,7 @@ describe('getLocale', () => {
         'accept-language': '*',
       },
     } as IncomingMessage
-    const locale = getLocale(mockRequest)
+    const locale = getAcceptLocale(mockRequest)
 
     expect(locale.baseName).toEqual(DEFAULT_LANG_TAG)
   })
@@ -95,7 +95,7 @@ describe('getLocale', () => {
         'accept-language': '*',
       },
     } as IncomingMessage
-    const locale = getLocale(mockRequest, 'ja-JP')
+    const locale = getAcceptLocale(mockRequest, 'ja-JP')
 
     expect(locale.baseName).toEqual('ja-JP')
   })
@@ -106,7 +106,7 @@ describe('getLocale', () => {
         'accept-language': 's',
       },
     } as IncomingMessage
-    expect(() => getLocale(mockRequest, 'ja-JP')).toThrowError(RangeError)
+    expect(() => getAcceptLocale(mockRequest, 'ja-JP')).toThrowError(RangeError)
   })
 })
 
