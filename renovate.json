@@ -1,6 +1,6 @@
 {
   "extends": ["config:base", ":preserveSemverRanges"],
-  "labels": ["Type: Dependency"],
+  "labels": ["deps"],
   "automerge": true,
   "major": {
     "automerge": false
