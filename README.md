@@ -1,11 +1,8 @@
 # @intilfy/utils
 
-[![npm version][npm-version-src]][npm-version-href] [![CI][ci-src]][ci-href]
-
-<!--
-[![npm
-downloads][npm-downloads-src]][npm-downloads-href]
--->
+[![npm version][npm-version-src]][npm-version-href]
+[![npm downloads][npm-downloads-src]][npm-downloads-href]
+[![CI][ci-src]][ci-href]
 
 Collection of i18n utilities
 
