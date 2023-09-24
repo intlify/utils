@@ -2,6 +2,9 @@ import { defineBuildConfig } from 'unbuild'
 
 export default defineBuildConfig({
   declaration: true,
+  replace: {
+    'import.meta.vitest': undefined,
+  },
   rollup: {
     emitCJS: true,
     inlineDependencies: true,
@@ -21,4 +24,18 @@ export default defineBuildConfig({
     },
   ],
   externals: ['h3'],
+  hooks: {
+    'rollup:options': (_ctx, options) => {
+      // deno-lint-ignore no-explicit-any
+      ;(options.plugins as any).push({
+        name: 'workaround-strip-in-source-test',
+        transform(code: string, _id: string) {
+          return {
+            code: code.replace(/import.meta.vitest/g, 'false'),
+            map: null,
+          }
+        },
+      })
+    },
+  },
 })
