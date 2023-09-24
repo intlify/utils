@@ -220,7 +220,7 @@ let navigatorLanguages: string[] | undefined
  * @returns {Array<string>} {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 language tags}, if you can't get the language tag, return an empty array.
  */
 export function getNavigatorLanguages(): readonly string[] {
-  if (navigatorLanguages) {
+  if (navigatorLanguages && navigatorLanguages.length > 0) {
     return navigatorLanguages
   }
 
@@ -235,7 +235,65 @@ export function getNavigatorLanguages(): readonly string[] {
   return navigatorLanguages = [...langs].filter(Boolean)
 }
 
-let navigatorLanguage: string | undefined
+/**
+ * in-source testing for `getNavigatorLanguages`
+ */
+if (import.meta.vitest) {
+  const { describe, test, expect, afterEach, vi } = import.meta.vitest
+
+  describe('getNavigatorLanguages', () => {
+    afterEach(() => {
+      vi.resetAllMocks()
+      navigatorLanguages = undefined
+    })
+
+    test('basic', () => {
+      vi.spyOn(process, 'env', 'get').mockReturnValue({
+        LC_ALL: 'en-GB',
+        LC_MESSAGES: 'en-US',
+        LANG: 'ja-JP',
+        LANGUAGE: 'en',
+      })
+
+      const values = [
+        'en-GB',
+        'en-US',
+        'ja-JP',
+        'en',
+      ]
+      expect(getNavigatorLanguages()).toEqual(values)
+      // cache checking
+      expect(navigatorLanguages).toEqual(values)
+    })
+
+    test('duplicate language', () => {
+      vi.spyOn(process, 'env', 'get').mockReturnValue({
+        LC_ALL: 'en-US',
+        LC_MESSAGES: 'en-US',
+        LANG: 'ja-JP',
+        LANGUAGE: 'ja-JP',
+      })
+
+      const values = [
+        'en-US',
+        'ja-JP',
+      ]
+      expect(getNavigatorLanguages()).toEqual(values)
+      // cache checking
+      expect(navigatorLanguages).toEqual(values)
+    })
+
+    test('language nothing', () => {
+      const mockEnv = vi.spyOn(process, 'env', 'get').mockReturnValue({})
+      expect(getNavigatorLanguages()).toEqual([])
+      expect(navigatorLanguages).toEqual([])
+      expect(getNavigatorLanguages()).toEqual([])
+      expect(mockEnv).toHaveBeenCalledTimes(2)
+    })
+  })
+}
+
+let navigatorLanguage = ''
 
 /**
  * get navigator languages
@@ -248,4 +306,53 @@ let navigatorLanguage: string | undefined
 export function getNavigatorLanguage(): string {
   return navigatorLanguage ||
     (navigatorLanguage = getNavigatorLanguages()[0] || '')
+}
+
+/**
+ * in-source testing for `getNavigatorLanguage`
+ */
+if (import.meta.vitest) {
+  const { describe, test, expect, afterEach, vi } = import.meta.vitest
+
+  describe('getNavigatorLanguage', () => {
+    afterEach(() => {
+      vi.resetAllMocks()
+      navigatorLanguages = undefined
+      navigatorLanguage = ''
+    })
+
+    test('basic', () => {
+      vi.spyOn(process, 'env', 'get').mockReturnValue({
+        LC_ALL: 'en-GB',
+        LC_MESSAGES: 'en-US',
+        LANG: 'ja-JP',
+        LANGUAGE: 'en',
+      })
+
+      expect(getNavigatorLanguage()).toEqual('en-GB')
+      // cache checking
+      expect(navigatorLanguage).toEqual('en-GB')
+    })
+
+    test('duplicate language', () => {
+      vi.spyOn(process, 'env', 'get').mockReturnValue({
+        LC_ALL: 'en-US',
+        LC_MESSAGES: 'en-US',
+        LANG: 'ja-JP',
+        LANGUAGE: 'ja-JP',
+      })
+
+      expect(getNavigatorLanguage()).toEqual('en-US')
+      // cache checking
+      expect(navigatorLanguage).toEqual('en-US')
+    })
+
+    test('language nothing', () => {
+      const mockEnv = vi.spyOn(process, 'env', 'get').mockReturnValue({})
+      expect(getNavigatorLanguage()).toBe('')
+      expect(navigatorLanguage).toBe('')
+      expect(getNavigatorLanguage()).toBe('')
+      expect(mockEnv).toHaveBeenCalledTimes(2)
+    })
+  })
 }
