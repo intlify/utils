@@ -132,13 +132,9 @@ You can do `import { ... } from '@intlify/utils'` the above utilities
 - `getNavigatorLanguages`
 - `getNavigatorLanguage`
 
-You can do `import { ... } from '@intlify/utils/{ENV}'` the above utilities.
+You can do `import { ... } from '@intlify/utils'` the above utilities
 
-The namespace `{ENV}` is one of the following:
-
-- `node`: Node.js
-- `web`: JS environments (such as Deno, Bun, and Browser) supporting Web APIs
-  (`navigator.language(s)`)
+> ⚠NOTE: for Node.js You need to do `import { ... } from '@intlify/utils/node'`
 
 ### HTTP
 
@@ -149,15 +145,21 @@ The namespace `{ENV}` is one of the following:
 - `getCookieLocale`
 - `setCookieLocale`
 
-You can do `import { ... } from '@intlify/utils/{ENV}'` the above utilities.
+The about utilies functions accpet Web APIs such as
+[Request](https://developer.mozilla.org/en-US/docs/Web/API/Request) and
+[Response](https://developer.mozilla.org/en-US/docs/Web/API/Response) that is
+supported by JS environments (such as Deno, Bun, and Browser)
+
+#### Specialized environments
+
+If you will use Node.js and H3, You can do
+`import { ... } from '@intlify/utils/{ENV}'` the above utilities.
 
 The namespace `{ENV}` is one of the following:
 
-- `node`: Node.js
-- `web`: JS environments (such as Deno, Bun, and Browser) supporting Web APIs
-  such as [Request](https://developer.mozilla.org/en-US/docs/Web/API/Request)
-  and [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response)
-- `h3`: HTTP framework [h3](https://github.com/unjs/h3)
+- `node`: accpet `IncomingMessage` and `Outgoing` by Node.js
+  [http](https://nodejs.org/api/http.html) module
+- `h3`: accept `H3Event` by HTTP framework [h3](https://github.com/unjs/h3)
 
 ## 🙌 Contributing guidelines
 
