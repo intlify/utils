@@ -166,8 +166,7 @@ export function getPathLanguage(
   path: string | URL,
   parser?: PathLanguageParser,
 ): string {
-  const _parser = parser || pathLanguageParser
-  return _parser.parse(path)
+  return (parser || pathLanguageParser)(path)
 }
 
 /**
