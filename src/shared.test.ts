@@ -1,8 +1,10 @@
 import { describe, expect, test } from 'vitest'
 import {
+  createPathIndexLanguageParser,
   isLocale,
   normalizeLanguageName,
   parseAcceptLanguage,
+  pathLanguageParser,
   validateLanguageTag,
 } from './shared.ts'
 
@@ -72,5 +74,20 @@ describe('normalizeLanguageName', () => {
 
   test('empty', () => {
     expect(normalizeLanguageName('')).toBe('')
+  })
+})
+
+describe('PathIndexLanguageParser', () => {
+  test('default index: 0', () => {
+    expect(pathLanguageParser.parse('/en/hello')).toEqual('en')
+  })
+
+  test('index 1', () => {
+    const parser = createPathIndexLanguageParser(1)
+    expect(parser.parse('/hello/ja/bar')).toEqual('ja')
+  })
+
+  test('empty', () => {
+    expect(pathLanguageParser.parse('/')).toEqual('')
   })
 })

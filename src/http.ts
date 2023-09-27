@@ -1,6 +1,11 @@
-import { parseAcceptLanguage } from './shared.ts'
-import { isLocale, validateLanguageTag } from './shared.ts'
+import {
+  isLocale,
+  parseAcceptLanguage,
+  pathLanguageParser,
+  validateLanguageTag,
+} from './shared.ts'
 
+import type { PathLanguageParser } from './shared.ts'
 // import type { CookieSerializeOptions } from 'cookie-es'
 // NOTE: This is a copy of the type definition from `cookie-es` package, we want to avoid building error for this type definition ...
 
@@ -145,4 +150,37 @@ export function getExistCookies(
     cookieValue && !cookieValue.startsWith(name + '=')
   )
   return setCookies as string[]
+}
+
+/**
+ * get the language from the path
+ *
+ * @param {string} path the target path
+ * @param {PathLanguageParser} parser the path language parser, optional
+ *
+ * @returns {string} the language that is parsed by the path language parser
+ */
+export function getPathLanguage(
+  path: string,
+  parser?: PathLanguageParser,
+): string {
+  const _parser = parser || pathLanguageParser
+  return _parser.parse(path)
+}
+
+/**
+ * get the locale from the path
+ *
+ * @param {string} path the target path
+ * @param {PathLanguageParser} parser the path language parser, optional
+ *
+ * @throws {RangeError} Throws the {@link RangeError} if the language in the path, that is not a well-formed BCP 47 language tag.
+ *
+ * @returns {Intl.Locale} The locale that resolved from path
+ */
+export function getPathLocale(
+  path: string,
+  parser?: PathLanguageParser,
+): Intl.Locale {
+  return new Intl.Locale(getPathLanguage(path, parser))
 }
