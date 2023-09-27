@@ -1,5 +1,7 @@
 import {
   isLocale,
+  isURL,
+  isURLSearchParams,
   parseAcceptLanguage,
   pathLanguageParser,
   validateLanguageTag,
@@ -158,7 +160,7 @@ export function getExistCookies(
  * @param {string | URL} path the target path
  * @param {PathLanguageParser} parser the path language parser, optional
  *
- * @returns {string} the language that is parsed by the path language parser
+ * @returns {string} the language that is parsed by the path language parser, if the language is not detected, return an empty string.
  */
 export function getPathLanguage(
   path: string | URL,
@@ -183,4 +185,49 @@ export function getPathLocale(
   parser?: PathLanguageParser,
 ): Intl.Locale {
   return new Intl.Locale(getPathLanguage(path, parser))
+}
+
+function getURLSearchParams(
+  input: string | URL | URLSearchParams,
+): URLSearchParams {
+  if (isURLSearchParams(input)) {
+    return input
+  } else if (isURL(input)) {
+    return input.searchParams
+  } else {
+    return new URLSearchParams(input)
+  }
+}
+
+/**
+ * get the language from the query
+ *
+ * @param {string | URL | URLSearchParams} query the target query
+ * @param {string} name the query param name, default `'lang'`
+ *
+ * @returns {string} the language from query, if the language is not detected, return an empty string.
+ */
+export function getQueryLanguage(
+  query: string | URL | URLSearchParams,
+  name = 'lang',
+): string {
+  const queryParams = getURLSearchParams(query)
+  return queryParams.get(name) || ''
+}
+
+/**
+ * get the locale from the query
+ *
+ * @param {string | URL | URLSearchParams} query the target query
+ * @param {string} name the query param name, default `'locale'`
+ *
+ * @throws {RangeError} Throws the {@link RangeError} if the language in the query, that is not a well-formed BCP 47 language tag.
+ *
+ * @returns {Intl.Locale} The locale that resolved from query
+ */
+export function getQueryLocale(
+  query: string | URL | URLSearchParams,
+  name = 'locale',
+): Intl.Locale {
+  return new Intl.Locale(getQueryLanguage(query, name))
 }
