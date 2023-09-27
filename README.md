@@ -144,6 +144,8 @@ You can do `import { ... } from '@intlify/utils'` the above utilities
 - `getAcceptLocale`
 - `getCookieLocale`
 - `setCookieLocale`
+- `getPathLanguage`
+- `getPathLocale`
 
 The about utilies functions accpet Web APIs such as
 [Request](https://developer.mozilla.org/en-US/docs/Web/API/Request) and

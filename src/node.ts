@@ -156,7 +156,7 @@ export function getAcceptLocale(
  *
  * @throws {RangeError} Throws a {@link RangeError} if `lang` option or cookie name value are not a well-formed BCP 47 language tag.
  *
- * @returns The locale that resolved from cookie
+ * @returns {Intl.Locale} The locale that resolved from cookie
  */
 export function getCookieLocale(
   request: IncomingMessage,

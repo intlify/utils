@@ -63,3 +63,49 @@ export function normalizeLanguageName(langName: string): string {
   const [lang] = langName.split('.')
   return lang.replace(/_/g, '-')
 }
+
+/**
+ * path language parser
+ */
+export interface PathLanguageParser {
+  /**
+   * parse the path that is include language
+   *
+   * @param {string | URL} path the target path
+   *
+   * @returns {string} the language, if it cannot parse the path is not found, you need to return empty string (`''`)
+   */
+  parse(path: string | URL): string
+}
+
+export function createPathIndexLanguageParser(
+  index = 0,
+): PathLanguageParser {
+  return {
+    parse(path: string | URL): string {
+      const rawPath = typeof path === 'string' ? path : path.pathname
+      const normalizedPath = rawPath.split('?')[0]
+      const parts = normalizedPath.split('/')
+      if (parts[0] === '') {
+        parts.shift()
+      }
+      return parts.length > index ? parts[index] || '' : ''
+    },
+  }
+}
+
+export let pathLanguageParser: PathLanguageParser =
+  /* #__PURE__*/ createPathIndexLanguageParser()
+
+/**
+ * register the path language parser
+ *
+ * @description register a parser to be used in the `getPathLanugage` utility function
+ *
+ * @param {PathLanguageParser} parser the path language parser
+ */
+export function registerPathLanguageParser(
+  parser: PathLanguageParser,
+): void {
+  pathLanguageParser = parser
+}
