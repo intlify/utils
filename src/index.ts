@@ -6,5 +6,10 @@ export {
   registerPathLanguageParser,
   validateLanguageTag,
 } from './shared.ts'
-export { getPathLanguage, getPathLocale } from './http.ts'
+export {
+  getPathLanguage,
+  getPathLocale,
+  getQueryLanguage,
+  getQueryLocale,
+} from './http.ts'
 export * from './web.ts'

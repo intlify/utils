@@ -1,6 +1,14 @@
 const objectToString = Object.prototype.toString
 const toTypeString = (value: unknown): string => objectToString.call(value)
 
+export function isURL(val: unknown): val is URL {
+  return toTypeString(val) === '[object URL]'
+}
+
+export function isURLSearchParams(val: unknown): val is URLSearchParams {
+  return toTypeString(val) === '[object URLSearchParams]'
+}
+
 /**
  * check whether the value is a {@link Intl.Locale} instance
  *

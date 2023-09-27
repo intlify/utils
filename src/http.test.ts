@@ -1,5 +1,10 @@
 import { describe, expect, test } from 'vitest'
-import { getPathLanguage, getPathLocale } from './http.ts'
+import {
+  getPathLanguage,
+  getPathLocale,
+  getQueryLanguage,
+  getQueryLocale,
+} from './http.ts'
 
 describe('getPathLanguage', () => {
   test('basic', () => {
@@ -36,5 +41,49 @@ describe('getPathLocale', () => {
     expect(() => getPathLocale('/en/foo', nullLangParser)).toThrowError(
       RangeError,
     )
+  })
+})
+
+describe('getQueryLanguage', () => {
+  test('basic', () => {
+    expect(getQueryLanguage('lang=en-US&flag=1')).toBe('en-US')
+  })
+
+  test('URL instance', () => {
+    const url = new URL('https://example.com/?locale=ja-JP')
+    expect(getQueryLanguage(url, 'locale')).toBe('ja-JP')
+  })
+
+  test('URLSearchParams instance', () => {
+    const params = new URLSearchParams('lang=ja-JP')
+    params.set('flag', '1')
+    expect(getQueryLanguage(params)).toBe('ja-JP')
+  })
+
+  test('empty', () => {
+    const params = new URLSearchParams()
+    expect(getQueryLanguage(params)).toBe('')
+  })
+})
+
+describe('getQueryLocale', () => {
+  test('basic', () => {
+    expect(getQueryLocale('lang=en-US&flag=1', 'lang').toString()).toBe('en-US')
+  })
+
+  test('URL instance', () => {
+    const url = new URL('https://example.com/?locale=ja-JP')
+    expect(getQueryLocale(url).toString()).toBe('ja-JP')
+  })
+
+  test('URLSearchParams instance', () => {
+    const params = new URLSearchParams('lang=ja-JP')
+    params.set('flag', '1')
+    expect(getQueryLocale(params, 'lang').toString()).toBe('ja-JP')
+  })
+
+  test('RangeError', () => {
+    const params = new URLSearchParams()
+    expect(() => getQueryLocale(params)).toThrowError(RangeError)
   })
 })
