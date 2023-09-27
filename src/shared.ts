@@ -71,19 +71,20 @@ export interface PathLanguageParser {
   /**
    * parse the path that is include language
    *
-   * @param {string} path the target path
+   * @param {string | URL} path the target path
    *
    * @returns {string} the language, if it cannot parse the path is not found, you need to return empty string (`''`)
    */
-  parse(path: string): string
+  parse(path: string | URL): string
 }
 
 export function createPathIndexLanguageParser(
   index = 0,
 ): PathLanguageParser {
   return {
-    parse(path: string): string {
-      const normalizedPath = path.split('?')[0]
+    parse(path: string | URL): string {
+      const rawPath = typeof path === 'string' ? path : path.pathname
+      const normalizedPath = rawPath.split('?')[0]
       const parts = normalizedPath.split('/')
       if (parts[0] === '') {
         parts.shift()

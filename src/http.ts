@@ -155,13 +155,13 @@ export function getExistCookies(
 /**
  * get the language from the path
  *
- * @param {string} path the target path
+ * @param {string | URL} path the target path
  * @param {PathLanguageParser} parser the path language parser, optional
  *
  * @returns {string} the language that is parsed by the path language parser
  */
 export function getPathLanguage(
-  path: string,
+  path: string | URL,
   parser?: PathLanguageParser,
 ): string {
   const _parser = parser || pathLanguageParser
@@ -171,7 +171,7 @@ export function getPathLanguage(
 /**
  * get the locale from the path
  *
- * @param {string} path the target path
+ * @param {string | URL} path the target path
  * @param {PathLanguageParser} parser the path language parser, optional
  *
  * @throws {RangeError} Throws the {@link RangeError} if the language in the path, that is not a well-formed BCP 47 language tag.
@@ -179,7 +179,7 @@ export function getPathLanguage(
  * @returns {Intl.Locale} The locale that resolved from path
  */
 export function getPathLocale(
-  path: string,
+  path: string | URL,
   parser?: PathLanguageParser,
 ): Intl.Locale {
   return new Intl.Locale(getPathLanguage(path, parser))

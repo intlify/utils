@@ -6,6 +6,11 @@ describe('getPathLanguage', () => {
     expect(getPathLanguage('/en/foo')).toBe('en')
   })
 
+  test('URL instance', () => {
+    const url = new URL('https://example.com/en/foo')
+    expect(getPathLanguage(url)).toBe('en')
+  })
+
   test('parser option', () => {
     const nullLangParser = {
       parse: () => 'null',
@@ -17,6 +22,11 @@ describe('getPathLanguage', () => {
 describe('getPathLocale', () => {
   test('basic', () => {
     expect(getPathLocale('/en-US/foo').toString()).toBe('en-US')
+  })
+
+  test('URL instance', () => {
+    const url = new URL('https://example.com/ja-JP/foo')
+    expect(getPathLocale(url).toString()).toBe('ja-JP')
   })
 
   test('RangeError', () => {
