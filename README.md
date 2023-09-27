@@ -8,8 +8,8 @@ Collection of i18n utilities
 
 ## 🌟 Features
 
-✅️ &nbsp;**Modern:** ES Modules first and respect ECMAScript
-Internationalization API
+✅️ &nbsp;**Modern:** ES Modules first and respect Web Standard and ECMAScript
+Internationalization APIs
 
 ✅️ &nbsp;**Compatible:** support CommonJS and various JS environments
 
