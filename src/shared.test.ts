@@ -79,15 +79,15 @@ describe('normalizeLanguageName', () => {
 
 describe('PathIndexLanguageParser', () => {
   test('default index: 0', () => {
-    expect(pathLanguageParser.parse('/en/hello')).toEqual('en')
+    expect(pathLanguageParser('/en/hello')).toEqual('en')
   })
 
   test('index 1', () => {
     const parser = createPathIndexLanguageParser(1)
-    expect(parser.parse('/hello/ja/bar')).toEqual('ja')
+    expect(parser('/hello/ja/bar')).toEqual('ja')
   })
 
   test('empty', () => {
-    expect(pathLanguageParser.parse('/')).toEqual('')
+    expect(pathLanguageParser('/')).toEqual('')
   })
 })

@@ -17,9 +17,7 @@ describe('getPathLanguage', () => {
   })
 
   test('parser option', () => {
-    const nullLangParser = {
-      parse: () => 'null',
-    }
+    const nullLangParser = () => 'null'
     expect(getPathLanguage('/en/foo', nullLangParser)).toBe('null')
   })
 })
@@ -35,9 +33,7 @@ describe('getPathLocale', () => {
   })
 
   test('RangeError', () => {
-    const nullLangParser = {
-      parse: () => 'null',
-    }
+    const nullLangParser = () => 'null'
     expect(() => getPathLocale('/en/foo', nullLangParser)).toThrowError(
       RangeError,
     )
