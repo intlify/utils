@@ -6,5 +6,3 @@ declare namespace NodeJS {
     LANGUAGE?: string
   }
 }
-
-declare let __TEST__: boolean
