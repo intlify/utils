@@ -2,11 +2,11 @@ import { beforeEach, describe, expect, test } from 'vitest'
 import { createApp, eventHandler, toNodeListener } from 'h3'
 import supertest from 'supertest'
 import {
-  getAcceptLanguage,
-  getAcceptLanguages,
-  getAcceptLocale,
-  getAcceptLocales,
   getCookieLocale,
+  getHeaderLanguage,
+  getHeaderLanguages,
+  getHeaderLocale,
+  getHeaderLocales,
   setCookieLocale,
 } from './h3.ts'
 import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
@@ -14,7 +14,7 @@ import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 import type { App, H3Event } from 'h3'
 import type { SuperTest, Test } from 'supertest'
 
-describe('getAcceptLanguages', () => {
+describe('getHeaderLanguages', () => {
   test('basic', () => {
     const mockEvent = {
       node: {
@@ -26,7 +26,7 @@ describe('getAcceptLanguages', () => {
         },
       },
     } as H3Event
-    expect(getAcceptLanguages(mockEvent)).toEqual(['en-US', 'en', 'ja'])
+    expect(getHeaderLanguages(mockEvent)).toEqual(['en-US', 'en', 'ja'])
   })
 
   test('any language', () => {
@@ -40,7 +40,7 @@ describe('getAcceptLanguages', () => {
         },
       },
     } as H3Event
-    expect(getAcceptLanguages(mockEvent)).toEqual([])
+    expect(getHeaderLanguages(mockEvent)).toEqual([])
   })
 
   test('empty', () => {
@@ -52,7 +52,27 @@ describe('getAcceptLanguages', () => {
         },
       },
     } as H3Event
-    expect(getAcceptLanguages(mockEvent)).toEqual([])
+    expect(getHeaderLanguages(mockEvent)).toEqual([])
+  })
+
+  test('custom header', () => {
+    // @ts-ignore: for mocking
+    const mockEvent = {
+      node: {
+        req: {
+          method: 'GET',
+          headers: {
+            'x-inlitfy-language': 'en-US,en,ja',
+          },
+        },
+      },
+    } as H3Event
+    expect(
+      getHeaderLanguages(mockEvent, {
+        name: 'x-inlitfy-language',
+        parser: (header) => header.split(','),
+      }),
+    ).toEqual(['en-US', 'en', 'ja'])
   })
 })
 
@@ -68,7 +88,7 @@ describe('getAcceptLanguage', () => {
         },
       },
     } as H3Event
-    expect(getAcceptLanguage(mockEvent)).toEqual('en-US')
+    expect(getHeaderLanguage(mockEvent)).toEqual('en-US')
   })
 
   test('any language', () => {
@@ -82,7 +102,7 @@ describe('getAcceptLanguage', () => {
         },
       },
     } as H3Event
-    expect(getAcceptLanguage(mockEvent)).toEqual('')
+    expect(getHeaderLanguage(mockEvent)).toEqual('')
   })
 
   test('empty', () => {
@@ -94,11 +114,31 @@ describe('getAcceptLanguage', () => {
         },
       },
     } as H3Event
-    expect(getAcceptLanguage(mockEvent)).toEqual('')
+    expect(getHeaderLanguage(mockEvent)).toEqual('')
+  })
+
+  test('custom header', () => {
+    // @ts-ignore: for mocking
+    const mockEvent = {
+      node: {
+        req: {
+          method: 'GET',
+          headers: {
+            'x-inlitfy-language': 'en-US,en,ja',
+          },
+        },
+      },
+    } as H3Event
+    expect(
+      getHeaderLanguage(mockEvent, {
+        name: 'x-inlitfy-language',
+        parser: (header) => header.split(','),
+      }),
+    ).toEqual('en-US')
   })
 })
 
-describe('getAcceptLocales', () => {
+describe('getHeaderLocales', () => {
   test('basic', () => {
     const mockEvent = {
       node: {
@@ -110,7 +150,7 @@ describe('getAcceptLocales', () => {
         },
       },
     } as H3Event
-    expect(getAcceptLocales(mockEvent).map((locale) => locale.baseName))
+    expect(getHeaderLocales(mockEvent).map((locale) => locale.baseName))
       .toEqual(['en-US', 'en', 'ja'])
   })
 
@@ -125,7 +165,7 @@ describe('getAcceptLocales', () => {
         },
       },
     } as H3Event
-    expect(getAcceptLocales(mockEvent)).toEqual([])
+    expect(getHeaderLocales(mockEvent)).toEqual([])
   })
 
   test('empty', () => {
@@ -137,11 +177,31 @@ describe('getAcceptLocales', () => {
         },
       },
     } as H3Event
-    expect(getAcceptLocales(mockEvent)).toEqual([])
+    expect(getHeaderLocales(mockEvent)).toEqual([])
+  })
+
+  test('custom header', () => {
+    // @ts-ignore: for mocking
+    const mockEvent = {
+      node: {
+        req: {
+          method: 'GET',
+          headers: {
+            'x-inlitfy-language': 'en-US,en,ja',
+          },
+        },
+      },
+    } as H3Event
+    expect(
+      getHeaderLocales(mockEvent, {
+        name: 'x-inlitfy-language',
+        parser: (header) => header.split(','),
+      }).map((locale) => locale.baseName),
+    ).toEqual(['en-US', 'en', 'ja'])
   })
 })
 
-describe('getAcceptLocale', () => {
+describe('getHeaderLocale', () => {
   test('basic', () => {
     const mockEvent = {
       node: {
@@ -153,7 +213,7 @@ describe('getAcceptLocale', () => {
         },
       },
     } as H3Event
-    const locale = getAcceptLocale(mockEvent)
+    const locale = getHeaderLocale(mockEvent)
 
     expect(locale.baseName).toEqual('en-US')
     expect(locale.language).toEqual('en')
@@ -171,7 +231,7 @@ describe('getAcceptLocale', () => {
         },
       },
     } as H3Event
-    const locale = getAcceptLocale(mockEvent)
+    const locale = getHeaderLocale(mockEvent)
 
     expect(locale.baseName).toEqual(DEFAULT_LANG_TAG)
   })
@@ -187,7 +247,7 @@ describe('getAcceptLocale', () => {
         },
       },
     } as H3Event
-    const locale = getAcceptLocale(mockEvent, 'ja-JP')
+    const locale = getHeaderLocale(mockEvent, { lang: 'ja-JP' })
 
     expect(locale.baseName).toEqual('ja-JP')
   })
@@ -204,7 +264,29 @@ describe('getAcceptLocale', () => {
       },
     } as H3Event
 
-    expect(() => getAcceptLocale(mockEvent, 'ja-JP')).toThrowError(RangeError)
+    expect(() => getHeaderLocale(mockEvent, { lang: 'ja-JP' })).toThrowError(
+      RangeError,
+    )
+  })
+
+  test('custom header', () => {
+    // @ts-ignore: for mocking
+    const mockEvent = {
+      node: {
+        req: {
+          method: 'GET',
+          headers: {
+            'x-inlitfy-language': 'en-US,en,ja',
+          },
+        },
+      },
+    } as H3Event
+    expect(
+      getHeaderLocale(mockEvent, {
+        name: 'x-inlitfy-language',
+        parser: (header) => header.split(','),
+      }).toString(),
+    ).toEqual('en-US')
   })
 })
 

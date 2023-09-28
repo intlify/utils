@@ -1,24 +1,24 @@
 import { describe, expect, test } from 'vitest'
 import supertest from 'supertest'
 import {
-  getAcceptLanguage,
-  getAcceptLanguages,
-  getAcceptLocale,
-  getAcceptLocales,
   getCookieLocale,
+  getHeaderLanguage,
+  getHeaderLanguages,
+  getHeaderLocale,
+  getHeaderLocales,
   setCookieLocale,
 } from './node.ts'
 import { createServer, IncomingMessage, OutgoingMessage } from 'node:http'
 import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 
-describe('getAcceptLanguages', () => {
+describe('getHeaderLanguages', () => {
   test('basic', () => {
     const mockRequest = {
       headers: {
         'accept-language': 'en-US,en;q=0.9,ja;q=0.8',
       },
     } as IncomingMessage
-    expect(getAcceptLanguages(mockRequest)).toEqual(['en-US', 'en', 'ja'])
+    expect(getHeaderLanguages(mockRequest)).toEqual(['en-US', 'en', 'ja'])
   })
 
   test('any language', () => {
@@ -27,14 +27,27 @@ describe('getAcceptLanguages', () => {
         'accept-language': '*',
       },
     } as IncomingMessage
-    expect(getAcceptLanguages(mockRequest)).toEqual([])
+    expect(getHeaderLanguages(mockRequest)).toEqual([])
   })
 
   test('empty', () => {
     const mockRequest = {
       headers: {},
     } as IncomingMessage
-    expect(getAcceptLanguages(mockRequest)).toEqual([])
+    expect(getHeaderLanguages(mockRequest)).toEqual([])
+  })
+
+  test('custom header', () => {
+    // @ts-ignore: for mocking
+    const mockRequest = {
+      headers: {
+        'x-inlitfy-language': 'en-US,en,ja',
+      },
+    } as IncomingMessage
+    expect(getHeaderLanguages(mockRequest, {
+      name: 'x-inlitfy-language',
+      parser: (header) => header.split(','),
+    })).toEqual(['en-US', 'en', 'ja'])
   })
 })
 
@@ -45,7 +58,7 @@ describe('getAcceptLanguage', () => {
         'accept-language': 'en-US,en;q=0.9,ja;q=0.8',
       },
     } as IncomingMessage
-    expect(getAcceptLanguage(mockRequest)).toBe('en-US')
+    expect(getHeaderLanguage(mockRequest)).toBe('en-US')
   })
 
   test('any language', () => {
@@ -54,25 +67,40 @@ describe('getAcceptLanguage', () => {
         'accept-language': '*',
       },
     } as IncomingMessage
-    expect(getAcceptLanguage(mockRequest)).toBe('')
+    expect(getHeaderLanguage(mockRequest)).toBe('')
   })
 
   test('empty', () => {
     const mockRequest = {
       headers: {},
     } as IncomingMessage
-    expect(getAcceptLanguage(mockRequest)).toBe('')
+    expect(getHeaderLanguage(mockRequest)).toBe('')
+  })
+
+  test('custom header', () => {
+    // @ts-ignore: for mocking
+    const mockRequest = {
+      headers: {
+        'x-inlitfy-language': 'en-US,en,ja',
+      },
+    } as IncomingMessage
+    expect(
+      getHeaderLanguage(mockRequest, {
+        name: 'x-inlitfy-language',
+        parser: (header) => header.split(','),
+      }),
+    ).toEqual('en-US')
   })
 })
 
-describe('getAcceptLocales', () => {
+describe('getHeaderLocales', () => {
   test('basic', () => {
     const mockRequest = {
       headers: {
         'accept-language': 'en-US,en;q=0.9,ja;q=0.8',
       },
     } as IncomingMessage
-    expect(getAcceptLocales(mockRequest).map((locale) => locale.baseName))
+    expect(getHeaderLocales(mockRequest).map((locale) => locale.baseName))
       .toEqual(['en-US', 'en', 'ja'])
   })
 
@@ -82,25 +110,40 @@ describe('getAcceptLocales', () => {
         'accept-language': '*',
       },
     } as IncomingMessage
-    expect(getAcceptLocales(mockRequest)).toEqual([])
+    expect(getHeaderLocales(mockRequest)).toEqual([])
   })
 
   test('empty', () => {
     const mockRequest = {
       headers: {},
     } as IncomingMessage
-    expect(getAcceptLocales(mockRequest)).toEqual([])
+    expect(getHeaderLocales(mockRequest)).toEqual([])
+  })
+
+  test('custom header', () => {
+    // @ts-ignore: for mocking
+    const mockRequest = {
+      headers: {
+        'x-inlitfy-language': 'en-US,en,ja',
+      },
+    } as IncomingMessage
+    expect(
+      getHeaderLocales(mockRequest, {
+        name: 'x-inlitfy-language',
+        parser: (header) => header.split(','),
+      }).map((locale) => locale.baseName),
+    ).toEqual(['en-US', 'en', 'ja'])
   })
 })
 
-describe('getAcceptLocale', () => {
+describe('getHeaderLocale', () => {
   test('basic', () => {
     const mockRequest = {
       headers: {
         'accept-language': 'en-US,en;q=0.9,ja;q=0.8',
       },
     } as IncomingMessage
-    const locale = getAcceptLocale(mockRequest)
+    const locale = getHeaderLocale(mockRequest)
 
     expect(locale.baseName).toEqual('en-US')
     expect(locale.language).toEqual('en')
@@ -113,7 +156,7 @@ describe('getAcceptLocale', () => {
         'accept-language': '*',
       },
     } as IncomingMessage
-    const locale = getAcceptLocale(mockRequest)
+    const locale = getHeaderLocale(mockRequest)
 
     expect(locale.baseName).toEqual(DEFAULT_LANG_TAG)
   })
@@ -124,7 +167,7 @@ describe('getAcceptLocale', () => {
         'accept-language': '*',
       },
     } as IncomingMessage
-    const locale = getAcceptLocale(mockRequest, 'ja-JP')
+    const locale = getHeaderLocale(mockRequest, { lang: 'ja-JP' })
 
     expect(locale.baseName).toEqual('ja-JP')
   })
@@ -135,7 +178,9 @@ describe('getAcceptLocale', () => {
         'accept-language': 's',
       },
     } as IncomingMessage
-    expect(() => getAcceptLocale(mockRequest, 'ja-JP')).toThrowError(RangeError)
+    expect(() => getHeaderLocale(mockRequest, { lang: 'ja-JP' })).toThrowError(
+      RangeError,
+    )
   })
 })
 
@@ -193,6 +238,21 @@ describe('getCookieLocale', () => {
 
     expect(() => getCookieLocale(mockRequest, { name: 'intlify_locale' }))
       .toThrowError(RangeError)
+  })
+
+  test('custom header', () => {
+    // @ts-ignore: for mocking
+    const mockRequest = {
+      headers: {
+        'x-inlitfy-language': 'en-US,en,ja',
+      },
+    } as IncomingMessage
+    expect(
+      getHeaderLocale(mockRequest, {
+        name: 'x-inlitfy-language',
+        parser: (header) => header.split(','),
+      }).toString(),
+    ).toEqual('en-US')
   })
 })
 

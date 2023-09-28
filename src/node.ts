@@ -1,31 +1,36 @@
 import { IncomingMessage, OutgoingMessage } from 'node:http'
 import { parse, serialize } from 'cookie-es'
 import {
-  getAcceptLanguagesWithGetter,
   getExistCookies,
+  getHeaderLanguagesWithGetter,
   getLocaleWithGetter,
   mapToLocaleFromLanguageTag,
+  parseDefaultHeader,
   validateLocale,
 } from './http.ts'
+import {
+  ACCEPT_LANGUAGE_HEADER,
+  DEFAULT_COOKIE_NAME,
+  DEFAULT_LANG_TAG,
+} from './constants.ts'
 import { normalizeLanguageName } from './shared.ts'
-import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 
-import type { CookieOptions } from './http.ts'
+import type { CookieOptions, HeaderOptions } from './http.ts'
 
 /**
- * get accpet languages
+ * get languages from header
  *
- * @description parse `accept-language` header string
+ * @description parse header string, default `accept-language` header
  *
  * @example
  * example for Node.js request:
  *
  * ```ts
  * import { createServer } from 'node:http'
- * import { getAcceptLanguages } from '@intlify/utils/node'
+ * import { getHeaderLanguages } from '@intlify/utils/node'
  *
  * const server = createServer((req, res) => {
- *   const langTags = getAcceptLanguages(req)
+ *   const langTags = getHeaderLanguages(req)
  *   // ...
  *   res.writeHead(200)
  *   res.end(`detect accpect-languages: ${langTags.join(', ')}`)
@@ -33,28 +38,36 @@ import type { CookieOptions } from './http.ts'
  * ```
  *
  * @param {IncomingMessage} request The {@link IncomingMessage | request}
+ * @param {HeaderOptions['name']} options.name The header name, which is as default `accept-language`.
+ * @param {HeaderOptions['parser']} options.parser The parser function, which is as default {@link parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
  *
- * @returns {Array<string>} The array of language tags, if `*` (any language) or empty string is detected, return an empty array.
+ * @returns {Array<string>} The array of language tags, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array.
  */
-export function getAcceptLanguages(request: IncomingMessage): string[] {
-  const getter = () => request.headers['accept-language']
-  return getAcceptLanguagesWithGetter(getter)
+export function getHeaderLanguages(
+  request: IncomingMessage,
+  {
+    name = ACCEPT_LANGUAGE_HEADER,
+    parser = parseDefaultHeader,
+  }: HeaderOptions = {},
+): string[] {
+  const getter = () => request.headers[name] as string | undefined
+  return getHeaderLanguagesWithGetter(getter, { name, parser })
 }
 
 /**
- * get accept language
+ * get language from header
  *
- * @description parse `accept-language` header string, this function retuns the **first language tag** of `accept-language` header.
+ * @description parse header string, default `accept-language`. if you use `accept-language`, this function retuns the **first language tag** of `accept-language` header.
  *
  * @example
  * example for Node.js request:
  *
  * ```ts
  * import { createServer } from 'node:http'
- * import { getAcceptLanguage } from '@intlify/utils/node'
+ * import { getHeaderLanguage } from '@intlify/utils/node'
  *
  * const server = createServer((req, res) => {
- *   const langTag = getAcceptLanguage(req)
+ *   const langTag = getHeaderLanguage(req)
  *   // ...
  *   res.writeHead(200)
  *   res.end(`detect accpect-language: ${langTag}`)
@@ -62,27 +75,35 @@ export function getAcceptLanguages(request: IncomingMessage): string[] {
  * ```
  *
  * @param {IncomingMessage} request The {@link IncomingMessage | request}
+ * @param {HeaderOptions['name']} options.name The header name, which is as default `accept-language`.
+ * @param {HeaderOptions['parser']} options.parser The parser function, which is as default {@link parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
  *
- * @returns {string} The **first language tag** of `accept-language` header, if `accept-language` header is not exists, or `*` (any language), return empty string.
+ * @returns {string} The **first language tag** of header, if header is not exists, or `*` (any language), return empty string.
  */
-export function getAcceptLanguage(request: IncomingMessage): string {
-  return getAcceptLanguages(request)[0] || ''
+export function getHeaderLanguage(
+  request: IncomingMessage,
+  {
+    name = ACCEPT_LANGUAGE_HEADER,
+    parser = parseDefaultHeader,
+  }: HeaderOptions = {},
+): string {
+  return getHeaderLanguages(request, { name, parser })[0] || ''
 }
 
 /**
- * get locales from `accept-language` header
+ * get locales from header
  *
- * @description wrap language tags with {@link Intl.Locale | locale}
+ * @description wrap language tags with {@link Intl.Locale | locale}, languages tags will be parsed from `accept-language` header as default.
  *
  * @example
  * example for Node.js request:
  *
  * ```ts
  * import { createServer } from 'node:http'
- * import { getAcceptLocales } from '@intlify/utils/node'
+ * import { getHeaderLocales } from '@intlify/utils/node'
  *
  * const server = createServer((req, res) => {
- *   const locales = getAcceptLocales(req)
+ *   const locales = getHeaderLocales(req)
  *   // ...
  *   res.writeHead(200)
  *   res.end(`accpected locales: ${locales.map(locale => locale.toString()).join(', ')}`)
@@ -91,28 +112,35 @@ export function getAcceptLanguage(request: IncomingMessage): string {
  *
  * @param {IncomingMessage} request The {@link IncomingMessage | request}
  *
- * @returns {Array<Intl.Locale>} The locales that wrapped from `accept-language` header, if `*` (any language) or empty string is detected, return an empty array.
+ * @returns {Array<Intl.Locale>} The locales that wrapped from header, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array.
  */
-export function getAcceptLocales(
+export function getHeaderLocales(
   request: IncomingMessage,
+  {
+    name = ACCEPT_LANGUAGE_HEADER,
+    parser = parseDefaultHeader,
+  }: HeaderOptions = {},
 ): Intl.Locale[] {
-  return mapToLocaleFromLanguageTag(getAcceptLanguages, request)
+  return mapToLocaleFromLanguageTag(getHeaderLanguages, request, {
+    name,
+    parser,
+  })
 }
 
 /**
- * get locale from `accept-language` header
+ * get locale from header
  *
- * @description wrap language tag with {@link Intl.Locale | locale}
+ * @description wrap language tag with {@link Intl.Locale | locale}, languages tags will be parsed from `accept-language` header as default.
  *
  * @example
  * example for Node.js request:
  *
  * ```ts
  * import { createServer } from 'node:http'
- * import { getAcceptLocale } from '@intlify/utils/node'
+ * import { getHeaderLocale } from '@intlify/utils/node'
  *
  * const server = createServer((req, res) => {
- *   const locale = getAcceptLocale(req)
+ *   const locale = getHeaderLocale(req)
  *   // ...
  *   res.writeHead(200)
  *   res.end(`accpected locale: ${locale.toString()}`)
@@ -120,17 +148,25 @@ export function getAcceptLocales(
  * ```
  *
  * @param {IncomingMessage} request The {@link IncomingMessage | request}
- * @param {string} lang The default language tag, Optional. default value is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
+ * @param {string} options.lang The default language tag, Optional. default value is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
+ * @param {HeaderOptions['name']} options.name The header name, which is as default `accept-language`.
+ * @param {HeaderOptions['parser']} options.parser The parser function, which is as default {@link parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
  *
- * @throws {RangeError} Throws the {@link RangeError} if `lang` option or `accpet-languages` are not a well-formed BCP 47 language tag.
+ * @throws {RangeError} Throws the {@link RangeError} if `lang` option or header are not a well-formed BCP 47 language tag.
  *
- * @returns {Intl.Locale} The first locale that resolved from `accept-language` header string, first language tag is used. if `*` (any language) or empty string is detected, return `en-US`.
+ * @returns {Intl.Locale} The first locale that resolved from header string. if you use `accept-language` header and `*` (any language) or empty string is detected, return `en-US`.
  */
-export function getAcceptLocale(
+export function getHeaderLocale(
   request: IncomingMessage,
-  lang = DEFAULT_LANG_TAG,
+  {
+    lang = DEFAULT_LANG_TAG,
+    name = ACCEPT_LANGUAGE_HEADER,
+    parser = parseDefaultHeader,
+  }: HeaderOptions & { lang?: string } = {},
 ): Intl.Locale {
-  return getLocaleWithGetter(() => getAcceptLanguages(request)[0] || lang)
+  return getLocaleWithGetter(() =>
+    getHeaderLanguages(request, { name, parser })[0] || lang
+  )
 }
 
 /**
