@@ -138,10 +138,10 @@ You can do `import { ... } from '@intlify/utils'` the above utilities
 
 ### HTTP
 
-- `getAcceptLanguages`
-- `getAcceptLanguage`
-- `getAcceptLocales`
-- `getAcceptLocale`
+- `getHeaderLanguages`
+- `getHeaderLanguage`
+- `getHeaderLocales`
+- `getHeaderLocale`
 - `getCookieLocale`
 - `setCookieLocale`
 - `getPathLanguage`

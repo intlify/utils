@@ -6,6 +6,7 @@ import {
   pathLanguageParser,
   validateLanguageTag,
 } from './shared.ts'
+import { ACCEPT_LANGUAGE_HEADER } from './constants.ts'
 
 import type { PathLanguageParser } from './shared.ts'
 // import type { CookieSerializeOptions } from 'cookie-es'
@@ -110,11 +111,28 @@ interface CookieSerializeOptions {
 
 export type CookieOptions = CookieSerializeOptions & { name?: string }
 
-export function getAcceptLanguagesWithGetter(
+export type HeaderOptions = {
+  name?: string
+  parser?: typeof parseAcceptLanguage
+}
+
+export function parseDefaultHeader(input: string): string[] {
+  return [input]
+}
+
+export function getHeaderLanguagesWithGetter(
   getter: () => string | null | undefined,
+  {
+    name = ACCEPT_LANGUAGE_HEADER,
+    parser = parseDefaultHeader,
+  }: HeaderOptions = {},
 ): string[] {
-  const acceptLanguage = getter()
-  return acceptLanguage ? parseAcceptLanguage(acceptLanguage) : []
+  const langString = getter()
+  return langString
+    ? name === ACCEPT_LANGUAGE_HEADER
+      ? parseAcceptLanguage(langString)
+      : parser(langString)
+    : []
 }
 
 export function getLocaleWithGetter(getter: () => string): Intl.Locale {
@@ -133,9 +151,9 @@ export function validateLocale(locale: string | Intl.Locale): void {
 export function mapToLocaleFromLanguageTag(
   // deno-lint-ignore no-explicit-any
   getter: (...args: any[]) => string[],
-  arg: unknown,
+  ...args: unknown[]
 ): Intl.Locale[] {
-  return (Reflect.apply(getter, null, [arg]) as string[]).map((lang) =>
+  return (Reflect.apply(getter, null, args) as string[]).map((lang) =>
     getLocaleWithGetter(() => lang)
   )
 }
