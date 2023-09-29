@@ -4,6 +4,7 @@ import {
   isURLSearchParams,
   parseAcceptLanguage,
   pathLanguageParser,
+  toLocale,
   validateLanguageTag,
 } from './shared.ts'
 import { ACCEPT_LANGUAGE_HEADER } from './constants.ts'
@@ -136,7 +137,7 @@ export function getHeaderLanguagesWithGetter(
 }
 
 export function getLocaleWithGetter(getter: () => string): Intl.Locale {
-  return new Intl.Locale(getter())
+  return toLocale(getter())
 }
 
 export function validateLocale(locale: string | Intl.Locale): void {

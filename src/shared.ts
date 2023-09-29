@@ -21,6 +21,19 @@ export function isLocale(val: unknown): val is Intl.Locale {
 }
 
 /**
+ * returns the {@link Intl.Locale | locale}
+ *
+ * @param {string | Intl.Locale} val The value for which the 'locale' is requested.
+ *
+ * @throws {RangeError} Throws the {@link RangeError} if `val` is not a well-formed BCP 47 language tag.
+ *
+ * @returns {Intl.Locale} The locale
+ */
+export function toLocale(val: string | Intl.Locale): Intl.Locale {
+  return isLocale(val) ? val : new Intl.Locale(val)
+}
+
+/**
  * parse `accept-language` header string
  *
  * @param {string} value The accept-language header string
