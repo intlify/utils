@@ -5,6 +5,7 @@ import {
   normalizeLanguageName,
   parseAcceptLanguage,
   pathLanguageParser,
+  toLocale,
   validateLanguageTag,
 } from './shared.ts'
 
@@ -15,6 +16,21 @@ describe('isLocale', () => {
 
   test('not Locale instance', () => {
     expect(isLocale('en-US')).toBe(false)
+  })
+})
+
+describe('toLocale', () => {
+  test('language tag', () => {
+    expect(toLocale('en-US').toString()).toBe('en-US')
+  })
+
+  test('Intl.Locale instance', () => {
+    const locale = new Intl.Locale('en-US')
+    expect(toLocale(locale).toString()).toBe('en-US')
+  })
+
+  test('invalid language tag', () => {
+    expect(() => toLocale('')).toThrowError(RangeError)
   })
 })
 

@@ -121,6 +121,7 @@ You can play the below examples:
 ### Common
 
 - `isLocale`
+- `toLocale`
 - `parseAcceptLanguage`
 - `validateLanguageTag`
 - `normalizeLanguageName`
