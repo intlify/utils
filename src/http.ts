@@ -5,7 +5,7 @@ import {
   parseAcceptLanguage,
   pathLanguageParser,
   toLocale,
-  validateLanguageTag,
+  validateLangTag,
 } from './shared.ts'
 import { ACCEPT_LANGUAGE_HEADER } from './constants.ts'
 
@@ -145,7 +145,7 @@ export function getLocaleWithGetter(getter: () => string): Intl.Locale {
 export function validateLocale(locale: string | Intl.Locale): void {
   if (
     !(isLocale(locale) ||
-      typeof locale === 'string' && validateLanguageTag(locale))
+      typeof locale === 'string' && validateLangTag(locale))
   ) {
     throw new SyntaxError(`locale is invalid: ${locale.toString()}`)
   }
