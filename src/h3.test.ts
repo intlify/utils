@@ -9,6 +9,7 @@ import {
   getHeaderLocales,
   setCookieLocale,
 } from './h3.ts'
+import { parseAcceptLanguage } from './shared.ts'
 import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 
 import type { App, H3Event } from 'h3'
@@ -53,6 +54,21 @@ describe('getHeaderLanguages', () => {
       },
     } as H3Event
     expect(getHeaderLanguages(mockEvent)).toEqual([])
+  })
+
+  test('parse option', () => {
+    const mockEvent = {
+      node: {
+        req: {
+          method: 'GET',
+          headers: {
+            'accept-language': 'en-US,en;q=0.9,ja;q=0.8',
+          },
+        },
+      },
+    } as H3Event
+    expect(getHeaderLanguages(mockEvent, { parser: parseAcceptLanguage }))
+      .toEqual(['en-US', 'en', 'ja'])
   })
 
   test('custom header', () => {
