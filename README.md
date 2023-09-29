@@ -123,7 +123,7 @@ You can play the below examples:
 - `isLocale`
 - `toLocale`
 - `parseAcceptLanguage`
-- `validateLanguageTag`
+- `validateLangTag`
 - `normalizeLanguageName`
 
 You can do `import { ... } from '@intlify/utils'` the above utilities
