@@ -6,7 +6,7 @@ import {
   parseAcceptLanguage,
   pathLanguageParser,
   toLocale,
-  validateLanguageTag,
+  validateLangTag,
 } from './shared.ts'
 
 describe('isLocale', () => {
@@ -65,13 +65,13 @@ describe('parseAcceptLanguage', () => {
   })
 })
 
-describe('validateLanguageTag', () => {
+describe('validateLangTag', () => {
   test('valid', () => {
-    expect(validateLanguageTag('en-US')).toBe(true)
+    expect(validateLangTag('en-US')).toBe(true)
   })
 
   test('invalid', () => {
-    expect(validateLanguageTag('j')).toBe(false)
+    expect(validateLangTag('j')).toBe(false)
   })
 })
 

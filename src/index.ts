@@ -4,7 +4,7 @@ export {
   normalizeLanguageName,
   parseAcceptLanguage,
   registerPathLanguageParser,
-  validateLanguageTag,
+  validateLangTag,
 } from './shared.ts'
 export {
   getPathLanguage,
