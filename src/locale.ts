@@ -286,22 +286,6 @@ type ParseUnicodeVariantsSubtag<
         : [never, never] // ignore
       : [never, never] // ignore
 
-type _S = _ParseVariantsSubtag<['1ab', 'abcde']>
-type s1 = ParseUnicodeVariantsSubtag<'1ab'>
-type s2 = ParseUnicodeVariantsSubtag<'abcde'>
-type s3 = ParseUnicodeVariantsSubtag<'111'>
-type s4 = ParseUnicodeVariantsSubtag<'abcde222'>
-type s5 = ParseUnicodeVariantsSubtag<'1111'>
-
-type UnicodeLangId = ParseUnicodeLanguageId<'ja-Kana-jp-t-it-latn-it'>
-type UnicodeLangId2 = ParseUnicodeLanguageId<'ja-Kana-jp-jauer'>
-
-type u1 = _ParseVariantsSubtag<['1ab', 'abcde']>
-
-type id2 = ParseUnicodeLanguageId<''>
-
-// -----
-
 export type KV = [string, string] | [string]
 
 export interface Extension {
