@@ -5,7 +5,7 @@
     "dev": "npx tsx index.ts"
   },
   "dependencies": {
-    "@intlify/utils": "npm:@intlify/utils-edge@0.2.0-28254719.6209414"
+    "@intlify/utils": "npm:@intlify/utils-edge@0.5.0-28266797.0fa17f3"
   },
   "devDependencies": {
     "@types/node": "^20.6.0",
