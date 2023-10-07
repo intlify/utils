@@ -5,6 +5,8 @@ import type {
   ParseLangSubtag,
   ParseRegionSubtag,
   ParseScriptSubtag,
+  ParseUnicodeLanguageId,
+  ParseVariantsSubtag,
 } from './locale.ts'
 
 test('CheckRange', () => {
@@ -67,6 +69,14 @@ test('ParseLangSubtag', () => {
   expectTypeOf<ParseLangSubtag<'english'>>().toMatchTypeOf<['english', never]>()
   // 'root' is special (4 chars)
   expectTypeOf<ParseLangSubtag<'root'>>().toMatchTypeOf<['root', never]>()
+  // upper case
+  expectTypeOf<ParseLangSubtag<'JA'>>().toMatchTypeOf<
+    ['JA', never]
+  >()
+  // mixied case
+  expectTypeOf<ParseLangSubtag<'Ja'>>().toMatchTypeOf<
+    ['Ja', never]
+  >()
 
   /**
    * Failed cases
@@ -110,6 +120,11 @@ test('ParseScriptSubtag', () => {
     [never, never]
   >()
 
+  // upper case
+  expectTypeOf<ParseScriptSubtag<'Kana'>>().toMatchTypeOf<
+    ['Kana', never]
+  >()
+
   /**
    * Failed cases
    */
@@ -148,6 +163,10 @@ test('ParseRegionSubtag', () => {
   expectTypeOf<ParseRegionSubtag<''>>().toMatchTypeOf<
     [never, never]
   >()
+  // upper case
+  expectTypeOf<ParseLangSubtag<'JP'>>().toMatchTypeOf<
+    ['JP', never]
+  >()
 
   /**
    * Failed cases
@@ -165,19 +184,97 @@ test('ParseRegionSubtag', () => {
   expectTypeOf<ParseRegionSubtag<'j'>>().toMatchTypeOf<
     [never, 7]
   >()
-  type t2 = ParseRegionSubtag<'12'>
   expectTypeOf<ParseRegionSubtag<'12'>>().toMatchTypeOf<
     [never, 7]
   >()
-  type t1 = ParseRegionSubtag<'jpn'>
   expectTypeOf<ParseRegionSubtag<'jpn'>>().toMatchTypeOf<
     [never, 7]
   >()
-  expectTypeOf<ParseRegionSubtag<'9123'>>().toMatchTypeOf<
+  expectTypeOf<ParseRegionSubtag<'9a23'>>().toMatchTypeOf<
     [never, 7]
   >()
   // not string
   expectTypeOf<ParseRegionSubtag<1>>().toMatchTypeOf<
     never
+  >()
+})
+
+test('ParseVariantsSubtag', () => {
+  /**
+   * Success cases
+   */
+
+  // 3 chars, all digits
+  expectTypeOf<ParseVariantsSubtag<['123']>>().toMatchTypeOf<
+    [['123'], never]
+  >()
+  // 3 chars, first digit and alphabets
+  expectTypeOf<ParseVariantsSubtag<['1ab']>>().toMatchTypeOf<
+    [['1ab'], never]
+  >()
+  // 5 chars, all alphabets
+  expectTypeOf<ParseVariantsSubtag<['abcde']>>().toMatchTypeOf<
+    [['abcde'], never]
+  >()
+  // 7 chars, alphabets and digits
+  expectTypeOf<ParseVariantsSubtag<['ab12cde', 'abcde123']>>().toMatchTypeOf<
+    [['ab12cde', 'abcde123'], never]
+  >()
+
+  /**
+   * Failed cases
+   */
+
+  // range 1
+  expectTypeOf<ParseVariantsSubtag<['1']>>().toMatchTypeOf<
+    [[], never]
+  >()
+  // range 2
+  expectTypeOf<ParseVariantsSubtag<['12']>>().toMatchTypeOf<
+    [[], never]
+  >()
+  // range 4
+  expectTypeOf<ParseVariantsSubtag<['1234']>>().toMatchTypeOf<
+    [[], never]
+  >()
+  // range 9
+  expectTypeOf<ParseVariantsSubtag<['123456789']>>().toMatchTypeOf<
+    [[], never]
+  >()
+
+  // 3 chars, first alphabet and digits
+  expectTypeOf<ParseVariantsSubtag<['a12']>>().toMatchTypeOf<
+    [[], never]
+  >()
+  // 3 chars, all alphabets
+  expectTypeOf<ParseVariantsSubtag<['abc']>>().toMatchTypeOf<
+    [[], never]
+  >()
+
+  // not string
+  expectTypeOf<ParseVariantsSubtag<[1]>>().toMatchTypeOf<
+    [[], never]
+  >()
+})
+
+test('ParseUnicodeLangugageId', () => {
+  /**
+   * Success cases
+   */
+  expectTypeOf<ParseUnicodeLanguageId<'ja-Kana-jp-jauer'>>().toMatchTypeOf<
+    [{ lang: 'ja'; script: 'Kana'; region: 'jp'; variants: ['jauer'] }, never]
+  >()
+
+  /** Erros */
+  expectTypeOf<ParseUnicodeLanguageId<'a-ana-p-jauer-jauer'>>().toMatchTypeOf<
+    [
+      { lang: never; script: never; region: never; variants: ['jauer'] },
+      [
+        'requires 2-3 or 5-8 alphabet lower characters',
+        'unicode script subtag requires 4 alphabet lower characters',
+        'unicode region subtag requires 2 alphabet lower characters or 3 digits',
+        'duplicate unicode variant subtag',
+      ],
+    ]
   >()
 })

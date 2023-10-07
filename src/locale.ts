@@ -1,3 +1,19 @@
+import type {
+  All,
+  Concat,
+  Filter,
+  First,
+  Includes,
+  IsNever,
+  Length,
+  Push,
+  Shift,
+  Split,
+  StringToArray,
+  TupleToUnion,
+  UnionToTuple,
+} from './types.ts'
+
 export interface UnicodeLocaleId {
   lang: UnicodeLanguageId
   extensions: Array<
@@ -11,44 +27,6 @@ export interface UnicodeLanguageId {
   region?: string
   variants: string[]
 }
-
-// -----
-
-type IsNever<T> = [T] extends [never] ? true : false
-type Split<S extends string, SEP extends string> = string extends S ? string[]
-  : S extends `${infer A}${SEP}${infer B}`
-    ? [A, ...(B extends '' ? [] : Split<B, SEP>)]
-  : SEP extends '' ? []
-  : [S]
-type Shift<T extends unknown[]> = T extends [unknown, ...infer U] ? U : never
-type First<T extends unknown[]> = T extends [infer A, ...infer rest] ? A : never
-type Last<T extends unknown[]> = [unknown, ...T][T['length']]
-type Length<T extends readonly unknown[]> = T['length']
-type IsEqual<X, Y> = (<T>() => T extends X ? 1 : 2) extends
-  (<T>() => T extends Y ? 1 : 2) ? true : false
-type All<T extends unknown[], U> = IsEqual<T[number], U> extends true ? true
-  : false
-type Push<T extends unknown[], U> = [...T, U]
-type Includes<Value extends unknown[], Item> = IsEqual<Value[0], Item> extends
-  true ? true
-  : Value extends [Value[0], ...infer rest] ? Includes<rest, Item>
-  : false
-type UnionToIntersection<U> = (
-  U extends unknown ? (arg: U) => 0 : never
-) extends (arg: infer I) => 0 ? I
-  : never
-type LastInUnion<U> = UnionToIntersection<
-  U extends unknown ? (x: U) => 0 : never
-> extends (x: infer L) => 0 ? L
-  : never
-type UnionToTuple<U, Last = LastInUnion<U>> = [U] extends [never] ? []
-  : [...UnionToTuple<Exclude<U, Last>>, Last]
-type StrintToUnion<T extends string> = T extends `${infer Letter}${infer Rest}`
-  ? Letter | StrintToUnion<Rest>
-  : never
-
-export type StringToArray<T extends string> = T extends
-  `${infer Letter}${infer Rest}` ? [Letter, ...StringToArray<Rest>] : []
 
 type Alphabets =
   | 'a'
@@ -77,8 +55,13 @@ type Alphabets =
   | 'x'
   | 'y'
   | 'z'
-
 type Digits = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+type Alpha = TupleToUnion<
+  Concat<UnionToTuple<Alphabets>, UnionToTuple<Uppercase<Alphabets>>>
+>
+type AlphaNumber = TupleToUnion<
+  Concat<UnionToTuple<Alpha>, UnionToTuple<Digits>>
+>
 
 export type CheckRange<
   T extends unknown[],
@@ -95,28 +78,6 @@ export type ValidCharacters<
   ? [Includes<UnionToTuple<UnionChars>, Target>, ...ValidCharacters<Rest, UnionChars>]
   : []
 
-type ParseUnicodeLanguageId<
-  T extends string,
-  S extends unknown[] = Split<T, '-'>,
-  Lang extends unknown[] = ParseLangSubtag<First<S>>,
-  Rest1 extends unknown[] = Shift<S>,
-  Script extends unknown[] = ParseScriptSubtag<First<Rest1>>,
-  Rest2 extends unknown[] = Shift<Rest1>,
-  Region extends unknown[] = ParseRegionSubtag<First<Rest2>>,
-  Rest3 extends unknown[] = Shift<Rest2>,
-  Variants extends { variants: string[]; error?: string } = ParseVariantsSubtag<
-    Rest3
-  >,
-> = [
-  {
-    lang: First<Lang>
-    script: First<Script>
-    region: First<Region>
-    variants: Variants['variants']
-  },
-  Last<Lang>,
-]
-
 export const localeErrors = /* @__PURE__ */ {
   1: 'missing unicode language subtag',
   2: 'malformed unicode language subtag',
@@ -125,8 +86,42 @@ export const localeErrors = /* @__PURE__ */ {
   5: 'unicode script subtag requires 4 alphabet lower characters',
   6: 'malformed unicode region subtag',
   7: 'unicode region subtag requires 2 alphabet lower characters or 3 digits',
+  8: 'duplicate unicode variant subtag',
   1024: 'Unexpected error',
 } as const
+
+/**
+ * parse unicode language id
+ * https://unicode.org/reports/tr35/#unicode_language_id
+ */
+export type ParseUnicodeLanguageId<
+  T extends string,
+  ErrorMsg extends Record<number, string> = typeof localeErrors,
+  S extends unknown[] = Split<T, '-'>,
+  Lang extends [string, number] = ParseLangSubtag<First<S>>,
+  Rest1 extends unknown[] = Shift<S>,
+  Script extends [string, number] = ParseScriptSubtag<First<Rest1>>,
+  Rest2 extends unknown[] = Shift<Rest1>,
+  Region extends [string, number] = ParseRegionSubtag<First<Rest2>>,
+  Rest3 extends unknown[] = Shift<Rest2>,
+  Variants extends [string[], number | never] = ParseVariantsSubtag<
+    Rest3
+  >,
+  Errors extends unknown[] = Filter<[
+    ErrorMsg[Lang[1]],
+    ErrorMsg[Script[1]],
+    ErrorMsg[Region[1]],
+    ErrorMsg[Variants[1]],
+  ], never>,
+> = [
+  {
+    lang: Lang[0]
+    script: Script[0]
+    region: Region[0]
+    variants: Variants[0]
+  },
+  Length<Errors> extends 0 ? never : Errors,
+]
 
 /**
  * parse unicode language subtag
@@ -156,7 +151,7 @@ export type ParseUnicodeLanguageSubtag<
   T extends string,
   Chars extends unknown[] = StringToArray<T>,
 > = CheckRange<Chars, [2, 3, 5, 6, 7, 8]> extends true
-  ? Includes<ValidCharacters<Chars, Alphabets>, false> extends true // check if all chars are alphabets
+  ? Includes<ValidCharacters<Chars, Alpha>, false> extends true // check if all chars are alphabets
     ? [never, 2] // malformed
     : [T, never]
   : [never, 3] // require characters length
@@ -175,7 +170,7 @@ export type ParseScriptSubtag<
       : T extends string
         ? ParseUnicodeScriptSubtag<T>
         : never // unexpected
-> =R
+> = R
 
 /**
  * paser unicode script subtag (EBNF: = alpha{4};)
@@ -187,7 +182,7 @@ export type ParseUnicodeScriptSubtag<
 T extends string,
 Chars extends unknown[] = StringToArray<T>,
 > = CheckRange<Chars, [4]> extends true
-  ? Includes<ValidCharacters<Chars, Alphabets>, false> extends true // check if all chars are alphabets
+  ? Includes<ValidCharacters<Chars, Alpha>, false> extends true // check if all chars are alphabets
     ? [never, 4] // malformed
     : [T, never]
   : [never, 5] // require characters length
@@ -208,11 +203,6 @@ export type ParseRegionSubtag<
         : never, // unexpected
 > = R
 
-type val = StringToArray<'12'>
-type t1 = All<ValidCharacters<val, Alphabets>, true>
-type t2 = All<ValidCharacters<val, Digits>, true>
-type t3 = All<ValidCharacters<val, Alphabets | Digits>, true>
-
 /**
  * parse unicode region subtag (= (alpha{2} | digit{3}) ;)
  * https://unicode.org/reports/tr35/#unicode_region_subtag
@@ -222,77 +212,92 @@ type t3 = All<ValidCharacters<val, Alphabets | Digits>, true>
 export type ParseUnicodeRegionSubtag<
   T extends string,
   Chars extends unknown[] = StringToArray<T>,
-  HasAlphabetsOnly = All<ValidCharacters<Chars, Alphabets>, true>,
+  HasAlphabetsOnly = All<ValidCharacters<Chars, Alpha>, true>,
   HasDigitsOnly = All<ValidCharacters<Chars, Digits>, true>,
-  HasBoth = All<ValidCharacters<Chars, Alphabets | Digits>, true>,
 > = CheckRange<Chars, [2, 3]> extends true 
   ? Length<Chars> extends 2
     ? HasAlphabetsOnly extends true
       ? [T, never]
       : HasDigitsOnly extends true
-        ? [never, 7]
+        ? [never, 7] // require characters length
         : [never, 6] // malformed
     : Length<Chars> extends 3
-      ? Includes<ValidCharacters<Chars, Digits>, false> extends true
-        ? [never, 6] // malformed
-        : [T, never]
-      : Includes<ValidCharacters<Chars, Alphabets>, false> extends true
-        ? [never, 7] // malformed
-        : [T, never]
+      ? HasDigitsOnly extends true
+        ? [T, never]
+        : HasAlphabetsOnly extends true
+          ? [never, 7] // require characters length
+          : [never, 6] // malformed
+      : [never, 7] // require characters length
   : [never, 7] // require characters length
 
-export type _ParseUnicodeRegionSubtag<
-  T extends string,
-  Chars extends unknown[] = StringToArray<T>,
-> = CheckRange<Chars, [2]> extends true
-  ? Includes<ValidCharacters<Chars, Alphabets>, false> extends true // check if all chars are alphabets
-    ? [never, 6] // malformed
-  : [T, never]
-  : CheckRange<Chars, [3]> extends true
-    ? Includes<ValidCharacters<Chars, Digits>, false> extends true // check if all chars are digits
-      ? [never, 6] // malformed
-    : [T, never]
-  : [never, 7]
-
-type ParseVariantsSubtag<
+/**
+ * parse unicode variant subtag
+ * https://unicode.org/reports/tr35/#unicode_variant_subtag
+ */
+export type ParseVariantsSubtag<
   T extends unknown[],
-  S extends { variants: string[]; error?: string } = _ParseVariantsSubtag<T>,
-> = S
+  R extends [string[], number | never] = _ParseVariantsSubtag<T>,
+> = R
 
+// deno-fmt-ignore
 type _ParseVariantsSubtag<
   T extends unknown[] = [],
-  Accumrator extends { variants: string[]; error?: string } = { variants: [] },
+  Accumrator extends [string[], number | never] = [[], never],
   HasVariants = Length<T> extends 0 ? false : true,
   Target = First<T>,
-  HasVariantSubTag = HasVariants extends true ? IsUnicodeVariantSubtag<Target>
-    : false,
-  Rest extends unknown[] = Shift<T>,
-  Variant = HasVariants extends true
-    ? HasVariantSubTag extends true ? Target : never
+  Variant extends string = HasVariants extends true
+    ? Target extends string ? Target : never
     : never,
+  VariantSubTag = ParseUnicodeVariantsSubtag<Variant> extends [infer Tag, never] ? Tag : never,
+  Rest extends unknown[] = Shift<T>,
   Duplicate = IsNever<Variant> extends false
-    ? Includes<Accumrator['variants'], Variant> extends true ? true
-    : false
+    ? Includes<Accumrator[0], Variant> extends true ? true : false
     : false,
-  VariantStr extends string = Variant extends string ? Variant : never,
-> = Accumrator['error'] extends string ? {
-    variants: [...Accumrator['variants']]
-    error: Accumrator['error']
-  }
-  : Duplicate extends true ? {
-      variants: [...Accumrator['variants']]
-      error: `Duplicate variant "${VariantStr}"`
-    }
-  : IsNever<VariantStr> extends true ? { variants: [...Accumrator['variants']] }
-  : _ParseVariantsSubtag<
-    Rest,
-    { variants: Push<Accumrator['variants'], VariantStr> }
-  >
+  VariantStr extends string = VariantSubTag extends string ? VariantSubTag : never,
+ > = IsNever<Accumrator[1]> extends false
+   ? [[...Accumrator[0]], Accumrator[1]]
+   : Duplicate extends true
+     ? [[...Accumrator[0]], 8]
+     : IsNever<VariantStr> extends true
+       ? [[...Accumrator[0]], never]
+       : _ParseVariantsSubtag<Rest, [[...Push<Accumrator[0], VariantStr>], Accumrator[1]]>
 
-type IsUnicodeVariantSubtag<T> = true
-type _S = _ParseVariantsSubtag<['a', 'b', 'b', 'c']>
+/**
+ * parse unicode variant subtag (= (alphanum{5,8} | digit alphanum{3}) ;)
+ * https://unicode.org/reports/tr35/#unicode_variant_subtag
+ */
+// deno-fmt-ignore
+type ParseUnicodeVariantsSubtag<
+  T extends string,
+  Chars extends unknown[] = StringToArray<T>,
+  FirstChar = First<Chars>,
+  RemainChars extends unknown[]= Shift<Chars>,
+> = Length<Chars> extends 3
+  ? All<ValidCharacters<[FirstChar], Digits>, true> extends true // check digit at first char
+    ? All<ValidCharacters<RemainChars, AlphaNumber>, true> extends true// check alphanum at remain chars
+      ? [T, never]
+      : [never, never] // ignore
+    : [never, never] // ignore
+  : Length<Chars> extends 4
+    ? [never, never] // ignore
+    : CheckRange<Chars, [5, 6, 7, 8]> extends true
+      ? All<ValidCharacters<Chars, AlphaNumber>, true> extends true// capture alphanum
+        ? [T, never]
+        : [never, never] // ignore
+      : [never, never] // ignore
+
+type _S = _ParseVariantsSubtag<['1ab', 'abcde']>
+type s1 = ParseUnicodeVariantsSubtag<'1ab'>
+type s2 = ParseUnicodeVariantsSubtag<'abcde'>
+type s3 = ParseUnicodeVariantsSubtag<'111'>
+type s4 = ParseUnicodeVariantsSubtag<'abcde222'>
+type s5 = ParseUnicodeVariantsSubtag<'1111'>
 
 type UnicodeLangId = ParseUnicodeLanguageId<'ja-Kana-jp-t-it-latn-it'>
+type UnicodeLangId2 = ParseUnicodeLanguageId<'ja-Kana-jp-jauer'>
+
+type u1 = _ParseVariantsSubtag<['1ab', 'abcde']>
+
 type id2 = ParseUnicodeLanguageId<''>
 
 // -----
