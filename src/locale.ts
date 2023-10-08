@@ -5,6 +5,7 @@ import type {
   First,
   Includes,
   IsNever,
+  Join,
   Length,
   Push,
   Shift,
@@ -19,6 +20,56 @@ export interface UnicodeLocaleId {
   extensions: Array<
     UnicodeExtension | TransformedExtension | PuExtension | OtherExtension
   >
+}
+
+export type KV = [string, string] | [string]
+
+export interface Extension {
+  type: string
+}
+
+export interface UnicodeExtension extends Extension {
+  type: 'u'
+  keywords: KV[]
+  attributes: string[]
+}
+
+export interface TransformedExtension extends Extension {
+  type: 't'
+  fields: KV[]
+  lang?: UnicodeLanguageId
+}
+export interface PuExtension extends Extension {
+  type: 'x'
+  value: string
+}
+
+export interface OtherExtension extends Extension {
+  type:
+    | 'a'
+    | 'b'
+    | 'c'
+    | 'd'
+    | 'e'
+    | 'f'
+    | 'g'
+    | 'h'
+    | 'i'
+    | 'j'
+    | 'k'
+    | 'l'
+    | 'm'
+    | 'n'
+    | 'o'
+    | 'p'
+    | 'q'
+    | 'r'
+    | 's'
+    | 'v'
+    | 'w'
+    | 'y'
+    | 'z'
+  value: string
 }
 
 export interface UnicodeLanguageId {
@@ -286,52 +337,84 @@ type ParseUnicodeVariantsSubtag<
         : [never, never] // ignore
       : [never, never] // ignore
 
-export type KV = [string, string] | [string]
+// TODO:
+type ParseUnicodeLocaleId<T extends string> = true
 
-export interface Extension {
-  type: string
-}
+// TODO:
+type ParseUnicodeExtensions<T extends string> = true
 
-export interface UnicodeExtension extends Extension {
-  type: 'u'
-  keywords: KV[]
-  attributes: string[]
-}
+// TODO:
+type ParseUnicodeExtension<T extends unknown[]> = true
 
-export interface TransformedExtension extends Extension {
-  type: 't'
-  fields: KV[]
-  lang?: UnicodeLanguageId
-}
-export interface PuExtension extends Extension {
-  type: 'x'
-  value: string
-}
+/**
+ * parse keyword key at unicode locale extension generally
+ * `keyword` at https://unicode.org/reports/tr35/#Unicode_locale_identifier
+ * (= key (sep type)? ;)
+ */
+export type ParseKeyword<
+  T extends unknown[],
+  Sep extends string = '-',
+  Key = ParseKeywordKey<T>,
+  Rest extends unknown[] = Shift<T>,
+  Value = ParseKeywordValue<Rest, Sep>,
+> = IsNever<Key> extends never ? never
+  : [Key, Value]
 
-export interface OtherExtension extends Extension {
-  type:
-    | 'a'
-    | 'b'
-    | 'c'
-    | 'd'
-    | 'e'
-    | 'f'
-    | 'g'
-    | 'h'
-    | 'i'
-    | 'j'
-    | 'k'
-    | 'l'
-    | 'm'
-    | 'n'
-    | 'o'
-    | 'p'
-    | 'q'
-    | 'r'
-    | 's'
-    | 'v'
-    | 'w'
-    | 'y'
-    | 'z'
-  value: string
-}
+/**
+ * parse keyword key at unicode locale extension generally
+ * `key` at https://unicode.org/reports/tr35/#Unicode_locale_identifier
+ * (= alphanum alpha ;)
+ */
+// deno-fmt-ignore
+type ParseKeywordKey<
+  Chunks extends unknown[],
+  _Chunk = First<Chunks>,
+  Chunk extends string = _Chunk extends string ? _Chunk : never,
+  ChunkChars extends unknown[] = StringToArray<Chunk>,
+  Key1 extends string = ChunkChars[0] extends string ? ChunkChars[0] : never,
+  Key2 extends string = ChunkChars[1] extends string ? ChunkChars[1] : never,
+> = Chunk extends string
+  ? Length<ChunkChars> extends 2
+    ? All<ValidCharacters<StringToArray<Key1>, AlphaNumber>, true> extends true
+      ? All<ValidCharacters<StringToArray<Key2>, Alpha>, true> extends true
+        ? Chunk
+        : never
+      : never
+    : never
+  : never
+
+type ParseKeywordValue<
+  Chunks extends unknown[],
+  Sep extends string = '-',
+  Types extends unknown[] = ParseKeywordType<Chunks>,
+> = Length<Types> extends 0 ? '' : Join<Types, Sep>
+
+/**
+ * parse type on keyword at unicode locale extension generally
+ * `type` at https://unicode.org/reports/tr35/#Unicode_locale_identifier
+ * (= alphanum{3,8} (sep alphanum{3,8})* ;)
+ */
+// deno-fmt-ignore
+type ParseKeywordType<
+  Chunks extends unknown[],
+  Types extends unknown[] = [],
+  Chunk extends string = Chunks[0] extends string ? Chunks[0] : never,
+  ChunkChars extends unknown[] = StringToArray<Chunk>,
+> = Length<Chunks> extends 0
+  ? Types
+  : Chunk extends string
+    ? CheckRange<ChunkChars, [3, 4, 5, 6, 7, 8]> extends true // check type length
+      ? All<ValidCharacters<ChunkChars, AlphaNumber>, true> extends true // check type characters
+        ? ParseKeywordType<Shift<Chunks>, [...Push<Types, Chunk>]>
+        : Types
+      : Types
+    : Types
+
+// TODO:
+type ParseTransformedExtension<T extends string> = true
+
+// TODO:
+type ParsePuExtension<T extends string> = true
+
+// TODO:
+type ParseOtherExtension<T extends string> = true

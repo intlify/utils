@@ -2,6 +2,7 @@ import { expectTypeOf, test } from 'vitest'
 
 import type {
   CheckRange,
+  ParseKeyword,
   ParseLangSubtag,
   ParseRegionSubtag,
   ParseScriptSubtag,
@@ -276,5 +277,26 @@ test('ParseUnicodeLangugageId', () => {
         'duplicate unicode variant subtag',
       ],
     ]
+  >()
+})
+
+test('ParseKeyword', () => {
+  /**
+   * Success cases
+   */
+
+  expectTypeOf<ParseKeyword<['ca', 'buddhist', 'chinese']>>().toMatchTypeOf<
+    ['ca', 'buddhist-chinese']
+  >()
+  expectTypeOf<ParseKeyword<['ca', 'buddhist']>>().toMatchTypeOf<
+    ['ca', 'buddhist']
+  >()
+  expectTypeOf<ParseKeyword<['ca']>>().toMatchTypeOf<
+    ['ca', '']
+  >()
+
+  /** Fail cases */
+  expectTypeOf<ParseKeyword<['c']>>().toMatchTypeOf<
+    [never, '']
   >()
 })
