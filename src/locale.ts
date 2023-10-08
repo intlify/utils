@@ -138,6 +138,7 @@ export const localeErrors = /* @__PURE__ */ {
   6: 'malformed unicode region subtag',
   7: 'unicode region subtag requires 2 alphabet lower characters or 3 digits',
   8: 'duplicate unicode variant subtag',
+  9: 'malformed unicode extension',
   1024: 'Unexpected error',
 } as const
 
@@ -343,21 +344,61 @@ type ParseUnicodeLocaleId<T extends string> = true
 // TODO:
 type ParseUnicodeExtensions<T extends string> = true
 
-// TODO:
-type ParseUnicodeExtension<T extends unknown[]> = true
+/**
+ * parse unicode extension
+ * https://unicode.org/reports/tr35/#unicode_locale_extensions
+ *  = ((sep keyword)+
+ *    |(sep attribute)+ (sep keyword)*) ;
+ */
+// deno-fmt-ignore
+export type ParseUnicodeExtension<
+  Chunks extends unknown[],
+  Result extends [unknown[], unknown[]] = ParseAttribute<Chunks>,
+  Attributes extends unknown[] = Result[0],
+  Keywords extends unknown[] = ParseKeyword<Result[1]>,
+> = Length<Keywords> extends 0
+  ? Length<Attributes> extends 0
+    ? [never, 8]
+    : [{ type: 'u'; keywords: Keywords; attributes: Attributes }, never]
+  : [{ type: 'u'; keywords: Keywords; attributes: Attributes }, never]
 
 /**
- * parse keyword key at unicode locale extension generally
+ * parse attribute at unicode locale extension generally
+ * `attribute` at https://unicode.org/reports/tr35/#Unicode_locale_identifier
+ * (= alphanum{3,8} ;)
+ */
+// deno-fmt-ignore
+export type ParseAttribute<
+  Chunks extends unknown[],
+  Attributes extends unknown[] = [],
+  RemainChunks extends unknown[] = Shift<Chunks>,
+  Chunk extends string = Chunks[0] extends string ? Chunks[0] : never,
+  ChunkChars extends unknown[] = StringToArray<Chunk>,
+> = Length<Chunks> extends 0
+  ? [Attributes, RemainChunks]
+  : Chunk extends string
+    ? CheckRange<ChunkChars, [3, 4, 5, 6, 7, 8]> extends true // check attribute length
+      ? All<ValidCharacters<ChunkChars, AlphaNumber>, true> extends true // check attribute characters
+        ? ParseAttribute<
+          RemainChunks,
+          [...Push<Attributes, Chunk>]
+        >
+        : [Attributes, Chunks]
+      : [Attributes, Chunks]
+    : [Attributes, Chunks]
+
+/**
+ * parse keyword at unicode locale extension generally
  * `keyword` at https://unicode.org/reports/tr35/#Unicode_locale_identifier
  * (= key (sep type)? ;)
  */
 export type ParseKeyword<
-  T extends unknown[],
+  Chunks extends unknown[],
   Sep extends string = '-',
-  Key = ParseKeywordKey<T>,
-  Rest extends unknown[] = Shift<T>,
+  Key = ParseKeywordKey<Chunks>,
+  Rest extends unknown[] = Shift<Chunks>,
   Value = ParseKeywordValue<Rest, Sep>,
-> = IsNever<Key> extends never ? never
+> = IsNever<Key> extends true ? never
   : [Key, Value]
 
 /**

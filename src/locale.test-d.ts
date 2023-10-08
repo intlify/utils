@@ -6,6 +6,7 @@ import type {
   ParseLangSubtag,
   ParseRegionSubtag,
   ParseScriptSubtag,
+  ParseUnicodeExtension,
   ParseUnicodeLanguageId,
   ParseVariantsSubtag,
 } from './locale.ts'
@@ -285,18 +286,42 @@ test('ParseKeyword', () => {
    * Success cases
    */
 
-  expectTypeOf<ParseKeyword<['ca', 'buddhist', 'chinese']>>().toMatchTypeOf<
-    ['ca', 'buddhist-chinese']
+  expectTypeOf<ParseKeyword<['co', 'standard', 'phonetic']>>().toMatchTypeOf<
+    ['co', 'standard-phonetic']
   >()
-  expectTypeOf<ParseKeyword<['ca', 'buddhist']>>().toMatchTypeOf<
-    ['ca', 'buddhist']
+  expectTypeOf<ParseKeyword<['co', 'standard']>>().toMatchTypeOf<
+    ['co', 'standard']
   >()
-  expectTypeOf<ParseKeyword<['ca']>>().toMatchTypeOf<
-    ['ca', '']
+  expectTypeOf<ParseKeyword<['co']>>().toMatchTypeOf<
+    ['co', '']
   >()
 
   /** Fail cases */
   expectTypeOf<ParseKeyword<['c']>>().toMatchTypeOf<
-    [never, '']
+    never
+  >()
+})
+
+test('ParseUnicodeExtension', () => {
+  /**
+   * Success cases
+   */
+  expectTypeOf<ParseUnicodeExtension<['co', 'standard']>>()
+    .toMatchTypeOf<
+      [{ type: 'u'; keywords: ['co', 'standard']; attributes: [] }, never]
+    >()
+  expectTypeOf<ParseUnicodeExtension<['foo', 'bar', 'co', 'standard']>>()
+    .toMatchTypeOf<
+      [
+        { type: 'u'; keywords: ['co', 'standard']; attributes: ['foo', 'bar'] },
+        never,
+      ]
+    >()
+
+  /**
+   * Fail cases
+   */
+  expectTypeOf<ParseUnicodeExtension<['c']>>().toMatchTypeOf<
+    [never, 8]
   >()
 })
