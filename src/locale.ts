@@ -558,12 +558,13 @@ type ParseTransformedExtensionFieldsValue<
 // deno-fmt-ignore
 export type ParsePuExtension<
   Chunks extends unknown[],
+  Sep extends string = '-',
   Exts extends unknown[] = _ParsePuExtension<
     Chunks
   >,
   Result extends [PuExtension, number] = Length<Exts> extends 0
     ? [never, 12]
-    : [{ type: 'x'; value: Join<Exts, '-'> }, never],
+    : [{ type: 'x'; value: Join<Exts, Sep> }, never],
 > = Result
 
 export type _ParsePuExtension<
@@ -573,8 +574,8 @@ export type _ParsePuExtension<
   Chunk extends string = Chunks[0] extends string ? Chunks[0] : never,
   ChunkChars extends unknown[] = StringToArray<Chunk>,
 > = Length<Chunks> extends 0 ? Exts
-  : CheckRange<ChunkChars, [1, 2, 3, 4, 5, 6, 7, 8]> extends true // check `tfield` value length
-    ? All<ValidCharacters<ChunkChars, AlphaNumber>, true> extends true // check `tfield` value characters
+  : CheckRange<ChunkChars, [1, 2, 3, 4, 5, 6, 7, 8]> extends true // check value length
+    ? All<ValidCharacters<ChunkChars, AlphaNumber>, true> extends true // check value characters
       ? _ParsePuExtension<
         RemainChunks,
         [...Push<Exts, Chunk>]
@@ -582,5 +583,36 @@ export type _ParsePuExtension<
     : Exts
   : Exts
 
-// TODO:
-type ParseOtherExtension<T extends string> = true
+/**
+ * parse other extension
+ * https://unicode.org/reports/tr35/#other_extensions
+ *  = sep [alphanum-[tTuUxX]]
+      (sep alphanum{2,8})+ ;
+ */
+// deno-fmt-ignore
+export type ParseOtherExtension<
+  Chunks extends unknown[],
+  Sep extends string = '-',
+  Exts extends unknown[] = _ParseOtherExtension<
+    Chunks
+  >,
+  Result extends string = Length<Exts> extends 0
+    ? ''
+    : Join<Exts, Sep>
+> = Result
+
+type _ParseOtherExtension<
+  Chunks extends unknown[],
+  Exts extends unknown[] = [],
+  RemainChunks extends unknown[] = Shift<Chunks>,
+  Chunk extends string = Chunks[0] extends string ? Chunks[0] : never,
+  ChunkChars extends unknown[] = StringToArray<Chunk>,
+> = Length<Chunks> extends 0 ? Exts
+  : CheckRange<ChunkChars, [2, 3, 4, 5, 6, 7, 8]> extends true // check value length
+    ? All<ValidCharacters<ChunkChars, AlphaNumber>, true> extends true // check value characters
+      ? _ParseOtherExtension<
+        RemainChunks,
+        [...Push<Exts, Chunk>]
+      >
+    : Exts
+  : Exts
