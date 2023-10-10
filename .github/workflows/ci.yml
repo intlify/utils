@@ -68,8 +68,6 @@ jobs:
 
   test:
     name: Test
-    needs:
-      - build
     strategy:
       matrix:
         os: [ubuntu-latest]
