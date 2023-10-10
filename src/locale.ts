@@ -306,8 +306,6 @@ export type ParseUnicodeRegionSubtag<
 type ThroughErrorWithChunks<Chunks extends unknown[], Result> =
   Length<Chunks> extends 0 ? Result : [never, never, Chunks]
 
-type rr1 = ParseUnicodeRegionSubtag<'US', ['US', 'u']>
-
 /**
  * parse unicode variant subtag
  * https://unicode.org/reports/tr35/#unicode_variant_subtag
