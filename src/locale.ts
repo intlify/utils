@@ -152,12 +152,21 @@ export type ParseUnicodeLanguageId<
   Chunks extends string | unknown[],
   ErrorMsg extends Record<number, string> = typeof localeErrors,
   Chars extends unknown[] = Chunks extends string ? Split<Chunks, '-'> : Chunks,
-  Lang extends [string, number] = ParseLangSubtag<First<Chars>>,
-  Rest1 extends unknown[] = Shift<Chars>,
-  Script extends [string, number] = ParseScriptSubtag<First<Rest1>>,
-  Rest2 extends unknown[] = Shift<Rest1>,
-  Region extends [string, number] = ParseRegionSubtag<First<Rest2>>,
-  Rest3 extends unknown[] = Shift<Rest2>,
+  Lang extends [string, number, unknown[]] = ParseLangSubtag<
+    First<Chars>,
+    Chars
+  >,
+  Rest1 extends unknown[] = Lang[2],
+  Script extends [string, number, unknown[]] = ParseScriptSubtag<
+    First<Rest1>,
+    Rest1
+  >,
+  Rest2 extends unknown[] = Script[2],
+  Region extends [string, number, unknown[]] = ParseRegionSubtag<
+    First<Rest2>,
+    Rest2
+  >,
+  Rest3 extends unknown[] = Region[2],
   Variants extends [string[], number | never, unknown[]] = ParseVariantsSubtag<
     Rest3
   >,
@@ -179,10 +188,6 @@ export type ParseUnicodeLanguageId<
   RestChars,
 ]
 
-type l1 = ParseUnicodeLanguageId<['en', 'Kana', 'US', 'h0', 'hybrid']>
-type l2 = ParseUnicodeLanguageId<'en'>
-type l3 = ParseUnicodeLanguageId<['en', 'US']>
-
 /**
  * parse unicode language subtag
  * https://unicode.org/reports/tr35/#unicode_language_subtag
@@ -190,14 +195,15 @@ type l3 = ParseUnicodeLanguageId<['en', 'US']>
 // deno-fmt-ignore
 export type ParseLangSubtag<
   Chunk,
-  Result extends [string, number] = IsNever<Chunk> extends true
-    ? [never, 1] // missing
+  RestChunks extends unknown[] = [],
+  Result extends [string, number, unknown[]] = IsNever<Chunk> extends true
+    ? [never, 1, RestChunks] // missing
     : Chunk extends ''
-      ? [never, 1] // missing
+      ? [never, 1, RestChunks] // missing
       : Chunk extends 'root'
-        ? ['root', never] // 'root' is special case
+        ? ['root', never, RestChunks] // 'root' is special case
         : Chunk extends string
-          ? ParseUnicodeLanguageSubtag<Chunk>
+          ? ParseUnicodeLanguageSubtag<Chunk, RestChunks>
           : never // unexpected
 > = Result
 
@@ -209,12 +215,13 @@ export type ParseLangSubtag<
 // deno-fmt-ignore
 export type ParseUnicodeLanguageSubtag<
   Chunk extends string,
+  RestChunks extends unknown[] = [],
   Chars extends unknown[] = StringToArray<Chunk>,
 > = CheckRange<Chars, [2, 3, 5, 6, 7, 8]> extends true
   ? Includes<ValidCharacters<Chars, Alpha>, false> extends true // check if all chars are alphabets
-    ? [never, 2] // malformed
-    : [Chunk, never]
-  : [never, 3] // require characters length
+    ? [never, 2, RestChunks] // malformed
+    : [Chunk, never, Shift<RestChunks>]
+  : [never, 3, RestChunks] // require characters length
 
 /**
  * parse unicode script subtag
@@ -223,12 +230,13 @@ export type ParseUnicodeLanguageSubtag<
 // deno-fmt-ignore
 export type ParseScriptSubtag<
   Chunk,
-  Result extends [string, number] = IsNever<Chunk> extends true
-    ? [never, never] // missing
+  RestChunks extends unknown[] = [],
+  Result extends [string, number, unknown[]] = IsNever<Chunk> extends true
+    ? [never, never, RestChunks] // missing
     : Chunk extends ''
-      ? [never, never] // missing
+      ? [never, never, RestChunks] // missing
       : Chunk extends string
-        ? ParseUnicodeScriptSubtag<Chunk>
+        ? ParseUnicodeScriptSubtag<Chunk, RestChunks>
         : never // unexpected
 > = Result
 
@@ -240,12 +248,15 @@ export type ParseScriptSubtag<
 // deno-fmt-ignore
 export type ParseUnicodeScriptSubtag<
   Chunk extends string,
+  RestChunks extends unknown[] = [],
   Chars extends unknown[] = StringToArray<Chunk>,
 > = CheckRange<Chars, [4]> extends true
   ? Includes<ValidCharacters<Chars, Alpha>, false> extends true // check if all chars are alphabets
-    ? [never, 4] // malformed
-    : [Chunk, never]
-  : [never, 5] // require characters length
+    ? [never, 4, RestChunks] // malformed
+    : [Chunk, never, Shift<RestChunks>]
+  : Length<RestChunks> extends 0
+    ? [never, 5, RestChunks] // require characters length
+    : [never, never, RestChunks] // through
 
 /**
  * parse unicode region subtag
@@ -254,16 +265,15 @@ export type ParseUnicodeScriptSubtag<
 // deno-fmt-ignore
 export type ParseRegionSubtag<
   Chunk,
-  Result extends [string, number] = IsNever<Chunk> extends true 
-    ? [never, never] // missing
+  RestChunks extends unknown[] = [],
+  Result extends [string, number, unknown[]] = IsNever<Chunk> extends true 
+    ? [never, never, RestChunks] // missing
     : Chunk extends ''
-      ? [never, never] // missing
+      ? [never, never, RestChunks] // missing
       : Chunk extends string
-        ? ParseUnicodeRegionSubtag<Chunk>
+        ? ParseUnicodeRegionSubtag<Chunk, RestChunks>
         : never, // unexpected
 > = Result
-
-type r1 = ParseRegionSubtag<'US'>
 
 /**
  * parse unicode region subtag (= (alpha{2} | digit{3}) ;)
@@ -273,24 +283,30 @@ type r1 = ParseRegionSubtag<'US'>
 // deno-fmt-ignore
 export type ParseUnicodeRegionSubtag<
   Chunk extends string,
+  RestChunks extends unknown[] = [],
   Chars extends unknown[] = StringToArray<Chunk>,
   HasAlphabetsOnly = All<ValidCharacters<Chars, Alpha>, true>,
   HasDigitsOnly = All<ValidCharacters<Chars, Digits>, true>,
 > = CheckRange<Chars, [2, 3]> extends true 
   ? Length<Chars> extends 2
     ? HasAlphabetsOnly extends true
-      ? [Chunk, never]
+      ? [Chunk, never, Shift<RestChunks>]
       : HasDigitsOnly extends true
-        ? [never, 7] // require characters length
-        : [never, 6] // malformed
+        ? ThroughErrorWithChunks<RestChunks, [never, 7, RestChunks]> // require characters length
+        : ThroughErrorWithChunks<RestChunks, [never, 6, RestChunks]> // malformed
     : Length<Chars> extends 3
       ? HasDigitsOnly extends true
-        ? [Chunk, never]
+        ? [Chunk, never, Shift<RestChunks>]
         : HasAlphabetsOnly extends true
-          ? [never, 7] // require characters length
-          : [never, 6] // malformed
-      : [never, 7] // require characters length
-  : [never, 7] // require characters length
+          ? ThroughErrorWithChunks<RestChunks, [never, 7, RestChunks]> // require characters length
+          : ThroughErrorWithChunks<RestChunks, [never, 6, RestChunks]> // malformed
+      : [never, 7, RestChunks] // require characters length
+  : ThroughErrorWithChunks<RestChunks, [never, 7, RestChunks]> // require characters length
+
+type ThroughErrorWithChunks<Chunks extends unknown[], Result> =
+  Length<Chunks> extends 0 ? Result : [never, never, Chunks]
+
+type rr1 = ParseUnicodeRegionSubtag<'US', ['US', 'u']>
 
 /**
  * parse unicode variant subtag
@@ -463,13 +479,13 @@ type ParseKeywordType<
       : Types
     : Types
 
-// TODO:
 /**
  * parse transformed extension
  * https://unicode.org/reports/tr35/#transformed_extensions
  * 	= sep [tT] ((sep tlang (sep tfield)*) | (sep tfield)+) ;
  */
-type ParseTransformedExtension<
+// deno-fmt-ignore
+export type ParseTransformedExtension<
   Chunks extends unknown[],
   /* Excessive stack depth comparing types ...
   ResultLangId extends [UnicodeLanguageId, number, unknown[]] =
@@ -478,20 +494,18 @@ type ParseTransformedExtension<
   ResultLangId extends unknown[] = ParseUnicodeLanguageId<
     Chunks
   >,
-  ResultFields extends [string[], number] = ParseTransformedExtensionFields<
-    Chunks
+  RestChunks extends unknown[] = ResultLangId[2] extends unknown[]
+    ? ResultLangId[2]
+    : never,
+  ResultFields extends [KV[], number] = ParseTransformedExtensionFields<
+    RestChunks
   >,
-  FiledsError = ResultFields[1],
-> = FiledsError extends number ? [never, FiledsError]
-  : Length<ResultFields[0]> extends 0 ? [never, 11] // malformed
-  : {
-    type: 't'
-    lang: ResultLangId[0]
-    fields: ResultFields[0]
-  }
-
-type t1 = ParseTransformedExtension<['en', 'h0', 'hybrid']>
-type t2 = ParseTransformedExtension<['en']>
+  HasError = IsNever<ResultFields[1]> extends true ? false : true,
+> = HasError extends true
+   ? [never, ResultFields[1]]
+   : Length<ResultFields[0]> extends 0
+     ? [never, 11] // malformed
+     : [{ type: 't', lang: ResultLangId[0], fields: ResultFields[0] }, never]
 
 /**
  * parse `tfield` at unicode transformed extension
@@ -516,7 +530,7 @@ type ParseTransformedExtensionFields<
       ? All<ValidCharacters<[KeyChars[1]], Digits>, true> extends true // check `tfield` characters
         ? Length<ResultValue> extends 0
           ? [never, 10] // missing
-          : [Push<Accumrator[0], Join<ResultValue, Sep>>, Accumrator[1]]
+          : [Push<Accumrator[0], [Key, Join<ResultValue, Sep>]>, Accumrator[1]]
         : FieldsReturn
       : FieldsReturn
     : FieldsReturn

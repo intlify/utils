@@ -6,6 +6,7 @@ import type {
   ParseLangSubtag,
   ParseRegionSubtag,
   ParseScriptSubtag,
+  ParseTransformedExtension,
   ParseUnicodeExtension,
   ParseUnicodeLanguageId,
   ParseVariantsSubtag,
@@ -61,23 +62,25 @@ test('ParseLangSubtag', () => {
 
   // 2 chars
   expectTypeOf<ParseLangSubtag<'ja'>>().toMatchTypeOf<
-    ['ja', never]
+    ['ja', never, []]
   >()
   // 3 chars
-  expectTypeOf<ParseLangSubtag<'jpn'>>().toMatchTypeOf<
-    ['jpn', never]
+  expectTypeOf<ParseLangSubtag<'jpn', ['jpn']>>().toMatchTypeOf<
+    ['jpn', never, []]
   >()
   // 7 chars
-  expectTypeOf<ParseLangSubtag<'english'>>().toMatchTypeOf<['english', never]>()
+  expectTypeOf<ParseLangSubtag<'english', ['english', 'US']>>().toMatchTypeOf<
+    ['english', never, ['US']]
+  >()
   // 'root' is special (4 chars)
-  expectTypeOf<ParseLangSubtag<'root'>>().toMatchTypeOf<['root', never]>()
+  expectTypeOf<ParseLangSubtag<'root'>>().toMatchTypeOf<['root', never, []]>()
   // upper case
   expectTypeOf<ParseLangSubtag<'JA'>>().toMatchTypeOf<
-    ['JA', never]
+    ['JA', never, []]
   >()
   // mixied case
   expectTypeOf<ParseLangSubtag<'Ja'>>().toMatchTypeOf<
-    ['Ja', never]
+    ['Ja', never, []]
   >()
 
   /**
@@ -86,22 +89,22 @@ test('ParseLangSubtag', () => {
 
   // empty
   expectTypeOf<ParseLangSubtag<''>>().toMatchTypeOf<
-    [never, 1]
+    [never, 1, []]
   >()
   // no-alphabet
   expectTypeOf<ParseLangSubtag<'11'>>().toMatchTypeOf<
-    [never, 2]
+    [never, 2, []]
   >()
   // never
   expectTypeOf<ParseLangSubtag<never>>().toMatchTypeOf<
-    [never, 1]
+    [never, 1, []]
   >()
   // range
   expectTypeOf<ParseLangSubtag<'abcd'>>().toMatchTypeOf<
-    [never, 3]
+    [never, 3, []]
   >()
   expectTypeOf<ParseLangSubtag<'abcdefghj'>>().toMatchTypeOf<
-    [never, 3]
+    [never, 3, []]
   >()
   // not string
   expectTypeOf<ParseLangSubtag<1>>().toMatchTypeOf<never>()
@@ -114,17 +117,17 @@ test('ParseScriptSubtag', () => {
 
   // 4 chars
   expectTypeOf<ParseScriptSubtag<'kana'>>().toMatchTypeOf<
-    ['kana', never]
+    ['kana', never, []]
   >()
 
   // empty
   expectTypeOf<ParseScriptSubtag<''>>().toMatchTypeOf<
-    [never, never]
+    [never, never, []]
   >()
 
   // upper case
   expectTypeOf<ParseScriptSubtag<'Kana'>>().toMatchTypeOf<
-    ['Kana', never]
+    ['Kana', never, []]
   >()
 
   /**
@@ -133,18 +136,25 @@ test('ParseScriptSubtag', () => {
 
   // no-alphabet
   expectTypeOf<ParseScriptSubtag<'1111'>>().toMatchTypeOf<
-    [never, 4]
+    [never, 4, []]
   >()
   // range
   expectTypeOf<ParseScriptSubtag<'lat'>>().toMatchTypeOf<
-    [never, 5]
+    [never, 5, []]
   >()
   expectTypeOf<ParseScriptSubtag<'arabi'>>().toMatchTypeOf<
-    [never, 5]
+    [never, 5, []]
   >()
   // not string
   expectTypeOf<ParseScriptSubtag<1>>().toMatchTypeOf<
     never
+  >()
+
+  /**
+   * through case
+   */
+  expectTypeOf<ParseScriptSubtag<'US', ['US']>>().toMatchTypeOf<
+    [never, never, ['US']]
   >()
 })
 
@@ -155,19 +165,19 @@ test('ParseRegionSubtag', () => {
 
   // 2 chars (alpha)
   expectTypeOf<ParseRegionSubtag<'jp'>>().toMatchTypeOf<
-    ['jp', never]
+    ['jp', never, []]
   >()
   // 3 chars (digit)
   expectTypeOf<ParseRegionSubtag<'012'>>().toMatchTypeOf<
-    ['012', never]
+    ['012', never, []]
   >()
   // empty
   expectTypeOf<ParseRegionSubtag<''>>().toMatchTypeOf<
-    [never, never]
+    [never, never, []]
   >()
   // upper case
   expectTypeOf<ParseLangSubtag<'JP'>>().toMatchTypeOf<
-    ['JP', never]
+    ['JP', never, []]
   >()
 
   /**
@@ -176,28 +186,35 @@ test('ParseRegionSubtag', () => {
 
   // no all-alphabet
   expectTypeOf<ParseRegionSubtag<'j1'>>().toMatchTypeOf<
-    [never, 6]
+    [never, 6, []]
   >()
   // no all-digits
   expectTypeOf<ParseRegionSubtag<'12j'>>().toMatchTypeOf<
-    [never, 6]
+    [never, 6, []]
   >()
   // range
   expectTypeOf<ParseRegionSubtag<'j'>>().toMatchTypeOf<
-    [never, 7]
+    [never, 7, []]
   >()
   expectTypeOf<ParseRegionSubtag<'12'>>().toMatchTypeOf<
-    [never, 7]
+    [never, 7, []]
   >()
   expectTypeOf<ParseRegionSubtag<'jpn'>>().toMatchTypeOf<
-    [never, 7]
+    [never, 7, []]
   >()
   expectTypeOf<ParseRegionSubtag<'9a23'>>().toMatchTypeOf<
-    [never, 7]
+    [never, 7, []]
   >()
   // not string
   expectTypeOf<ParseRegionSubtag<1>>().toMatchTypeOf<
     never
+  >()
+
+  /**
+   * through case
+   */
+  expectTypeOf<ParseRegionSubtag<'u', ['u']>>().toMatchTypeOf<
+    [never, never, ['u']]
   >()
 })
 
@@ -264,7 +281,6 @@ test('ParseUnicodeLangugageId', () => {
   /**
    * Success cases
    */
-  type l1 = ParseUnicodeLanguageId<'ja'>
   expectTypeOf<ParseUnicodeLanguageId<['ja']>>().toMatchTypeOf<
     [
       { lang: 'ja'; variants: [] },
@@ -272,7 +288,6 @@ test('ParseUnicodeLangugageId', () => {
       [],
     ]
   >()
-  type l2 = ParseUnicodeLanguageId<['ja', 'JP']>
   expectTypeOf<ParseUnicodeLanguageId<'ja-JP'>>().toMatchTypeOf<
     [
       { lang: 'ja'; region: 'JP'; variants: [] },
@@ -288,20 +303,14 @@ test('ParseUnicodeLangugageId', () => {
     ]
   >()
 
-  type t1 = ParseUnicodeLanguageId<'ja-Kana-jp-jauer-1abc-u-co-standard'>
-
   /** Erros */
-  type el1 = ParseUnicodeLanguageId<'a-ana-p-jauer-jauer'>
   expectTypeOf<ParseUnicodeLanguageId<'a-ana-p-jauer-jauer'>>().toMatchTypeOf<
     [
-      { lang: never; script: never; region: never; variants: ['jauer'] },
+      { lang: never; script: never; region: never; variants: [] },
       [
         'requires 2-3 or 5-8 alphabet lower characters',
-        'unicode script subtag requires 4 alphabet lower characters',
-        'unicode region subtag requires 2 alphabet lower characters or 3 digits',
-        'duplicate unicode variant subtag',
       ],
-      [],
+      ['a', 'ana', 'p', 'jauer', 'jauer'],
     ]
   >()
 })
@@ -348,5 +357,40 @@ test('ParseUnicodeExtension', () => {
    */
   expectTypeOf<ParseUnicodeExtension<['c']>>().toMatchTypeOf<
     [never, 8]
+  >()
+})
+
+test('ParseTransformedExtension', () => {
+  /**
+   * Success cases
+   */
+  expectTypeOf<
+    ParseTransformedExtension<['en', 'Kana', 'US', 'jauer', 'h0', 'hybrid']>
+  >()
+    .toMatchTypeOf<
+      [
+        {
+          type: 't'
+          lang: {
+            lang: 'en'
+            script: 'Kana'
+            region: 'US'
+            variants: ['jauer']
+          }
+          fields: [['h0', 'hybrid']]
+        },
+        never,
+      ]
+    >()
+
+  /**
+   * Fail cases
+   */
+  expectTypeOf<ParseTransformedExtension<['en', 'US', 'h0']>>()
+    .toMatchTypeOf<
+      [never, 10]
+    >()
+  expectTypeOf<ParseTransformedExtension<['en']>>().toMatchTypeOf<
+    [never, 11]
   >()
 })
