@@ -141,6 +141,7 @@ export const localeErrors = /* @__PURE__ */ {
   9: 'malformed unicode extension',
   10: 'missing tvalue for tkey',
   11: 'malformed transformed extension',
+  12: 'malformed private use extension',
   1024: 'Unexpected error',
 } as const
 
@@ -549,8 +550,37 @@ type ParseTransformedExtensionFieldsValue<
     : Value
   : Value
 
-// TODO:
-type ParsePuExtension<T extends string> = true
+/**
+ * parse private use extensions
+ * https://unicode.org/reports/tr35/#pu_extensions
+ * 	= sep [xX] (sep alphanum{1,8})+ ;
+ */
+// deno-fmt-ignore
+export type ParsePuExtension<
+  Chunks extends unknown[],
+  Exts extends unknown[] = _ParsePuExtension<
+    Chunks
+  >,
+  Result extends [PuExtension, number] = Length<Exts> extends 0
+    ? [never, 12]
+    : [{ type: 'x'; value: Join<Exts, '-'> }, never],
+> = Result
+
+export type _ParsePuExtension<
+  Chunks extends unknown[],
+  Exts extends unknown[] = [],
+  RemainChunks extends unknown[] = Shift<Chunks>,
+  Chunk extends string = Chunks[0] extends string ? Chunks[0] : never,
+  ChunkChars extends unknown[] = StringToArray<Chunk>,
+> = Length<Chunks> extends 0 ? Exts
+  : CheckRange<ChunkChars, [1, 2, 3, 4, 5, 6, 7, 8]> extends true // check `tfield` value length
+    ? All<ValidCharacters<ChunkChars, AlphaNumber>, true> extends true // check `tfield` value characters
+      ? _ParsePuExtension<
+        RemainChunks,
+        [...Push<Exts, Chunk>]
+      >
+    : Exts
+  : Exts
 
 // TODO:
 type ParseOtherExtension<T extends string> = true

@@ -4,6 +4,7 @@ import type {
   CheckRange,
   ParseKeyword,
   ParseLangSubtag,
+  ParsePuExtension,
   ParseRegionSubtag,
   ParseScriptSubtag,
   ParseTransformedExtension,
@@ -393,4 +394,47 @@ test('ParseTransformedExtension', () => {
   expectTypeOf<ParseTransformedExtension<['en']>>().toMatchTypeOf<
     [never, 11]
   >()
+})
+
+test('ParsePuExtension', () => {
+  /**
+   * Success cases
+   */
+  expectTypeOf<
+    ParsePuExtension<['1234', 'abcde']>
+  >()
+    .toMatchTypeOf<
+      [
+        {
+          type: 'x'
+          value: '1234-abcde'
+        },
+        never,
+      ]
+    >()
+
+  /**
+   * Fail cases
+   */
+  // empty
+  expectTypeOf<
+    ParsePuExtension<['']>
+  >()
+    .toMatchTypeOf<
+      [
+        never,
+        12,
+      ]
+    >()
+
+  // not alphabet or digit
+  expectTypeOf<
+    ParsePuExtension<['1あ']>
+  >()
+    .toMatchTypeOf<
+      [
+        never,
+        12,
+      ]
+    >()
 })
