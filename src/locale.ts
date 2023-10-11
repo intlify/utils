@@ -522,15 +522,16 @@ type ParseKeywordType<
   Types extends unknown[] = [],
   Chunk extends string = Chunks[0] extends string ? Chunks[0] : never,
   ChunkChars extends unknown[] = StringToArray<Chunk>,
+  ExitReturn = [Types, Chunks],
 > = Length<Chunks> extends 0
-  ? [Types, Chunks]
+  ? ExitReturn
   : Chunk extends string
     ? CheckRange<ChunkChars, [3, 4, 5, 6, 7, 8]> extends true // check type length
       ? All<ValidCharacters<ChunkChars, AlphaNumber>, true> extends true // check type characters
         ? ParseKeywordType<Shift<Chunks>, [...Push<Types, Chunk>]>
-        : [Types, Chunks]
-      : [Types, Chunks]
-    : [Types, Chunk]
+        : ExitReturn
+      : ExitReturn
+    : ExitReturn
 
 /**
  * parse transformed extension
