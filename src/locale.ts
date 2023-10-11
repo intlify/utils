@@ -380,14 +380,52 @@ type ParseUnicodeExtensions<T extends string> = true
 // deno-fmt-ignore
 export type ParseUnicodeExtension<
   Chunks extends unknown[],
-  Result extends [unknown[], unknown[]] = ParseAttribute<Chunks>,
-  Attributes extends unknown[] = Result[0],
-  Keywords extends unknown[] = ParseKeyword<Result[1]>,
-> = Length<Keywords> extends 0
-  ? Length<Attributes> extends 0
-    ? [never, 8]
-    : [{ type: 'u'; keywords: Keywords; attributes: Attributes }, never]
-  : [{ type: 'u'; keywords: Keywords; attributes: Attributes }, never]
+  Sep extends string = '-',
+  ResultFirstKeyword extends unknown[] = CollectFirstKeywords<Chunks, Sep>,
+  FirstKeywolds extends unknown[] = ResultFirstKeyword[0] extends unknown[] ? ResultFirstKeyword[0] : never,
+  FirstRestChunks extends unknown[] = ResultFirstKeyword[1] extends unknown[] ? ResultFirstKeyword[1] : Chunks,
+  ResultAttribute extends [unknown[], unknown[]] = ParseAttribute<FirstRestChunks>,
+  Attributes extends unknown[] = ResultAttribute[0],
+  RestAttributeChunks extends unknown[] = ResultAttribute[1] extends unknown[] ? ResultAttribute[1] : never,
+  ResultKeyword extends unknown[] = ParseKeyword<RestAttributeChunks, Sep>,
+  _Keywords extends unknown[] = Push<[], ResultKeyword[0]>,
+  Keywords extends unknown[] = Push<_Keywords, ResultKeyword[1]>,
+  RestChunks extends unknown[] = ResultKeyword[2] extends unknown[] ? ResultKeyword[2] : never,
+> = Length<FirstKeywolds> extends 0
+  ? IsNever<ResultKeyword[0]> extends false
+    ? Length<Keywords> extends 0
+      ? Length<Attributes> extends 0
+        ? [never, 9] // malformed
+        : [{ type: 'u'; keywords: Keywords; attributes: Attributes }, never, RestChunks]
+      : [{ type: 'u'; keywords: Keywords; attributes: Attributes }, never, RestChunks]
+    : [{ type: 'u'; keywords: []; attributes: Attributes }, never, ResultKeyword[1]]
+  : [{ type: 'u'; keywords: FirstKeywolds; attributes: [] }, never, FirstRestChunks]
+
+type t0 = ParseUnicodeExtension<['c']>
+type t1 = ParseUnicodeExtension<['co', 'standard']>
+type t2 = ParseUnicodeExtension<['foo', 'bar', 'co', 'standard']>
+
+// deno-fmt-ignore
+export type CollectFirstKeywords<
+  Chunks extends unknown[],
+  Sep extends string = '-',
+  Keywords extends unknown[] = [],
+  ResultKeyword extends unknown[] = ParseKeyword<Chunks, Sep>,
+  RestChunks extends unknown[] = ResultKeyword[2] extends unknown[] ? ResultKeyword[2] : never,
+  _Keywords1 extends unknown[] = Push<[], ResultKeyword[0]>,
+  _Keywords2 extends unknown[] = Push<_Keywords1, ResultKeyword[1]>,
+> = Length<Chunks> extends 0
+  ? Length<Keywords> extends 0
+    ? [never, Chunks]
+    : [Keywords, Chunks]
+  : IsNever<ResultKeyword[0]> extends true
+    ? [Keywords, Chunks]
+    : CollectFirstKeywords<RestChunks, Sep, [..._Keywords2]>
+
+type c0 = CollectFirstKeywords<['c']>
+type c1 = CollectFirstKeywords<['co', 'standard', 'x']>
+type c2 = CollectFirstKeywords<['co', 'standard', 'r111', 'u']>
+type c4 = CollectFirstKeywords<['foo', 'bar', 'co', 'standard']>
 
 /**
  * parse attribute at unicode locale extension generally
@@ -398,35 +436,48 @@ export type ParseUnicodeExtension<
 export type ParseAttribute<
   Chunks extends unknown[],
   Attributes extends unknown[] = [],
-  RemainChunks extends unknown[] = Shift<Chunks>,
+  RestChunks extends unknown[] = Shift<Chunks>,
   Chunk extends string = Chunks[0] extends string ? Chunks[0] : never,
   ChunkChars extends unknown[] = StringToArray<Chunk>,
 > = Length<Chunks> extends 0
-  ? [Attributes, RemainChunks]
+  ? [Attributes, RestChunks]
   : Chunk extends string
     ? CheckRange<ChunkChars, [3, 4, 5, 6, 7, 8]> extends true // check attribute length
       ? All<ValidCharacters<ChunkChars, AlphaNumber>, true> extends true // check attribute characters
         ? ParseAttribute<
-          RemainChunks,
+          RestChunks,
           [...Push<Attributes, Chunk>]
         >
         : [Attributes, Chunks]
       : [Attributes, Chunks]
     : [Attributes, Chunks]
 
+type pa1 = ParseAttribute<['foo', 'bar', 'co', 'standard']>
+type pa2 = ParseAttribute<['foo', 'bar']>
+type pa3 = ParseAttribute<['co', 'standard']>
+type pa4 = ParseAttribute<['c']>
+
 /**
  * parse keyword at unicode locale extension generally
  * `keyword` at https://unicode.org/reports/tr35/#Unicode_locale_identifier
  * (= key (sep type)? ;)
  */
+// deno-fmt-ignore
 export type ParseKeyword<
   Chunks extends unknown[],
   Sep extends string = '-',
   Key = ParseKeywordKey<Chunks>,
   Rest extends unknown[] = Shift<Chunks>,
-  Value = ParseKeywordValue<Rest, Sep>,
-> = IsNever<Key> extends true ? never
-  : [Key, Value]
+  ResultValue extends unknown[] = ParseKeywordValue<Rest, Sep>,
+> = IsNever<Key> extends true
+  ? [never, Chunks]
+  : [Key, ResultValue[0], ResultValue[1]]
+
+type k = ParseKeyword<['']>
+type k0 = ParseKeyword<['c']>
+type k1 = ParseKeyword<['co', 'standard', 'x']>
+type k2 = ParseKeyword<['co', 'standard', 'r111', 'u']>
+type k3 = ParseKeyword<['co', 'standard']>
 
 /**
  * parse keyword key at unicode locale extension generally
@@ -451,11 +502,14 @@ type ParseKeywordKey<
     : never
   : never
 
+// deno-fmt-ignore
 type ParseKeywordValue<
   Chunks extends unknown[],
   Sep extends string = '-',
-  Types extends unknown[] = ParseKeywordType<Chunks>,
-> = Length<Types> extends 0 ? '' : Join<Types, Sep>
+  ResultKeywordType extends [unknown[], unknown[]] = ParseKeywordType<Chunks>,
+> = Length<ResultKeywordType[0]> extends 0
+  ? ['', ResultKeywordType[1]]
+  : [Join<ResultKeywordType[0], Sep>, ResultKeywordType[1]]
 
 /**
  * parse type on keyword at unicode locale extension generally
@@ -469,14 +523,14 @@ type ParseKeywordType<
   Chunk extends string = Chunks[0] extends string ? Chunks[0] : never,
   ChunkChars extends unknown[] = StringToArray<Chunk>,
 > = Length<Chunks> extends 0
-  ? Types
+  ? [Types, Chunks]
   : Chunk extends string
     ? CheckRange<ChunkChars, [3, 4, 5, 6, 7, 8]> extends true // check type length
       ? All<ValidCharacters<ChunkChars, AlphaNumber>, true> extends true // check type characters
         ? ParseKeywordType<Shift<Chunks>, [...Push<Types, Chunk>]>
-        : Types
-      : Types
-    : Types
+        : [Types, Chunks]
+      : [Types, Chunks]
+    : [Types, Chunk]
 
 /**
  * parse transformed extension
@@ -493,18 +547,35 @@ export type ParseTransformedExtension<
   ResultLangId extends unknown[] = ParseUnicodeLanguageId<
     Chunks
   >,
+  LangParseError extends number = ResultLangId[1] extends number ? ResultLangId[1] : never,
   RestChunks extends unknown[] = ResultLangId[2] extends unknown[]
     ? ResultLangId[2]
     : never,
-  ResultFields extends [KV[], number] = ParseTransformedExtensionFields<
-    RestChunks
-  >,
-  HasError = IsNever<ResultFields[1]> extends true ? false : true,
-> = HasError extends true
-   ? [never, ResultFields[1]]
-   : Length<ResultFields[0]> extends 0
-     ? [never, 11] // malformed
-     : [{ type: 't', lang: ResultLangId[0], fields: ResultFields[0] }, never]
+  ResultFields extends unknown[] = ParseTransformedExtensionFields<RestChunks>,
+  Fields extends unknown[] = ResultFields[0] extends unknown[] ? ResultFields[0] : never,
+  TransformedParseError = ResultFields[1] extends number ? ResultFields[1] : never,
+  NextChunks extends unknown[] = IsNever<LangParseError> extends false
+    ? Chunks
+    : IsNever<TransformedParseError> extends false
+      ? RestChunks
+      : ResultFields[2] extends unknown[]
+        ? ResultFields[2]
+        : Chunks
+> = IsNever<LangParseError> extends false
+  ? [{ type: 't', lang: ResultLangId[0], fields: ResultFields[0] }, LangParseError, NextChunks]
+  : IsNever<TransformedParseError> extends false
+    ? [{ type: 't', lang: ResultLangId[0], fields: ResultFields[0] }, TransformedParseError, NextChunks]
+    : Length<Fields> extends 0
+      ? [never, 11, Chunks] // malformed
+      : [{ type: 't', lang: ResultLangId[0], fields: ResultFields[0] }, never, NextChunks]
+
+type pt1 = ParseTransformedExtension<
+  ['en', 'Kana', 'US', 'jauer', 'h0', 'hybrid']
+>
+type ll1 = ParseUnicodeLanguageId<
+  ['en', 'Kana', 'US', 'jauer', 'h0', 'hybrid']
+>
+type ll2 = ParseTransformedExtensionFields<['h0', 'hybrid']>
 
 /**
  * parse `tfield` at unicode transformed extension
@@ -514,41 +585,49 @@ export type ParseTransformedExtension<
 type ParseTransformedExtensionFields<
   Chunks extends unknown[],
   Sep extends string = '-',
-  Accumrator extends [unknown[], number] = [[], never],
+  Accumrator extends [unknown[], number, unknown[]] = [[], never, []],
   Key extends string = Chunks[0] extends string ? Chunks[0] : never,
   KeyChars extends unknown[] = StringToArray<Key>,
-  RemainChunks extends unknown[] = Shift<Chunks>,
-  ResultValue extends unknown[] = ParseTransformedExtensionFieldsValue<
-    RemainChunks
+  ResultValue extends [unknown[], unknown[]] = ParseTransformedExtensionFieldsValue<
+    Shift<Chunks>
   >,
-  FieldsReturn = [Accumrator[0], Accumrator[1]],
+  FieldsReturn = [Accumrator[0], Accumrator[1], Chunks],
 > = Length<Chunks> extends 0
   ? FieldsReturn
   : CheckRange<KeyChars, [2]> extends true // check `tfield` length
     ? All<ValidCharacters<[KeyChars[0]], Alpha>, true> extends true // check `tfield` characters
       ? All<ValidCharacters<[KeyChars[1]], Digits>, true> extends true // check `tfield` characters
-        ? Length<ResultValue> extends 0
-          ? [never, 10] // missing
-          : [Push<Accumrator[0], [Key, Join<ResultValue, Sep>]>, Accumrator[1]]
+        ? Length<ResultValue[0]> extends 0
+          ? [never, 10, Chunks] // missing
+          : [Push<Accumrator[0], [Key, Join<ResultValue[0], Sep>]>, Accumrator[1], ResultValue[1]]
         : FieldsReturn
       : FieldsReturn
     : FieldsReturn
 
+type ppt1 = ParseTransformedExtensionFields<
+  ['h0', 'hybrid']
+>
+type ppt2 = ParseTransformedExtensionFields<
+  ['h0']
+>
+
+// deno-fmt-ignore
 type ParseTransformedExtensionFieldsValue<
   Chunks extends unknown[],
   Value extends unknown[] = [],
-  RemainChunks extends unknown[] = Shift<Chunks>,
   Chunk extends string = Chunks[0] extends string ? Chunks[0] : never,
   ChunkChars extends unknown[] = StringToArray<Chunk>,
-> = Length<Chunks> extends 0 ? Value
+  ExitReturn = [Value, Chunks],
+> = Length<Chunks> extends 0
+  ? ExitReturn
   : CheckRange<ChunkChars, [3, 4, 5, 6, 7, 8]> extends true // check `tfield` value length
     ? All<ValidCharacters<ChunkChars, AlphaNumber>, true> extends true // check `tfield` value characters
       ? ParseTransformedExtensionFieldsValue<
-        RemainChunks,
+        Shift<Chunks>,
         [...Push<Value, Chunk>]
       >
-    : Value
-  : Value
+      : ExitReturn
+    : ExitReturn
 
 /**
  * parse private use extensions
@@ -559,29 +638,29 @@ type ParseTransformedExtensionFieldsValue<
 export type ParsePuExtension<
   Chunks extends unknown[],
   Sep extends string = '-',
-  Exts extends unknown[] = _ParsePuExtension<
+  ResultExts extends [unknown[], unknown[]] = _ParsePuExtension<
     Chunks
   >,
-  Result extends [PuExtension, number] = Length<Exts> extends 0
-    ? [never, 12]
-    : [{ type: 'x'; value: Join<Exts, Sep> }, never],
+  Result extends [PuExtension, number, unknown[]] = Length<ResultExts[0]> extends 0
+    ? [never, 12, ResultExts[1]]
+    : [{ type: 'x'; value: Join<ResultExts[0], Sep> }, never, ResultExts[1]],
 > = Result
 
 export type _ParsePuExtension<
   Chunks extends unknown[],
   Exts extends unknown[] = [],
-  RemainChunks extends unknown[] = Shift<Chunks>,
   Chunk extends string = Chunks[0] extends string ? Chunks[0] : never,
   ChunkChars extends unknown[] = StringToArray<Chunk>,
-> = Length<Chunks> extends 0 ? Exts
+  ExitReturn = [Exts, Chunks],
+> = Length<Chunks> extends 0 ? ExitReturn
   : CheckRange<ChunkChars, [1, 2, 3, 4, 5, 6, 7, 8]> extends true // check value length
     ? All<ValidCharacters<ChunkChars, AlphaNumber>, true> extends true // check value characters
       ? _ParsePuExtension<
-        RemainChunks,
+        Shift<Chunks>,
         [...Push<Exts, Chunk>]
       >
-    : Exts
-  : Exts
+    : ExitReturn
+  : ExitReturn
 
 /**
  * parse other extension
@@ -593,26 +672,26 @@ export type _ParsePuExtension<
 export type ParseOtherExtension<
   Chunks extends unknown[],
   Sep extends string = '-',
-  Exts extends unknown[] = _ParseOtherExtension<
+  ResultExts extends [unknown[], unknown[]] = _ParseOtherExtension<
     Chunks
   >,
-  Result extends string = Length<Exts> extends 0
-    ? ''
-    : Join<Exts, Sep>
+  Result extends [string, unknown[]] = Length<ResultExts[0]> extends 0
+    ? ['', ResultExts[1]]
+    : [Join<ResultExts[0], Sep>, ResultExts[1]]
 > = Result
 
 type _ParseOtherExtension<
   Chunks extends unknown[],
   Exts extends unknown[] = [],
-  RemainChunks extends unknown[] = Shift<Chunks>,
   Chunk extends string = Chunks[0] extends string ? Chunks[0] : never,
   ChunkChars extends unknown[] = StringToArray<Chunk>,
-> = Length<Chunks> extends 0 ? Exts
+  ExitReturn = [Exts, Chunks],
+> = Length<Chunks> extends 0 ? ExitReturn
   : CheckRange<ChunkChars, [2, 3, 4, 5, 6, 7, 8]> extends true // check value length
     ? All<ValidCharacters<ChunkChars, AlphaNumber>, true> extends true // check value characters
       ? _ParseOtherExtension<
-        RemainChunks,
+        Shift<Chunks>,
         [...Push<Exts, Chunk>]
       >
-    : Exts
-  : Exts
+    : ExitReturn
+  : ExitReturn

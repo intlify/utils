@@ -321,20 +321,22 @@ test('ParseKeyword', () => {
   /**
    * Success cases
    */
-
+  type t1 = ParseKeyword<['co', 'standard', 'phonetic']>
   expectTypeOf<ParseKeyword<['co', 'standard', 'phonetic']>>().toMatchTypeOf<
-    ['co', 'standard-phonetic']
+    ['co', 'standard-phonetic', []]
   >()
+  type t2 = ParseKeyword<['co', 'standard']>
   expectTypeOf<ParseKeyword<['co', 'standard']>>().toMatchTypeOf<
-    ['co', 'standard']
+    ['co', 'standard', []]
   >()
   expectTypeOf<ParseKeyword<['co']>>().toMatchTypeOf<
-    ['co', '']
+    ['co', '', []]
   >()
 
   /** Fail cases */
+  type t3 = ParseKeyword<['c']>
   expectTypeOf<ParseKeyword<['c']>>().toMatchTypeOf<
-    never
+    [never, ['c']]
   >()
 })
 
@@ -342,23 +344,31 @@ test('ParseUnicodeExtension', () => {
   /**
    * Success cases
    */
+  type t1 = ParseUnicodeExtension<['co', 'standard']>
   expectTypeOf<ParseUnicodeExtension<['co', 'standard']>>()
     .toMatchTypeOf<
-      [{ type: 'u'; keywords: ['co', 'standard']; attributes: [] }, never]
+      [{ type: 'u'; keywords: ['co', 'standard']; attributes: [] }, never, []]
     >()
+  type t2 = ParseUnicodeExtension<['foo', 'bar', 'co', 'standard']>
   expectTypeOf<ParseUnicodeExtension<['foo', 'bar', 'co', 'standard']>>()
     .toMatchTypeOf<
       [
         { type: 'u'; keywords: ['co', 'standard']; attributes: ['foo', 'bar'] },
         never,
+        [],
       ]
     >()
 
   /**
    * Fail cases
    */
+  type t3 = ParseUnicodeExtension<['c']>
   expectTypeOf<ParseUnicodeExtension<['c']>>().toMatchTypeOf<
-    [never, 8]
+    [
+      { type: 'u'; keywords: []; attributes: [] },
+      never,
+      ['c'],
+    ]
   >()
 })
 
@@ -366,6 +376,9 @@ test('ParseTransformedExtension', () => {
   /**
    * Success cases
    */
+  type t1 = ParseTransformedExtension<
+    ['en', 'Kana', 'US', 'jauer', 'h0', 'hybrid']
+  >
   expectTypeOf<
     ParseTransformedExtension<['en', 'Kana', 'US', 'jauer', 'h0', 'hybrid']>
   >()
@@ -382,18 +395,34 @@ test('ParseTransformedExtension', () => {
           fields: [['h0', 'hybrid']]
         },
         never,
+        [],
       ]
     >()
 
   /**
    * Fail cases
    */
+  type t2 = ParseTransformedExtension<['en', 'US', 'h0']>
   expectTypeOf<ParseTransformedExtension<['en', 'US', 'h0']>>()
     .toMatchTypeOf<
-      [never, 10]
+      [
+        {
+          type: 't'
+          lang: {
+            lang: 'en'
+            script: never
+            region: 'US'
+            variants: []
+          }
+          fields: never
+        },
+        10,
+        ['h0'],
+      ]
     >()
+  type t3 = ParseTransformedExtension<['en']>
   expectTypeOf<ParseTransformedExtension<['en']>>().toMatchTypeOf<
-    [never, 11]
+    [never, 11, ['en']]
   >()
 })
 
@@ -411,6 +440,7 @@ test('ParsePuExtension', () => {
           value: '1234-abcde'
         },
         never,
+        [],
       ]
     >()
 
@@ -425,6 +455,7 @@ test('ParsePuExtension', () => {
       [
         never,
         12,
+        [''],
       ]
     >()
 
@@ -436,6 +467,7 @@ test('ParsePuExtension', () => {
       [
         never,
         12,
+        ['1あ'],
       ]
     >()
 })
@@ -447,7 +479,7 @@ test('ParseOtherExtension', () => {
   expectTypeOf<
     ParseOtherExtension<['1234', 'abcde']>
   >()
-    .toMatchTypeOf<'1234-abcde'>()
+    .toMatchTypeOf<['1234-abcde', []]>()
 
   /**
    * Fail cases
@@ -456,11 +488,11 @@ test('ParseOtherExtension', () => {
   expectTypeOf<
     ParseOtherExtension<['']>
   >()
-    .toMatchTypeOf<''>()
+    .toMatchTypeOf<['', ['']]>()
 
   // not alphabet or digit
   expectTypeOf<
     ParseOtherExtension<['1あ']>
   >()
-    .toMatchTypeOf<''>()
+    .toMatchTypeOf<['', ['1あ']]>()
 })
