@@ -5,6 +5,10 @@ export type Split<S extends string, SEP extends string> = string extends S
     ? [A, ...(B extends '' ? [] : Split<B, SEP>)]
   : SEP extends '' ? []
   : [S]
+export type Join<T extends unknown[], U extends string | number> = T extends
+  [infer F, ...infer R] ? R['length'] extends 0 ? `${F & string}`
+  : `${F & string}${U}${Join<R, U>}`
+  : never
 export type Shift<T extends unknown[]> = T extends [unknown, ...infer U] ? U
   : never
 export type First<T extends unknown[]> = T extends [infer A, ...infer rest] ? A
