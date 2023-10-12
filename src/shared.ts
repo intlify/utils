@@ -42,8 +42,7 @@ export function toLocale(val: string | Intl.Locale): Intl.Locale {
  */
 export function validateLangTag(lang: string): boolean {
   try {
-    // TODO: if we have a better way to validate the language tag, we should use it.
-    new Intl.Locale(lang)
+    Intl.getCanonicalLocales(lang)
     return true
   } catch {
     return false
