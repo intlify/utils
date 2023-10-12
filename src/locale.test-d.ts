@@ -1,3 +1,10 @@
+/**
+ * NOTE:
+ *  This test is work in pregoress ...
+ *  We might remove this test file in the future,
+ *  when we will find out that cannot support locale validation
+ */
+
 import { expectTypeOf, test } from 'vitest'
 
 import type {
@@ -321,11 +328,11 @@ test('ParseKeyword', () => {
   /**
    * Success cases
    */
-  type t1 = ParseKeyword<['co', 'standard', 'phonetic']>
+  // type t1 = ParseKeyword<['co', 'standard', 'phonetic']>
   expectTypeOf<ParseKeyword<['co', 'standard', 'phonetic']>>().toMatchTypeOf<
     ['co', 'standard-phonetic', []]
   >()
-  type t2 = ParseKeyword<['co', 'standard']>
+  // type t2 = ParseKeyword<['co', 'standard']>
   expectTypeOf<ParseKeyword<['co', 'standard']>>().toMatchTypeOf<
     ['co', 'standard', []]
   >()
@@ -334,7 +341,7 @@ test('ParseKeyword', () => {
   >()
 
   /** Fail cases */
-  type t3 = ParseKeyword<['c']>
+  // type t3 = ParseKeyword<['c']>
   expectTypeOf<ParseKeyword<['c']>>().toMatchTypeOf<
     [never, ['c']]
   >()
@@ -344,12 +351,12 @@ test('ParseUnicodeExtension', () => {
   /**
    * Success cases
    */
-  type t1 = ParseUnicodeExtension<['co', 'standard']>
+  // type t1 = ParseUnicodeExtension<['co', 'standard']>
   expectTypeOf<ParseUnicodeExtension<['co', 'standard']>>()
     .toMatchTypeOf<
       [{ type: 'u'; keywords: ['co', 'standard']; attributes: [] }, never, []]
     >()
-  type t2 = ParseUnicodeExtension<['foo', 'bar', 'co', 'standard']>
+  // type t2 = ParseUnicodeExtension<['foo', 'bar', 'co', 'standard']>
   expectTypeOf<ParseUnicodeExtension<['foo', 'bar', 'co', 'standard']>>()
     .toMatchTypeOf<
       [
@@ -362,7 +369,7 @@ test('ParseUnicodeExtension', () => {
   /**
    * Fail cases
    */
-  type t3 = ParseUnicodeExtension<['c']>
+  // type t3 = ParseUnicodeExtension<['c']>
   expectTypeOf<ParseUnicodeExtension<['c']>>().toMatchTypeOf<
     [
       { type: 'u'; keywords: []; attributes: [] },
@@ -376,9 +383,9 @@ test('ParseTransformedExtension', () => {
   /**
    * Success cases
    */
-  type t1 = ParseTransformedExtension<
-    ['en', 'Kana', 'US', 'jauer', 'h0', 'hybrid']
-  >
+  // type t1 = ParseTransformedExtension<
+  //   ['en', 'Kana', 'US', 'jauer', 'h0', 'hybrid']
+  // >
   expectTypeOf<
     ParseTransformedExtension<['en', 'Kana', 'US', 'jauer', 'h0', 'hybrid']>
   >()
@@ -402,7 +409,7 @@ test('ParseTransformedExtension', () => {
   /**
    * Fail cases
    */
-  type t2 = ParseTransformedExtension<['en', 'US', 'h0']>
+  // type t2 = ParseTransformedExtension<['en', 'US', 'h0']>
   expectTypeOf<ParseTransformedExtension<['en', 'US', 'h0']>>()
     .toMatchTypeOf<
       [
@@ -420,7 +427,7 @@ test('ParseTransformedExtension', () => {
         ['h0'],
       ]
     >()
-  type t3 = ParseTransformedExtension<['en']>
+  // type t3 = ParseTransformedExtension<['en']>
   expectTypeOf<ParseTransformedExtension<['en']>>().toMatchTypeOf<
     [never, 11, ['en']]
   >()

@@ -1,3 +1,10 @@
+/**
+ * NOTE:
+ *  This test is work in pregoress ...
+ *  We might remove this test file in the future,
+ *  when we will find out that cannot support locale validation
+ */
+
 import type {
   All,
   Concat,
@@ -114,6 +121,10 @@ type AlphaNumber = TupleToUnion<
   Concat<UnionToTuple<Alpha>, UnionToTuple<Digits>>
 >
 
+type OtherExtensions = TupleToUnion<
+  Concat<UnionToTuple<OtherExtension['type']>, UnionToTuple<Digits>>
+>
+
 export type CheckRange<
   T extends unknown[],
   Indexes extends number[],
@@ -142,6 +153,11 @@ export const localeErrors = /* @__PURE__ */ {
   10: 'missing tvalue for tkey',
   11: 'malformed transformed extension',
   12: 'malformed private use extension',
+  13: 'There can only be 1 -u- extension',
+  14: 'There can only be 1 -t- extension',
+  15: 'There can only be 1 -x- extension',
+  16: 'Malformed extension type',
+  17: 'There can only be 1 -${type}- extension',
   1024: 'Unexpected error',
 } as const
 
@@ -370,11 +386,171 @@ type ParseUnicodeVariantsSubtag<
 type ParseUnicodeLocaleId<T extends string> = true
 
 // TODO:
-type ParseUnicodeExtensions<T extends string> = true
+/**
+ * parse unicode locale extensions
+ * https://unicode.org/reports/tr35/#extensions
+ *
+ *  = unicode_locale_extensions
+ *  | transformed_extensions
+ *  | other_extensions ;
+ */
+type ParseUnicodeExtensions<
+  Chunks extends unknown[],
+  Extensions extends UnicodeLocaleId['extensions'] = [],
+  ResultExtensions extends [Omit<UnicodeLocaleId, 'lang'>, number, unknown[]] =
+    _ParseUnicodeExtensions<
+      Chunks,
+      Extensions
+    >,
+  Result extends [Omit<UnicodeLocaleId, 'lang'>, number, unknown[]] =
+    Length<Chunks> extends 0 ? [{ extensions: [] }, never, Chunks]
+      : IsNever<ResultExtensions[1]> extends false
+        ? [{ extensions: [] }, ResultExtensions[1], Chunks]
+      : [ResultExtensions[0], never, ResultExtensions[2]],
+> = Result
+
+// type p1 = ParseUnicodeExtensions<['x', '1234']>
+
+type _ParseUnicodeExtensions<
+  Chunks extends unknown[],
+  Extensions extends UnicodeLocaleId['extensions'] = [],
+  ExistPuExtension extends PuExtension = never,
+  ExistOtherExtensions extends unknown[] = [],
+  Chunk = First<Chunks>,
+  Type extends string = Chunk extends string ? Chunk : never,
+  RestChunks extends unknown[] = Shift<Chunks>,
+  // UnicodeExtension = Includes<['u', 'U'], Type> extends true,
+  //   ? ParseUnicodeExtension<RestChunks>
+  //   : never,
+  // TransformedExtension = Includes<['t', 'T'], Type> extends true
+  //   ? ParseTransformedExtension<RestChunks>
+  //   : never,
+
+  // parse for PuExtension
+  ResultParsePu extends [PuExtension, number, unknown[]] =
+    _ParseUnicodeExtensionsPu<
+      RestChunks,
+      Type,
+      ExistPuExtension
+    >,
+  _ExtensionsPu extends UnicodeLocaleId['extensions'] = Push<
+    Extensions,
+    ResultParsePu[0]
+  >, /*[
+    ...(ResultParsePu[1] extends number ? Extensions
+      : Push<Extensions, ResultParsePu[0]>),
+  ],
+  */
+  // parse for OtherExtension
+  /*
+  ResultParseOther extends [OtherExtension, number, unknown[]] =
+    _ParseUnicodeExtensionsOther<
+      [...ResultParsePu[2]], // rest chunks
+      Type,
+      ExistOtherExtensions
+    >,
+  _ExtensionsOther extends UnicodeLocaleId['extensions'] =
+    ResultParseOther[1] extends number ? [..._ExtensionsPu]
+      : [...Push<_ExtensionsPu, ResultParseOther[0]>],
+  NextExistOtherExtensions extends unknown[] = ResultParseOther[0] extends
+    OtherExtension ? [...Push<ExistOtherExtensions, Type>]
+    : [...ExistOtherExtensions],
+    */
+  // check error
+  Error extends number = ResultParsePu[1] extends number ? ResultParsePu[1]
+    // : ResultParseOther[1] extends number ? ResultParseOther[1]
+    : never,
+  // tweak shared chunks for next parsing
+  NextChunks extends unknown[] = [...ResultParsePu[2]], // [...ResultParseOther[2]],
+  // tweak extensions
+  NextExtensions extends UnicodeLocaleId['extensions'] = _ExtensionsPu, // _ExtensionsOther,
+  NextExistPuExtension extends PuExtension = ResultParsePu[0],
+> = IsNever<Error> extends false ? [never, Error, Chunks]
+  : Length<RestChunks> extends 0 ? [{ extensions: Extensions }, never, Chunks]
+  : Length<NextChunks> extends 0
+    ? [{ extensions: NextExtensions }, never, NextChunks]
+  : _ParseUnicodeExtensions<
+    NextChunks,
+    NextExtensions,
+    NextExistPuExtension
+  > // ResultParsePu[0]
+// NextExistOtherExtensions
+
+// type pp1 = _ParseUnicodeExtensions<['x', '1234']>
+
+type _ParseUnicodeExtensionsPu<
+  Chunks extends unknown[],
+  Type extends string,
+  ExistPuExtension extends PuExtension = never,
+  ResultParsePuExtension extends unknown[] =
+    CheckExtensionType<Type, ['x', 'X']> extends true
+      ? ParsePuExtension<[...Chunks]>
+      : never,
+  _PuExtension extends PuExtension = ResultParsePuExtension[0] extends
+    PuExtension ? ResultParsePuExtension[0]
+    : never,
+  RestChunks extends unknown[] = ResultParsePuExtension[2] extends unknown[]
+    ? ResultParsePuExtension[2]
+    : Chunks,
+  Error extends number = IsNever<ExistPuExtension> extends false ? 14
+    : ResultParsePuExtension[1] extends number ? ResultParsePuExtension[1]
+    : never,
+  Result extends [PuExtension, number, unknown[]] = [
+    IsNever<ExistPuExtension> extends true ? _PuExtension : never,
+    Error,
+    RestChunks,
+  ],
+> = Result
+
+// type _pu0 = _ParseUnicodeExtensionsPu<
+//   ['1234'],
+//   'x'
+// >
+// type _pu1 = _ParseUnicodeExtensionsPu<
+//   ['1234'],
+//   'x',
+//   { type: 'x'; value: '111' }
+// >
+
+type _ParseUnicodeExtensionsOther<
+  Chunks extends unknown[],
+  Type extends string,
+  ExistOtherExtensions extends unknown[] = never,
+  MalformedError extends number =
+    Includes<UnionToTuple<OtherExtensions>, Type> extends false ? 16
+      : never,
+  Error extends number = MalformedError extends number ? MalformedError
+    : Includes<ExistOtherExtensions, Type> extends true ? 17
+    : never,
+  ResultParseOtherExtension extends [string, unknown[]] = IsNever<Error> extends
+    true ? ParseOtherExtension<[...Chunks]>
+    : [never, Chunks],
+  RestChunks extends unknown[] = ResultParseOtherExtension[1] extends unknown[]
+    ? ResultParseOtherExtension[1]
+    : Chunks,
+  Result extends [OtherExtension, number, unknown[]] = [
+    ResultParseOtherExtension[0] extends string
+      ? { type: 'a'; value: ResultParseOtherExtension[0] }
+      : never,
+    Error,
+    RestChunks,
+  ],
+> = Result
+
+// type _ou1 = _ParseUnicodeExtensionsOther<['abc'], 'z'>
+
+type CheckExtensionType<
+  Type extends string,
+  Ext extends string[],
+  Chars extends unknown[] = StringToArray<Type>,
+> = Length<Chars> extends 1 ? Includes<Ext, Type> extends true ? true
+  : false
+  : false
 
 /**
  * parse unicode locale extension
  * https://unicode.org/reports/tr35/#unicode_locale_extensions
+ *
  *  = ((sep keyword)+ | (sep attribute)+ (sep keyword)*) ;
  */
 // deno-fmt-ignore
@@ -422,14 +598,15 @@ export type CollectFirstKeywords<
     ? [Keywords, Chunks]
     : CollectFirstKeywords<RestChunks, Sep, [..._Keywords2]>
 
-type c0 = CollectFirstKeywords<['c']>
-type c1 = CollectFirstKeywords<['co', 'standard', 'x']>
-type c2 = CollectFirstKeywords<['co', 'standard', 'r111', 'u']>
-type c4 = CollectFirstKeywords<['foo', 'bar', 'co', 'standard']>
+// type c0 = CollectFirstKeywords<['c']>
+// type c1 = CollectFirstKeywords<['co', 'standard', 'x']>
+// type c2 = CollectFirstKeywords<['co', 'standard', 'r111', 'u']>
+// type c4 = CollectFirstKeywords<['foo', 'bar', 'co', 'standard']>
 
 /**
  * parse attribute at unicode locale extension generally
  * `attribute` at https://unicode.org/reports/tr35/#Unicode_locale_identifier
+ *
  * (= alphanum{3,8} ;)
  */
 // deno-fmt-ignore
@@ -452,14 +629,15 @@ export type ParseAttribute<
       : [Attributes, Chunks]
     : [Attributes, Chunks]
 
-type pa1 = ParseAttribute<['foo', 'bar', 'co', 'standard']>
-type pa2 = ParseAttribute<['foo', 'bar']>
-type pa3 = ParseAttribute<['co', 'standard']>
-type pa4 = ParseAttribute<['c']>
+// type pa1 = ParseAttribute<['foo', 'bar', 'co', 'standard']>
+// type pa2 = ParseAttribute<['foo', 'bar']>
+// type pa3 = ParseAttribute<['co', 'standard']>
+// type pa4 = ParseAttribute<['c']>
 
 /**
  * parse keyword at unicode locale extension generally
  * `keyword` at https://unicode.org/reports/tr35/#Unicode_locale_identifier
+ *
  * (= key (sep type)? ;)
  */
 // deno-fmt-ignore
@@ -473,15 +651,16 @@ export type ParseKeyword<
   ? [never, Chunks]
   : [Key, ResultValue[0], ResultValue[1]]
 
-type k = ParseKeyword<['']>
-type k0 = ParseKeyword<['c']>
-type k1 = ParseKeyword<['co', 'standard', 'x']>
-type k2 = ParseKeyword<['co', 'standard', 'r111', 'u']>
-type k3 = ParseKeyword<['co', 'standard']>
+// type k = ParseKeyword<['']>
+// type k0 = ParseKeyword<['c']>
+// type k1 = ParseKeyword<['co', 'standard', 'x']>
+// type k2 = ParseKeyword<['co', 'standard', 'r111', 'u']>
+// type k3 = ParseKeyword<['co', 'standard']>
 
 /**
  * parse keyword key at unicode locale extension generally
  * `key` at https://unicode.org/reports/tr35/#Unicode_locale_identifier
+ *
  * (= alphanum alpha ;)
  */
 // deno-fmt-ignore
@@ -514,6 +693,7 @@ type ParseKeywordValue<
 /**
  * parse type on keyword at unicode locale extension generally
  * `type` at https://unicode.org/reports/tr35/#Unicode_locale_identifier
+ *
  * (= alphanum{3,8} (sep alphanum{3,8})* ;)
  */
 // deno-fmt-ignore
@@ -536,6 +716,7 @@ type ParseKeywordType<
 /**
  * parse transformed extension
  * https://unicode.org/reports/tr35/#transformed_extensions
+ *
  * 	= sep [tT] ((sep tlang (sep tfield)*) | (sep tfield)+) ;
  */
 // deno-fmt-ignore
@@ -570,13 +751,13 @@ export type ParseTransformedExtension<
       ? [never, 11, Chunks] // malformed
       : [{ type: 't', lang: ResultLangId[0], fields: ResultFields[0] }, never, NextChunks]
 
-type pt1 = ParseTransformedExtension<
-  ['en', 'Kana', 'US', 'jauer', 'h0', 'hybrid']
->
-type ll1 = ParseUnicodeLanguageId<
-  ['en', 'Kana', 'US', 'jauer', 'h0', 'hybrid']
->
-type ll2 = ParseTransformedExtensionFields<['h0', 'hybrid']>
+// type pt1 = ParseTransformedExtension<
+//   ['en', 'Kana', 'US', 'jauer', 'h0', 'hybrid']
+// >
+// type ll1 = ParseUnicodeLanguageId<
+//   ['en', 'Kana', 'US', 'jauer', 'h0', 'hybrid']
+// >
+// type ll2 = ParseTransformedExtensionFields<['h0', 'hybrid']>
 
 /**
  * parse `tfield` at unicode transformed extension
@@ -605,12 +786,12 @@ type ParseTransformedExtensionFields<
       : FieldsReturn
     : FieldsReturn
 
-type ppt1 = ParseTransformedExtensionFields<
-  ['h0', 'hybrid']
->
-type ppt2 = ParseTransformedExtensionFields<
-  ['h0']
->
+// type ppt1 = ParseTransformedExtensionFields<
+//   ['h0', 'hybrid']
+// >
+// type ppt2 = ParseTransformedExtensionFields<
+//   ['h0']
+// >
 
 // deno-fmt-ignore
 type ParseTransformedExtensionFieldsValue<
@@ -633,6 +814,7 @@ type ParseTransformedExtensionFieldsValue<
 /**
  * parse private use extensions
  * https://unicode.org/reports/tr35/#pu_extensions
+ *
  * 	= sep [xX] (sep alphanum{1,8})+ ;
  */
 // deno-fmt-ignore
@@ -642,9 +824,12 @@ export type ParsePuExtension<
   ResultExts extends [unknown[], unknown[]] = _ParsePuExtension<
     Chunks
   >,
-  Result extends [PuExtension, number, unknown[]] = Length<ResultExts[0]> extends 0
-    ? [never, 12, ResultExts[1]]
-    : [{ type: 'x'; value: Join<ResultExts[0], Sep> }, never, ResultExts[1]],
+  // NOTE: workaround for `Excessive stack depth comparing types`
+  ResultExts0 extends unknown[] = ResultExts[0] extends unknown[] ? ResultExts[0] : never, 
+  ResultExts1 extends unknown[] = ResultExts[1] extends unknown[] ? ResultExts[1] : never, 
+  Result extends [PuExtension, number, unknown[]] = Length<ResultExts0> extends 0
+    ? [never, 12, ResultExts1]
+    : [{ type: 'x'; value: Join<ResultExts0, Sep> }, never, ResultExts1],
 > = Result
 
 export type _ParsePuExtension<
@@ -666,8 +851,9 @@ export type _ParsePuExtension<
 /**
  * parse other extension
  * https://unicode.org/reports/tr35/#other_extensions
+ *
  *  = sep [alphanum-[tTuUxX]]
-      (sep alphanum{2,8})+ ;
+ *    (sep alphanum{2,8})+ ;
  */
 // deno-fmt-ignore
 export type ParseOtherExtension<
@@ -680,6 +866,8 @@ export type ParseOtherExtension<
     ? ['', ResultExts[1]]
     : [Join<ResultExts[0], Sep>, ResultExts[1]]
 > = Result
+
+// type o1 = ParseOtherExtension<['foo', 'bar', 'co', 'standard']>
 
 type _ParseOtherExtension<
   Chunks extends unknown[],
