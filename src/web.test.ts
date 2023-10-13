@@ -5,8 +5,6 @@ import {
   getHeaderLanguages,
   getHeaderLocale,
   getHeaderLocales,
-  getNavigatorLanguage,
-  getNavigatorLanguages,
   getNavigatorLocale,
   getNavigatorLocales,
   setCookieLocale,
@@ -224,42 +222,6 @@ describe('setCookieLocale', () => {
   })
 })
 
-describe('getNavigatorLanguages', () => {
-  test('basic', () => {
-    vi.stubGlobal('navigator', {
-      languages: ['en-US', 'en', 'ja'],
-    })
-
-    expect(getNavigatorLanguages()).toEqual(['en-US', 'en', 'ja'])
-  })
-
-  test('error', () => {
-    vi.stubGlobal('navigator', undefined)
-
-    expect(() => getNavigatorLanguages()).toThrowError(
-      /not support `navigator`/,
-    )
-  })
-})
-
-describe('getNavigatorLanguage', () => {
-  test('basic', () => {
-    vi.stubGlobal('navigator', {
-      language: 'en-US',
-    })
-
-    expect(getNavigatorLanguage()).toEqual('en-US')
-  })
-
-  test('error', () => {
-    vi.stubGlobal('navigator', undefined)
-
-    expect(() => getNavigatorLanguage()).toThrowError(
-      /not support `navigator`/,
-    )
-  })
-})
-
 describe('getNavigatorLocales', () => {
   test('basic', () => {
     vi.stubGlobal('navigator', {
@@ -282,7 +244,7 @@ describe('getNavigatorLocales', () => {
   })
 })
 
-describe('getNavigatorLanguage', () => {
+describe('getNavigatorLocale', () => {
   test('basic', () => {
     vi.stubGlobal('navigator', {
       language: 'en-US',

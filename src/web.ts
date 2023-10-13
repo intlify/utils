@@ -259,7 +259,7 @@ export function setCookieLocale(
  *
  * @returns {Array<string>} {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 language tags}
  */
-export function getNavigatorLanguages(): readonly string[] {
+function getNavigatorLanguages(): readonly string[] {
   if (typeof navigator === 'undefined') {
     throw new Error('not support `navigator`')
   }
@@ -276,7 +276,7 @@ export function getNavigatorLanguages(): readonly string[] {
  *
  * @returns {string} {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 language tag}
  */
-export function getNavigatorLanguage(): string {
+function getNavigatorLanguage(): string {
   if (typeof navigator === 'undefined') {
     throw new Error('not support `navigator`')
   }
