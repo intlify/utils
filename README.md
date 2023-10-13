@@ -130,8 +130,6 @@ You can do `import { ... } from '@intlify/utils'` the above utilities
 
 ### Navigator
 
-- `getNavigatorLanguages`
-- `getNavigatorLanguage`
 - `getNavigatorLocales`
 - `getNavigatorLocale`
 

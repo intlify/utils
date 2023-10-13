@@ -255,7 +255,7 @@ let navigatorLanguages: string[] | undefined
  *
  * @returns {Array<string>} {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 language tags}, if you can't get the language tag, return an empty array.
  */
-export function getNavigatorLanguages(): readonly string[] {
+function getNavigatorLanguages(): readonly string[] {
   if (navigatorLanguages && navigatorLanguages.length > 0) {
     return navigatorLanguages
   }
@@ -382,7 +382,7 @@ let navigatorLanguage = ''
  *
  * @returns {string} {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 language tag}, if you can't get the language tag, return a enmpty string.
  */
-export function getNavigatorLanguage(): string {
+function getNavigatorLanguage(): string {
   return navigatorLanguage ||
     (navigatorLanguage = getNavigatorLanguages()[0] || '')
 }
