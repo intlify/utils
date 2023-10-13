@@ -7,6 +7,8 @@ import {
   getHeaderLocales,
   getNavigatorLanguage,
   getNavigatorLanguages,
+  getNavigatorLocale,
+  getNavigatorLocales,
   setCookieLocale,
 } from './web.ts'
 import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
@@ -253,6 +255,46 @@ describe('getNavigatorLanguage', () => {
     vi.stubGlobal('navigator', undefined)
 
     expect(() => getNavigatorLanguage()).toThrowError(
+      /not support `navigator`/,
+    )
+  })
+})
+
+describe('getNavigatorLocales', () => {
+  test('basic', () => {
+    vi.stubGlobal('navigator', {
+      languages: ['en-US', 'en', 'ja'],
+    })
+
+    expect(getNavigatorLocales().map((locale) => locale.toString())).toEqual([
+      'en-US',
+      'en',
+      'ja',
+    ])
+  })
+
+  test('error', () => {
+    vi.stubGlobal('navigator', undefined)
+
+    expect(() => getNavigatorLocales()).toThrowError(
+      /not support `navigator`/,
+    )
+  })
+})
+
+describe('getNavigatorLanguage', () => {
+  test('basic', () => {
+    vi.stubGlobal('navigator', {
+      language: 'en-US',
+    })
+
+    expect(getNavigatorLocale().toString()).toEqual('en-US')
+  })
+
+  test('error', () => {
+    vi.stubGlobal('navigator', undefined)
+
+    expect(() => getNavigatorLocale()).toThrowError(
       /not support `navigator`/,
     )
   })

@@ -272,6 +272,18 @@ export function getNavigatorLanguages(): readonly string[] {
 }
 
 /**
+ * get navigator locales
+ *
+ * @description
+ * You can get some {@link Intl.Locale} from system environment variables.
+ *
+ * @returns {Array<Intl.Locale>}
+ */
+export function getNavigatorLocales(): readonly Intl.Locale[] {
+  return getNavigatorLanguages().map((lang) => new Intl.Locale(lang))
+}
+
+/**
  * in-source testing for `getNavigatorLanguages`
  */
 if (import.meta.vitest) {
@@ -327,6 +339,37 @@ if (import.meta.vitest) {
       expect(mockEnv).toHaveBeenCalledTimes(2)
     })
   })
+
+  describe('getNavigatorLocales', () => {
+    afterEach(() => {
+      vi.resetAllMocks()
+      navigatorLanguages = undefined
+    })
+
+    test('basic', () => {
+      vi.spyOn(process, 'env', 'get').mockReturnValue({
+        LC_ALL: 'en-GB',
+        LC_MESSAGES: 'en-US',
+        LANG: 'ja-JP',
+        LANGUAGE: 'en',
+      })
+
+      const values = [
+        'en-GB',
+        'en-US',
+        'ja-JP',
+        'en',
+      ]
+      expect(getNavigatorLocales().map((locale) => locale.toString())).toEqual([
+        'en-GB',
+        'en-US',
+        'ja-JP',
+        'en',
+      ])
+      // cache checking
+      expect(navigatorLanguages).toEqual(values)
+    })
+  })
 }
 
 let navigatorLanguage = ''
@@ -345,7 +388,19 @@ export function getNavigatorLanguage(): string {
 }
 
 /**
- * in-source testing for `getNavigatorLanguage`
+ * get navigator locale
+ *
+ * @description
+ * You can get the {@link Intl.Locale} from system environment variables.
+ *
+ * @returns {Intl.Locale}
+ */
+export function getNavigatorLocale(): Intl.Locale {
+  return new Intl.Locale(getNavigatorLanguage())
+}
+
+/**
+ * in-source testing for `getNavigatorLanguage` and `getNavigatorLocale`
  */
 if (import.meta.vitest) {
   const { describe, test, expect, afterEach, vi } = import.meta.vitest
@@ -389,6 +444,27 @@ if (import.meta.vitest) {
       expect(navigatorLanguage).toBe('')
       expect(getNavigatorLanguage()).toBe('')
       expect(mockEnv).toHaveBeenCalledTimes(2)
+    })
+  })
+
+  describe('getNavigatorLocale', () => {
+    afterEach(() => {
+      vi.resetAllMocks()
+      navigatorLanguages = undefined
+      navigatorLanguage = ''
+    })
+
+    test('basic', () => {
+      vi.spyOn(process, 'env', 'get').mockReturnValue({
+        LC_ALL: 'en-GB',
+        LC_MESSAGES: 'en-US',
+        LANG: 'ja-JP',
+        LANGUAGE: 'en',
+      })
+
+      expect(getNavigatorLocale().toString()).toEqual('en-GB')
+      // cache checking
+      expect(navigatorLanguage).toEqual('en-GB')
     })
   })
 }
