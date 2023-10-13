@@ -132,6 +132,8 @@ You can do `import { ... } from '@intlify/utils'` the above utilities
 
 - `getNavigatorLanguages`
 - `getNavigatorLanguage`
+- `getNavigatorLocales`
+- `getNavigatorLocale`
 
 You can do `import { ... } from '@intlify/utils'` the above utilities
 

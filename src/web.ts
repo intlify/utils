@@ -282,3 +282,33 @@ export function getNavigatorLanguage(): string {
   }
   return navigator.language
 }
+
+/**
+ * get navigator locales
+ *
+ * @description
+ * This function is a wrapper that maps in {@link Intl.Locale} in `navigator.languages`.
+ * This function return values depends on the environments. if you use this function on the browser, you can get the languages, that are set in the browser, else if you use this function on the server side (Deno only), that value is the languages set in the server.
+ *
+ * @throws Throws the {@link Error} if the `navigator` is not exists.
+ *
+ * @returns {Array<Intl.Locale>}
+ */
+export function getNavigatorLocales(): readonly Intl.Locale[] {
+  return getNavigatorLanguages().map((lang) => new Intl.Locale(lang))
+}
+
+/**
+ * get navigator locale
+ *
+ * @description
+ * This function is the {@link Intl.Locale} wrapper of `navigator.language`.
+ * The value depends on the environments. if you use this function on the browser, you can get the languages, that are set in the browser, else if you use this function on the server side (Deno only), that value is the language set in the server.
+ *
+ * @throws Throws the {@link Error} if the `navigator` is not exists.
+ *
+ * @returns {Intl.Locale}
+ */
+export function getNavigatorLocale(): Intl.Locale {
+  return new Intl.Locale(getNavigatorLanguage())
+}
