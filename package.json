@@ -92,7 +92,7 @@
     "cookie-es": "^1.0.0",
     "gh-changelogen": "^0.2.8",
     "h3": "^1.8.1",
-    "lint-staged": "^14.0.0",
+    "lint-staged": "^15.0.0",
     "supertest": "^6.3.3",
     "typescript": "^5.2.2",
     "unbuild": "^2.0.0",
