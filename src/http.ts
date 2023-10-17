@@ -7,7 +7,7 @@ import {
   toLocale,
   validateLangTag,
 } from './shared.ts'
-import { ACCEPT_LANGUAGE_HEADER } from './constants.ts'
+import { ACCEPT_LANGUAGE_HEADER, DEFAULT_LANG_TAG } from './constants.ts'
 
 import type { PathLanguageParser } from './shared.ts'
 // import type { CookieSerializeOptions } from 'cookie-es'
@@ -175,26 +175,33 @@ export function getExistCookies(
   return setCookies as string[]
 }
 
+export type PathOptions = {
+  lang?: string
+  parser?: PathLanguageParser
+}
+
 /**
  * get the language from the path
  *
  * @param {string | URL} path the target path
- * @param {PathLanguageParser} parser the path language parser, optional
+ * @param {PathOptions['lang']} options.lang the language tag, which is as default `'en-US'`. optional
+ * @param {PathOptions['parser']} options.parser the path language parser, optional
  *
- * @returns {string} the language that is parsed by the path language parser, if the language is not detected, return an empty string.
+ * @returns {string} the language that is parsed by the path language parser, if the language is not detected, return a `options.lang` value
  */
 export function getPathLanguage(
   path: string | URL,
-  parser?: PathLanguageParser,
+  { lang = DEFAULT_LANG_TAG, parser = pathLanguageParser }: PathOptions = {},
 ): string {
-  return (parser || pathLanguageParser)(path)
+  return (parser || pathLanguageParser)(path) || lang
 }
 
 /**
  * get the locale from the path
  *
  * @param {string | URL} path the target path
- * @param {PathLanguageParser} parser the path language parser, optional
+ * @param {PathOptions['lang']} options.lang the language tag, which is as default `'en-US'`. optional
+ * @param {PathOptions['parser']} options.parser the path language parser, optional
  *
  * @throws {RangeError} Throws the {@link RangeError} if the language in the path, that is not a well-formed BCP 47 language tag.
  *
@@ -202,9 +209,9 @@ export function getPathLanguage(
  */
 export function getPathLocale(
   path: string | URL,
-  parser?: PathLanguageParser,
+  { lang = DEFAULT_LANG_TAG, parser = pathLanguageParser }: PathOptions = {},
 ): Intl.Locale {
-  return new Intl.Locale(getPathLanguage(path, parser))
+  return new Intl.Locale(getPathLanguage(path, { lang, parser }))
 }
 
 function getURLSearchParams(
@@ -219,27 +226,34 @@ function getURLSearchParams(
   }
 }
 
+export type QueryOptions = {
+  lang?: string
+  name?: string
+}
+
 /**
  * get the language from the query
  *
  * @param {string | URL | URLSearchParams} query the target query
- * @param {string} name the query param name, default `'lang'`
+ * @param {QueryOptions['lang']} options.lang the language tag, which is as default `'en-US'`. optional
+ * @param {QueryOptions['name']} options.name the query param name, default `'lang'`. optional
  *
- * @returns {string} the language from query, if the language is not detected, return an empty string.
+ * @returns {string} the language from query, if the language is not detected, return an `options.lang` option string.
  */
 export function getQueryLanguage(
   query: string | URL | URLSearchParams,
-  name = 'lang',
+  { lang = DEFAULT_LANG_TAG, name = 'lang' }: QueryOptions = {},
 ): string {
   const queryParams = getURLSearchParams(query)
-  return queryParams.get(name) || ''
+  return queryParams.get(name) || lang
 }
 
 /**
  * get the locale from the query
  *
  * @param {string | URL | URLSearchParams} query the target query
- * @param {string} name the query param name, default `'locale'`
+ * @param {QueryOptions['lang']} options.lang the language tag, which is as default `'en-US'`. optional
+ * @param {QueryOptions['name']} options.name the query param name, default `'locale'`. optional
  *
  * @throws {RangeError} Throws the {@link RangeError} if the language in the query, that is not a well-formed BCP 47 language tag.
  *
@@ -247,7 +261,7 @@ export function getQueryLanguage(
  */
 export function getQueryLocale(
   query: string | URL | URLSearchParams,
-  name = 'locale',
+  { lang = DEFAULT_LANG_TAG, name = 'locale' }: QueryOptions = {},
 ): Intl.Locale {
-  return new Intl.Locale(getQueryLanguage(query, name))
+  return new Intl.Locale(getQueryLanguage(query, { lang, name }))
 }
