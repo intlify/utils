@@ -16,9 +16,17 @@ describe('getPathLanguage', () => {
     expect(getPathLanguage(url)).toBe('en')
   })
 
+  test('default language, when the language is not detected', () => {
+    expect(getPathLanguage('/')).toBe('en-US')
+  })
+
   test('parser option', () => {
     const nullLangParser = () => 'null'
-    expect(getPathLanguage('/en/foo', nullLangParser)).toBe('null')
+    expect(getPathLanguage('/en/foo', { parser: nullLangParser })).toBe('null')
+  })
+
+  test('lang option', () => {
+    expect(getPathLanguage('/', { lang: 'ja' })).toBe('ja')
   })
 })
 
@@ -32,11 +40,16 @@ describe('getPathLocale', () => {
     expect(getPathLocale(url).toString()).toBe('ja-JP')
   })
 
+  test('default locale, when the language is not detected', () => {
+    expect(getPathLocale('/').toString()).toBe('en-US')
+  })
+
   test('RangeError', () => {
     const nullLangParser = () => 'null'
-    expect(() => getPathLocale('/en/foo', nullLangParser)).toThrowError(
-      RangeError,
-    )
+    expect(() => getPathLocale('/en/foo', { parser: nullLangParser }))
+      .toThrowError(
+        RangeError,
+      )
   })
 })
 
@@ -47,7 +60,7 @@ describe('getQueryLanguage', () => {
 
   test('URL instance', () => {
     const url = new URL('https://example.com/?locale=ja-JP')
-    expect(getQueryLanguage(url, 'locale')).toBe('ja-JP')
+    expect(getQueryLanguage(url, { name: 'locale' })).toBe('ja-JP')
   })
 
   test('URLSearchParams instance', () => {
@@ -56,15 +69,16 @@ describe('getQueryLanguage', () => {
     expect(getQueryLanguage(params)).toBe('ja-JP')
   })
 
-  test('empty', () => {
+  test('default language, when the language is not detected', () => {
     const params = new URLSearchParams()
-    expect(getQueryLanguage(params)).toBe('')
+    expect(getQueryLanguage(params)).toBe('en-US')
   })
 })
 
 describe('getQueryLocale', () => {
   test('basic', () => {
-    expect(getQueryLocale('lang=en-US&flag=1', 'lang').toString()).toBe('en-US')
+    expect(getQueryLocale('lang=en-US&flag=1', { name: 'lang' }).toString())
+      .toBe('en-US')
   })
 
   test('URL instance', () => {
@@ -75,11 +89,11 @@ describe('getQueryLocale', () => {
   test('URLSearchParams instance', () => {
     const params = new URLSearchParams('lang=ja-JP')
     params.set('flag', '1')
-    expect(getQueryLocale(params, 'lang').toString()).toBe('ja-JP')
+    expect(getQueryLocale(params, { name: 'lang' }).toString()).toBe('ja-JP')
   })
 
-  test('RangeError', () => {
+  test('default language, when the language is not detected', () => {
     const params = new URLSearchParams()
-    expect(() => getQueryLocale(params)).toThrowError(RangeError)
+    expect(getQueryLanguage(params)).toBe('en-US')
   })
 })
