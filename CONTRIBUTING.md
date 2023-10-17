@@ -16,7 +16,7 @@
   in the main branch.
 
 - Check if the issue is reproducible with the latest stable version of
-  vite-test-utils. If you are using a pre-release, please indicate the specific
+  `@intlify/utils`. If you are using a pre-release, please indicate the specific
   version you are using.
 
 - It is **required** that you clearly describe the steps necessary to reproduce
