@@ -7,6 +7,8 @@ import {
   getHeaderLocales,
   getNavigatorLocale,
   getNavigatorLocales,
+  getPathLocale,
+  getQueryLocale,
   setCookieLocale,
 } from './web.ts'
 import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
@@ -220,6 +222,18 @@ describe('setCookieLocale', () => {
     expect(() => setCookieLocale(res, 'j'))
       .toThrowError(/locale is invalid: j/)
   })
+})
+
+test('getPathLocale', () => {
+  const mockRequest = new Request('https://locahost:3000/en/foo')
+  const locale = getPathLocale(mockRequest)
+  expect(locale.toString()).toEqual('en')
+})
+
+test('getQueryLocale', () => {
+  const mockRequest = new Request('https://locahost:3000/?intlify=ja')
+  const locale = getQueryLocale(mockRequest, { name: 'intlify' })
+  expect(locale.toString()).toEqual('ja')
 })
 
 describe('getNavigatorLocales', () => {

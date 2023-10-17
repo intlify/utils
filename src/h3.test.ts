@@ -7,6 +7,8 @@ import {
   getHeaderLanguages,
   getHeaderLocale,
   getHeaderLocales,
+  getPathLocale,
+  getQueryLocale,
   setCookieLocale,
 } from './h3.ts'
 import { parseAcceptLanguage } from './shared.ts'
@@ -451,4 +453,32 @@ describe('setCookieLocale', () => {
     expect(() => setCookieLocale(eventMock, 'j'))
       .toThrowError(/locale is invalid: j/)
   })
+})
+
+test('getPathLocale', async () => {
+  const app = createApp({ debug: false })
+  const request = supertest(toNodeListener(app))
+
+  app.use(
+    '/',
+    eventHandler((event) => {
+      return { locale: getPathLocale(event).toString() }
+    }),
+  )
+  const res = await request.get('/en/foo')
+  expect(res.body).toEqual({ locale: 'en' })
+})
+
+test('getQueryLocale', async () => {
+  const app = createApp({ debug: false })
+  const request = supertest(toNodeListener(app))
+
+  app.use(
+    '/',
+    eventHandler((event) => {
+      return { locale: getQueryLocale(event).toString() }
+    }),
+  )
+  const res = await request.get('/?locale=ja')
+  expect(res.body).toEqual({ locale: 'ja' })
 })

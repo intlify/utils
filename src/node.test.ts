@@ -6,6 +6,8 @@ import {
   getHeaderLanguages,
   getHeaderLocale,
   getHeaderLocales,
+  getPathLocale,
+  getQueryLocale,
   setCookieLocale,
 } from './node.ts'
 import { createServer, IncomingMessage, OutgoingMessage } from 'node:http'
@@ -303,4 +305,26 @@ describe('setCookieLocale', () => {
     expect(() => setCookieLocale(mockRes, 'j'))
       .toThrowError(/locale is invalid: j/)
   })
+})
+
+test('getPathLocale', async () => {
+  const server = createServer((req, res) => {
+    const locale = getPathLocale(req)
+    res.writeHead(200, { 'Content-Type': 'application/json' })
+    res.end(JSON.stringify({ locale: locale.toString() }))
+  })
+  const request = supertest(server)
+  const result = await request.get('/en-US/foo')
+  expect(result.body).toEqual({ locale: 'en-US' })
+})
+
+test('getQueryLocale', async () => {
+  const server = createServer((req, res) => {
+    const locale = getQueryLocale(req, { name: 'lang' })
+    res.writeHead(200, { 'Content-Type': 'application/json' })
+    res.end(JSON.stringify({ locale: locale.toString() }))
+  })
+  const request = supertest(server)
+  const result = await request.get('/?lang=ja')
+  expect(result.body).toEqual({ locale: 'ja' })
 })

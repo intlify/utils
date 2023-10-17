@@ -6,14 +6,22 @@ import {
 import {
   getHeaderLanguagesWithGetter,
   getLocaleWithGetter,
+  getPathLocale as _getPathLocale,
+  getQueryLocale as _getQueryLocale,
   mapToLocaleFromLanguageTag,
   parseDefaultHeader,
   validateLocale,
 } from './http.ts'
-import { getCookie, getHeaders, setCookie } from 'h3'
+import { pathLanguageParser } from './shared.ts'
+import { getCookie, getHeaders, getRequestURL, setCookie } from 'h3'
 
 import type { H3Event } from 'h3'
-import type { CookieOptions, HeaderOptions } from './http.ts'
+import type {
+  CookieOptions,
+  HeaderOptions,
+  PathOptions,
+  QueryOptions,
+} from './http.ts'
 
 /**
  * get languages from header
@@ -222,4 +230,40 @@ export function setCookieLocale(
 ): void {
   validateLocale(locale)
   setCookie(event, options.name!, locale.toString(), options)
+}
+
+/**
+ * get the locale from the path
+ *
+ * @param {H3Event} event the {@link H3Event | H3} event
+ * @param {PathOptions['lang']} options.lang the language tag, which is as default `'en-US'`. optional
+ * @param {PathOptions['parser']} options.parser the path language parser, optional
+ *
+ * @throws {RangeError} Throws the {@link RangeError} if the language in the path, that is not a well-formed BCP 47 language tag.
+ *
+ * @returns {Intl.Locale} The locale that resolved from path
+ */
+export function getPathLocale(
+  event: H3Event,
+  { lang = DEFAULT_LANG_TAG, parser = pathLanguageParser }: PathOptions = {},
+): Intl.Locale {
+  return _getPathLocale(getRequestURL(event), { lang, parser })
+}
+
+/**
+ * get the locale from the query
+ *
+ * @param {H3Event} event the {@link H3Event | H3} event
+ * @param {QueryOptions['lang']} options.lang the language tag, which is as default `'en-US'`. optional
+ * @param {QueryOptions['name']} options.name the query param name, default `'locale'`. optional
+ *
+ * @throws {RangeError} Throws the {@link RangeError} if the language in the query, that is not a well-formed BCP 47 language tag.
+ *
+ * @returns {Intl.Locale} The locale that resolved from query
+ */
+export function getQueryLocale(
+  event: H3Event,
+  { lang = DEFAULT_LANG_TAG, name = 'locale' }: QueryOptions = {},
+): Intl.Locale {
+  return _getQueryLocale(getRequestURL(event), { lang, name })
 }
