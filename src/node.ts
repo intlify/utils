@@ -4,6 +4,8 @@ import {
   getExistCookies,
   getHeaderLanguagesWithGetter,
   getLocaleWithGetter,
+  getPathLocale as _getPathLocale,
+  getQueryLocale as _getQueryLocale,
   mapToLocaleFromLanguageTag,
   parseDefaultHeader,
   validateLocale,
@@ -13,9 +15,14 @@ import {
   DEFAULT_COOKIE_NAME,
   DEFAULT_LANG_TAG,
 } from './constants.ts'
-import { normalizeLanguageName } from './shared.ts'
+import { normalizeLanguageName, pathLanguageParser } from './shared.ts'
 
-import type { CookieOptions, HeaderOptions } from './http.ts'
+import type {
+  CookieOptions,
+  HeaderOptions,
+  PathOptions,
+  QueryOptions,
+} from './http.ts'
 
 /**
  * get languages from header
@@ -243,6 +250,85 @@ export function setCookieLocale(
     ...options,
   })
   response.setHeader('set-cookie', [...setCookies, target])
+}
+
+function getRequestProtocol(
+  request: IncomingMessage,
+  opts: { xForwardedProto?: boolean } = {},
+) {
+  if (
+    opts.xForwardedProto !== false &&
+    request.headers['x-forwarded-proto'] === 'https'
+  ) {
+    return 'https'
+  }
+  // deno-lint-ignore no-explicit-any
+  return (request.socket as any).encrypted ? 'https' : 'http'
+}
+
+function getRequestHost(
+  request: IncomingMessage,
+  opts: { xForwardedHost?: boolean } = {},
+) {
+  if (opts.xForwardedHost) {
+    const xForwardedHost = request.headers['x-forwarded-host'] as string
+    if (xForwardedHost) {
+      return xForwardedHost
+    }
+  }
+  return request.headers.host || 'localhost'
+}
+
+function getPath(request: IncomingMessage) {
+  // deno-lint-ignore no-explicit-any
+  const raw = (request as any).originalUrl || request.url || '/'
+  return raw.replace(
+    /^[/\\]+/g,
+    '/',
+  )
+}
+
+function getURL(request: IncomingMessage): URL {
+  const protocol = getRequestProtocol(request)
+  const host = getRequestHost(request)
+  const path = getPath(request)
+  return new URL(path, `${protocol}://${host}`)
+}
+
+/**
+ * get the locale from the path
+ *
+ * @param {IncomingMessage} request the {@link IncomingMessage | request}
+ * @param {PathOptions['lang']} options.lang the language tag, which is as default `'en-US'`. optional
+ * @param {PathOptions['parser']} options.parser the path language parser, optional
+ *
+ * @throws {RangeError} Throws the {@link RangeError} if the language in the path, that is not a well-formed BCP 47 language tag.
+ *
+ * @returns {Intl.Locale} The locale that resolved from path
+ */
+export function getPathLocale(
+  request: IncomingMessage,
+  { lang = DEFAULT_LANG_TAG, parser = pathLanguageParser }: PathOptions = {},
+): Intl.Locale {
+  return _getPathLocale(getURL(request), { lang, parser })
+}
+
+/**
+ * get the locale from the query
+ *
+ * @param {IncomingMessage} request the {@link IncomingMessage | request}
+ * @param {QueryOptions['lang']} options.lang the language tag, which is as default `'en-US'`. optional
+ * @param {QueryOptions['name']} options.name the query param name, default `'locale'`. optional
+ *
+ * @throws {RangeError} Throws the {@link RangeError} if the language in the query, that is not a well-formed BCP 47 language tag.
+ *
+ * @returns {Intl.Locale} The locale that resolved from query
+ */
+export function getQueryLocale(
+  request: IncomingMessage,
+  { lang = DEFAULT_LANG_TAG, name = 'locale' }: QueryOptions = {},
+): Intl.Locale {
+  return _getQueryLocale(getURL(request), { lang, name })
 }
 
 let navigatorLanguages: string[] | undefined

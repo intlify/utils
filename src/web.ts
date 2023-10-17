@@ -3,17 +3,25 @@ import {
   getExistCookies,
   getHeaderLanguagesWithGetter,
   getLocaleWithGetter,
+  getPathLocale as _getPathLocale,
+  getQueryLocale as _getQueryLocale,
   mapToLocaleFromLanguageTag,
   parseDefaultHeader,
   validateLocale,
 } from './http.ts'
+import { pathLanguageParser } from './shared.ts'
 import {
   ACCEPT_LANGUAGE_HEADER,
   DEFAULT_COOKIE_NAME,
   DEFAULT_LANG_TAG,
 } from './constants.ts'
 
-import type { CookieOptions, HeaderOptions } from './http.ts'
+import type {
+  CookieOptions,
+  HeaderOptions,
+  PathOptions,
+  QueryOptions,
+} from './http.ts'
 
 /**
  * get languages from header
@@ -186,7 +194,7 @@ export function getHeaderLocale(
  * })
  * ```
  *
- * @param {IncomingMessage} request The {@link IncomingMessage | request}
+ * @param {Request} request The {@link Request | request}
  * @param {string} options.lang The default language tag, default is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
  * @param {string} options.name The cookie name, default is `i18n_locale`
  *
@@ -247,6 +255,42 @@ export function setCookieLocale(
     ...options,
   })
   response.headers.set('set-cookie', [...setCookies, target].join('; '))
+}
+
+/**
+ * get the locale from the path
+ *
+ * @param {Request} request the {@link Request | request}
+ * @param {PathOptions['lang']} options.lang the language tag, which is as default `'en-US'`. optional
+ * @param {PathOptions['parser']} options.parser the path language parser, optional
+ *
+ * @throws {RangeError} Throws the {@link RangeError} if the language in the path, that is not a well-formed BCP 47 language tag.
+ *
+ * @returns {Intl.Locale} The locale that resolved from path
+ */
+export function getPathLocale(
+  request: Request,
+  { lang = DEFAULT_LANG_TAG, parser = pathLanguageParser }: PathOptions = {},
+): Intl.Locale {
+  return _getPathLocale(new URL(request.url), { lang, parser })
+}
+
+/**
+ * get the locale from the query
+ *
+ * @param {Request} request the {@link Request | request}
+ * @param {QueryOptions['lang']} options.lang the language tag, which is as default `'en-US'`. optional
+ * @param {QueryOptions['name']} options.name the query param name, default `'locale'`. optional
+ *
+ * @throws {RangeError} Throws the {@link RangeError} if the language in the query, that is not a well-formed BCP 47 language tag.
+ *
+ * @returns {Intl.Locale} The locale that resolved from query
+ */
+export function getQueryLocale(
+  request: Request,
+  { lang = DEFAULT_LANG_TAG, name = 'locale' }: QueryOptions = {},
+): Intl.Locale {
+  return _getQueryLocale(new URL(request.url), { lang, name })
 }
 
 /**
