@@ -82,7 +82,7 @@
     "play:bun": "npm run -w example-bun dev"
   },
   "lint-staged": {
-    "*.{js,ts,jsx,tsx,md,json,jsonc}": [
+    "*.{js,ts,jsx,tsx,json,jsonc}": [
       "deno fmt"
     ],
     "*.{js,ts,jsx,tsx}": [
