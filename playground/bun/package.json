@@ -13,6 +13,6 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@intlify/utils": "npm:@intlify/utils-edge@0.5.0-28266797.0fa17f3"
+    "@intlify/utils": "npm:@intlify/utils-edge@latest"
   }
 }

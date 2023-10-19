@@ -1,5 +1,5 @@
 // @ts-ignore: this is example
-import { getHeaderLanguages } from 'https://esm.sh/@intlify/utils/web'
+import { getHeaderLanguages } from 'https://esm.sh/@intlify/utils'
 
 const port = 8125
 // @ts-ignore: this is example
