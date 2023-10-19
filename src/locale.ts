@@ -320,8 +320,8 @@ export type ParseUnicodeRegionSubtag<
       : [never, 7, RestChunks] // require characters length
   : ThroughErrorWithChunks<RestChunks, [never, 7, RestChunks]> // require characters length
 
-type ThroughErrorWithChunks<Chunks extends unknown[], Result> =
-  Length<Chunks> extends 0 ? Result : [never, never, Chunks]
+type ThroughErrorWithChunks<Chunks extends unknown[], Result> = Length<Chunks> extends 0 ? Result
+  : [never, never, Chunks]
 
 /**
  * parse unicode variant subtag
@@ -402,11 +402,10 @@ type ParseUnicodeExtensions<
       Chunks,
       Extensions
     >,
-  Result extends [Omit<UnicodeLocaleId, 'lang'>, number, unknown[]] =
-    Length<Chunks> extends 0 ? [{ extensions: [] }, never, Chunks]
-      : IsNever<ResultExtensions[1]> extends false
-        ? [{ extensions: [] }, ResultExtensions[1], Chunks]
-      : [ResultExtensions[0], never, ResultExtensions[2]],
+  Result extends [Omit<UnicodeLocaleId, 'lang'>, number, unknown[]] = Length<Chunks> extends 0
+    ? [{ extensions: [] }, never, Chunks]
+    : IsNever<ResultExtensions[1]> extends false ? [{ extensions: [] }, ResultExtensions[1], Chunks]
+    : [ResultExtensions[0], never, ResultExtensions[2]],
 > = Result
 
 // type p1 = ParseUnicodeExtensions<['x', '1234']>
@@ -427,12 +426,11 @@ type _ParseUnicodeExtensions<
   //   : never,
 
   // parse for PuExtension
-  ResultParsePu extends [PuExtension, number, unknown[]] =
-    _ParseUnicodeExtensionsPu<
-      RestChunks,
-      Type,
-      ExistPuExtension
-    >,
+  ResultParsePu extends [PuExtension, number, unknown[]] = _ParseUnicodeExtensionsPu<
+    RestChunks,
+    Type,
+    ExistPuExtension
+  >,
   _ExtensionsPu extends UnicodeLocaleId['extensions'] = Push<
     Extensions,
     ResultParsePu[0]
@@ -467,8 +465,7 @@ type _ParseUnicodeExtensions<
   NextExistPuExtension extends PuExtension = ResultParsePu[0],
 > = IsNever<Error> extends false ? [never, Error, Chunks]
   : Length<RestChunks> extends 0 ? [{ extensions: Extensions }, never, Chunks]
-  : Length<NextChunks> extends 0
-    ? [{ extensions: NextExtensions }, never, NextChunks]
+  : Length<NextChunks> extends 0 ? [{ extensions: NextExtensions }, never, NextChunks]
   : _ParseUnicodeExtensions<
     NextChunks,
     NextExtensions,
@@ -482,12 +479,11 @@ type _ParseUnicodeExtensionsPu<
   Chunks extends unknown[],
   Type extends string,
   ExistPuExtension extends PuExtension = never,
-  ResultParsePuExtension extends unknown[] =
-    CheckExtensionType<Type, ['x', 'X']> extends true
-      ? ParsePuExtension<[...Chunks]>
-      : never,
-  _PuExtension extends PuExtension = ResultParsePuExtension[0] extends
-    PuExtension ? ResultParsePuExtension[0]
+  ResultParsePuExtension extends unknown[] = CheckExtensionType<Type, ['x', 'X']> extends true
+    ? ParsePuExtension<[...Chunks]>
+    : never,
+  _PuExtension extends PuExtension = ResultParsePuExtension[0] extends PuExtension
+    ? ResultParsePuExtension[0]
     : never,
   RestChunks extends unknown[] = ResultParsePuExtension[2] extends unknown[]
     ? ResultParsePuExtension[2]
@@ -516,21 +512,19 @@ type _ParseUnicodeExtensionsOther<
   Chunks extends unknown[],
   Type extends string,
   ExistOtherExtensions extends unknown[] = never,
-  MalformedError extends number =
-    Includes<UnionToTuple<OtherExtensions>, Type> extends false ? 16
-      : never,
+  MalformedError extends number = Includes<UnionToTuple<OtherExtensions>, Type> extends false ? 16
+    : never,
   Error extends number = MalformedError extends number ? MalformedError
     : Includes<ExistOtherExtensions, Type> extends true ? 17
     : never,
-  ResultParseOtherExtension extends [string, unknown[]] = IsNever<Error> extends
-    true ? ParseOtherExtension<[...Chunks]>
+  ResultParseOtherExtension extends [string, unknown[]] = IsNever<Error> extends true
+    ? ParseOtherExtension<[...Chunks]>
     : [never, Chunks],
   RestChunks extends unknown[] = ResultParseOtherExtension[1] extends unknown[]
     ? ResultParseOtherExtension[1]
     : Chunks,
   Result extends [OtherExtension, number, unknown[]] = [
-    ResultParseOtherExtension[0] extends string
-      ? { type: 'a'; value: ResultParseOtherExtension[0] }
+    ResultParseOtherExtension[0] extends string ? { type: 'a'; value: ResultParseOtherExtension[0] }
       : never,
     Error,
     RestChunks,

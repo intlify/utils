@@ -1,8 +1,4 @@
-import {
-  ACCEPT_LANGUAGE_HEADER,
-  DEFAULT_COOKIE_NAME,
-  DEFAULT_LANG_TAG,
-} from './constants.ts'
+import { ACCEPT_LANGUAGE_HEADER, DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 import {
   getHeaderLanguagesWithGetter,
   getLocaleWithGetter,
@@ -165,9 +161,7 @@ export function getHeaderLocale(
     parser = parseDefaultHeader,
   }: HeaderOptions & { lang?: string } = {},
 ): Intl.Locale {
-  return getLocaleWithGetter(() =>
-    getHeaderLanguages(context, { name, parser })[0] || lang
-  )
+  return getLocaleWithGetter(() => getHeaderLanguages(context, { name, parser })[0] || lang)
 }
 
 /**

@@ -4,7 +4,8 @@
     "include": [
     ],
     */
-    "exclude": ["node_modules", "dist"],
+    "lineWidth": 100,
+    "exclude": ["node_modules", "dist", "**/*.md"],
     "semiColons": false,
     "singleQuote": true
   },

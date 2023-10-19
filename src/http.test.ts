@@ -1,10 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import {
-  getPathLanguage,
-  getPathLocale,
-  getQueryLanguage,
-  getQueryLocale,
-} from './http.ts'
+import { getPathLanguage, getPathLocale, getQueryLanguage, getQueryLocale } from './http.ts'
 
 describe('getPathLanguage', () => {
   test('basic', () => {

@@ -112,8 +112,7 @@ export function createPathIndexLanguageParser(
   }
 }
 
-export let pathLanguageParser: PathLanguageParser =
-  /* #__PURE__*/ createPathIndexLanguageParser()
+export let pathLanguageParser: PathLanguageParser = /* #__PURE__*/ createPathIndexLanguageParser()
 
 /**
  * register the path language parser

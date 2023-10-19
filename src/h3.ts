@@ -1,8 +1,4 @@
-import {
-  ACCEPT_LANGUAGE_HEADER,
-  DEFAULT_COOKIE_NAME,
-  DEFAULT_LANG_TAG,
-} from './constants.ts'
+import { ACCEPT_LANGUAGE_HEADER, DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 import {
   getHeaderLanguagesWithGetter,
   getLocaleWithGetter,
@@ -16,12 +12,7 @@ import { pathLanguageParser } from './shared.ts'
 import { getCookie, getHeaders, getRequestURL, setCookie } from 'h3'
 
 import type { H3Event } from 'h3'
-import type {
-  CookieOptions,
-  HeaderOptions,
-  PathOptions,
-  QueryOptions,
-} from './http.ts'
+import type { CookieOptions, HeaderOptions, PathOptions, QueryOptions } from './http.ts'
 
 /**
  * get languages from header
@@ -164,9 +155,7 @@ export function getHeaderLocale(
     parser = parseDefaultHeader,
   }: HeaderOptions & { lang?: string } = {},
 ): Intl.Locale {
-  return getLocaleWithGetter(() =>
-    getHeaderLanguages(event, { name, parser })[0] || lang
-  )
+  return getLocaleWithGetter(() => getHeaderLanguages(event, { name, parser })[0] || lang)
 }
 
 /**

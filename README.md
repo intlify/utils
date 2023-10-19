@@ -45,8 +45,7 @@ If you are directly using `@intlify/utils` as a dependency:
 }
 ```
 
-**Note:** Make sure to recreate lockfile and `node_modules` after reinstall to
-avoid hoisting issues.
+**Note:** Make sure to recreate lockfile and `node_modules` after reinstall to avoid hoisting issues.
 
 </details>
 
@@ -148,29 +147,21 @@ You can do `import { ... } from '@intlify/utils'` the above utilities
 - `getPathLocale`
 - `getQueryLocale`
 
-The about utilies functions accpet Web APIs such as
-[Request](https://developer.mozilla.org/en-US/docs/Web/API/Request) and
-[Response](https://developer.mozilla.org/en-US/docs/Web/API/Response) that is
-supported by JS environments (such as Deno, Bun, and Browser)
+The about utilies functions accpet Web APIs such as [Request](https://developer.mozilla.org/en-US/docs/Web/API/Request) and [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response) that is supported by JS environments (such as Deno, Bun, and Browser)
 
 #### Specialized environments
 
-If you will use Node.js and H3, You can do
-`import { ... } from '@intlify/utils/{ENV}'` the above utilities.
+If you will use Node.js and H3, You can do `import { ... } from '@intlify/utils/{ENV}'` the above utilities.
 
 The namespace `{ENV}` is one of the following:
 
-- `node`: accpet `IncomingMessage` and `Outgoing` by Node.js
-  [http](https://nodejs.org/api/http.html) module
+- `node`: accpet `IncomingMessage` and `Outgoing` by Node.js [http](https://nodejs.org/api/http.html) module
 - `h3`: accept `H3Event` by HTTP framework [h3](https://github.com/unjs/h3)
+- `hono`: accept `Context` by edge-side web framework [hono](https://github.com/honojs/hono)
 
 ## 🙌 Contributing guidelines
 
-If you are interested in contributing to `@intlify/utils`, I highly recommend
-checking out [the contributing guidelines](/CONTRIBUTING.md) here. You'll find
-all the relevant information such as
-[how to make a PR](/CONTRIBUTING.md#pull-request-guidelines),
-[how to setup development](/CONTRIBUTING.md#development-setup)) etc., there.
+If you are interested in contributing to `@intlify/utils`, I highly recommend checking out [the contributing guidelines](/CONTRIBUTING.md) here. You'll find all the relevant information such as [how to make a PR](/CONTRIBUTING.md#pull-request-guidelines), [how to setup development](/CONTRIBUTING.md#development-setup)) etc., there.
 
 ## ©️ License
 

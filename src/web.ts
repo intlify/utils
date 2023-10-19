@@ -10,18 +10,9 @@ import {
   validateLocale,
 } from './http.ts'
 import { pathLanguageParser } from './shared.ts'
-import {
-  ACCEPT_LANGUAGE_HEADER,
-  DEFAULT_COOKIE_NAME,
-  DEFAULT_LANG_TAG,
-} from './constants.ts'
+import { ACCEPT_LANGUAGE_HEADER, DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 
-import type {
-  CookieOptions,
-  HeaderOptions,
-  PathOptions,
-  QueryOptions,
-} from './http.ts'
+import type { CookieOptions, HeaderOptions, PathOptions, QueryOptions } from './http.ts'
 
 /**
  * get languages from header
@@ -171,9 +162,7 @@ export function getHeaderLocale(
     parser = parseDefaultHeader,
   }: HeaderOptions & { lang?: string } = {},
 ): Intl.Locale {
-  return getLocaleWithGetter(() =>
-    getHeaderLanguages(request, { name, parser })[0] || lang
-  )
+  return getLocaleWithGetter(() => getHeaderLanguages(request, { name, parser })[0] || lang)
 }
 
 /**

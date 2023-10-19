@@ -131,9 +131,7 @@ export function getHeaderLanguagesWithGetter(
   const langString = getter()
   return langString
     ? name === ACCEPT_LANGUAGE_HEADER
-      ? parser === parseDefaultHeader
-        ? parseAcceptLanguage(langString)
-        : parser(langString)
+      ? parser === parseDefaultHeader ? parseAcceptLanguage(langString) : parser(langString)
       : parser(langString)
     : []
 }
