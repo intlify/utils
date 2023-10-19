@@ -74,7 +74,7 @@
     "build": "unbuild",
     "test": "npm run test:typecheck && npm run test:unit",
     "test:unit": "vitest run",
-    "test:typecheck": "vitest typecheck --run",
+    "test:typecheck": "NODE_OPTIONS=--experimental-vm-modules vitest typecheck --run",
     "test:coverage": "npm test -- --reporter verbose --coverage",
     "play:browser": "npm run -w example-browser dev",
     "play:node": "npm run -w example-node dev",
