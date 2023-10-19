@@ -98,6 +98,11 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      # NOTE: avoid https://github.com/intlify/utils/actions/runs/6573605958/job/17857030689?pr=31#step:8:48
+      # vitest-environment-miniflare tries to load dist/index.cjs and work with vitest...
+      - name: Build codes
+        run: npm run build
+
       - name: Test
         run: npm test
 
