@@ -251,7 +251,7 @@ export function setCookieLocale(
  *
  * @param {Request} request the {@link Request | request}
  * @param {PathOptions['lang']} options.lang the language tag, which is as default `'en-US'`. optional
- * @param {PathOptions['parser']} options.parser the path language parser, optional
+ * @param {PathOptions['parser']} options.parser the path language parser, default {@link pathLanguageParser}, optional
  *
  * @throws {RangeError} Throws the {@link RangeError} if the language in the path, that is not a well-formed BCP 47 language tag.
  *

@@ -98,6 +98,13 @@ export interface PathLanguageParser {
   (path: string | URL): string
 }
 
+/**
+ * create a parser, which can split with slash `/`
+ *
+ * @param index An index of locale, which is included in path
+ *
+ * @returns A return a parser, which has {@link PathLanguageParser} interface
+ */
 export function createPathIndexLanguageParser(
   index = 0,
 ): PathLanguageParser {
@@ -112,6 +119,12 @@ export function createPathIndexLanguageParser(
   }
 }
 
+/**
+ * A path parser that can get the zeroth part of a path split by `/` as local value
+ *
+ * @description
+ * - `/en/nest/about` -> `en`
+ */
 export let pathLanguageParser: PathLanguageParser = /* #__PURE__*/ createPathIndexLanguageParser()
 
 /**
