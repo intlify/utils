@@ -47,6 +47,12 @@
       "require": "./dist/h3.cjs",
       "default": "./dist/h3.mjs"
     },
+    "./hono": {
+      "types": "./dist/hono.d.ts",
+      "import": "./dist/hono.mjs",
+      "require": "./dist/hono.cjs",
+      "default": "./dist/hono.mjs"
+    },
     "./node": {
       "types": "./dist/node.d.ts",
       "import": "./dist/node.mjs",
@@ -68,7 +74,7 @@
     "build": "unbuild",
     "test": "npm run test:typecheck && npm run test:unit",
     "test:unit": "vitest run",
-    "test:typecheck": "vitest typecheck --run",
+    "test:typecheck": "NODE_OPTIONS=--experimental-vm-modules vitest typecheck --run",
     "test:coverage": "npm test -- --reporter verbose --coverage",
     "play:browser": "npm run -w example-browser dev",
     "play:node": "npm run -w example-node dev",
@@ -84,19 +90,23 @@
     ]
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20231016.0",
     "@types/node": "^20.6.0",
     "@types/supertest": "^2.0.12",
-    "@vitest/coverage-v8": "^1.0.0-beta.1",
-    "bun-types": "latest",
+    "@vitest/coverage-v8": "^0.34.6",
     "bumpp": "^9.2.0",
+    "bun-types": "latest",
     "cookie-es": "^1.0.0",
     "gh-changelogen": "^0.2.8",
     "h3": "^1.8.1",
+    "hono": "^3.8.1",
     "lint-staged": "^15.0.0",
+    "miniflare": "^3.20231016.0",
     "supertest": "^6.3.3",
     "typescript": "^5.2.2",
     "unbuild": "^2.0.0",
-    "vitest": "^1.0.0-beta.1"
+    "vitest": "^0.34.6",
+    "vitest-environment-miniflare": "^2.14.1"
   },
   "workspaces": [
     "playground/*"
