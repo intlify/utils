@@ -17,8 +17,11 @@ export default defineBuildConfig({
       input: './src/h3.ts',
     },
     {
+      input: './src/hono.ts',
+    },
+    {
       input: './src/node.ts',
     },
   ],
-  externals: ['h3'],
+  externals: ['h3', 'hono'],
 })
