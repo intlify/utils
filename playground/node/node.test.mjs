@@ -7,7 +7,7 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 test('node integration test', async () => {
   const child = spawn('npx', ['tsx', './index.ts'], { cwd: process.cwd(), stdio: 'inherit' })
-  await sleep(1000)
+  await sleep(2000)
 
   const req = new Request('http://localhost:8123')
   req.headers.set('accept-language', 'en-US,en;q=0.9,ja;q=0.8')
