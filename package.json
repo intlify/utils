@@ -76,15 +76,20 @@
     "test": "npm run test:typecheck && npm run test:unit",
     "test:unit": "NODE_OPTIONS=--experimental-vm-modules vitest run ./src",
     "test:typecheck": "vitest typecheck --config ./vitest.type.config.ts --run",
-    "test:e2e": "run-s test:e2e:*",
-    "test:e2e:node": "npm run -w example-node test",
-    "test:e2e:deno": "cd playground/deno && deno task test",
-    "test:e2e:bun": "npm run -w example-bun test",
     "test:coverage": "npm test -- --reporter verbose --coverage",
-    "play:browser": "npm run -w example-browser dev",
-    "play:node": "npm run -w example-node dev",
+    "test:e2e": "run-s test:e2e:*",
+    "test:e2e:node": "cd playground/node && node --test",
+    "test:e2e:deno": "cd playground/deno && deno task test",
+    "test:e2e:bun": "cd playground/bun && npm run test",
+    "setup": "run-s setup:*",
+    "setup:browser": "cd playground/browser && bun install",
+    "setup:node": "cd playground/node && bun install",
+    "setup:deno": "cd playground/deno && deno cache --reload ./main.ts",
+    "setup:bun": "cd playground/bun && bun install",
+    "play:browser": "cd playground/browser && npm run dev",
+    "play:node": "cd playground/node && npm run dev",
     "play:deno": "cd playground/deno && deno run --allow-net main.ts",
-    "play:bun": "npm run -w example-bun dev"
+    "play:bun": "cd playground/bun && npm run dev"
   },
   "lint-staged": {
     "*.{js,ts,jsx,tsx,json,jsonc}": [
@@ -109,12 +114,10 @@
     "npm-run-all": "^4.1.5",
     "miniflare": "^3.20231016.0",
     "supertest": "^6.3.3",
+    "pkg-types": "^1.0.2",
     "typescript": "^5.2.2",
     "unbuild": "^2.0.0",
     "vitest": "^0.34.6",
     "vitest-environment-miniflare": "^2.14.1"
-  },
-  "workspaces": [
-    "playground/*"
-  ]
+  }
 }

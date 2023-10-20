@@ -1,5 +1,5 @@
 coverage
-examples
+playground
 deno.lock
 .*
 *.log

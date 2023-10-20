@@ -3,6 +3,8 @@ node_modules
 coverage
 .DS_Store
 .idea
+playground/**/bun.lockb
+playground/**/deno.lock
 
 *.log
 *.swp

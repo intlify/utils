@@ -9,9 +9,12 @@
   "dependencies": {
     "@intlify/utils": "npm:@intlify/utils-edge@latest"
   },
+  "peerDependencies": {
+    "typescript": "^5.2.2"
+  },
   "devDependencies": {
     "ofetch": "^1.3.3",
-    "@types/node": "^20.6.0",
-    "typescript": "^5.2.2"
+    "bun-types": "latest",
+    "@types/node": "^20.6.0"
   }
 }
