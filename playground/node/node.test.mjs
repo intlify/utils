@@ -17,6 +17,15 @@ test('node integration test', async () => {
   const res = await fetch(req)
   await sleep(1000)
 
+  console.log(child.pid)
+
+  const cleanup = () => {
+    process.kill(child.pid)
+  }
+
+  process.on('SIGINT', cleanup)
+  process.on('SIGTERM', cleanup)
+  process.on('SIGQUIT', cleanup)
+
   assert.deepEqual('detect accpect-language: en-US,en,ja', await res.text())
-  child.kill('SIGINT')
 })

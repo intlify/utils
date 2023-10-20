@@ -6,6 +6,7 @@ const server = createServer((req, res) => {
 
   res.writeHead(200)
   res.end(`detect accpect-language: ${languages}`)
+  process.exit()
 })
 
 server.listen(8123)
