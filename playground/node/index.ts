@@ -10,3 +10,8 @@ const server = createServer((req, res) => {
 
 server.listen(8123)
 console.log('server listening on 8123')
+
+process.on('SIGINT', () => {
+  server.close()
+  process.exit()
+})
