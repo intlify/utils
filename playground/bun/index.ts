@@ -1,7 +1,6 @@
 import { getHeaderLocale } from '@intlify/utils'
 
 const port = 8124
-// @ts-ignore: this is example
 Bun.serve({
   port,
   fetch(req: Request) {

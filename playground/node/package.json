@@ -1,13 +1,16 @@
 {
   "name": "example-node",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "npx tsx index.ts"
+    "dev": "npx tsx index.ts",
+    "test": "node --test"
   },
   "dependencies": {
     "@intlify/utils": "npm:@intlify/utils-edge@latest"
   },
   "devDependencies": {
+    "ofetch": "^1.3.3",
     "@types/node": "^20.6.0",
     "typescript": "^5.2.2"
   }
