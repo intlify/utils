@@ -6,7 +6,10 @@ import { fetch } from 'ofetch'
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 test('node integration test', async () => {
-  const child = spawn('npx', ['tsx', './index.ts'], { cwd: process.cwd(), stdio: 'inherit' })
+  const child = spawn('npx', ['--no-install', 'tsx', './index.ts'], {
+    cwd: process.cwd(),
+    stdio: 'inherit',
+  })
   await sleep(2000)
 
   const req = new Request('http://localhost:8123')
