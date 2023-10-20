@@ -35,8 +35,7 @@ async function replaceDenoPlatform(playgroundPath: string) {
   const denoConfig = JSON.parse(await fs.readFile(denoConfigPath, 'utf-8')) as {
     imports: Record<string, unknown>
   }
-  denoConfig['imports']['@intlify/utils'] = '../../src/index.ts'
-  denoConfig['imports']['cookie-es'] = 'npm:cookie-es@1.0.0'
+  denoConfig['imports']['@intlify/utils'] = '../../dist/index.mjs'
 
   await fs.writeFile(denoConfigPath, JSON.stringify(denoConfig), 'utf-8')
   return true
