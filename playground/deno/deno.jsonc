@@ -1,7 +1,4 @@
 {
-  "imports": {
-    "@intlify/utils": "https://esm.sh/@intlify/utils@0.10.0"
-  },
   "tasks": {
     "dev": "deno run --watch main.ts",
     "test": "deno test --allow-read=$(which deno) --allow-run --allow-net ./deno.spec.ts"
