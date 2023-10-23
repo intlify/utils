@@ -8,7 +8,7 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
 type Platform = 'browser' | 'node' | 'deno' | 'bun'
 
-async function replaceNodePlatform(platform: 'node' | 'bun', playgroundPath: string) {
+async function replaceNodePlatform(platform: 'browser' | 'node' | 'bun', playgroundPath: string) {
   const utilsPath = resolve(__dirname, '..')
   const utilsPkg = await readPackageJSON(resolve(utilsPath, 'package.json'))
   const utilsTgzPath = resolve(utilsPath, `intlify-utils-${utilsPkg.version}.tgz`)
@@ -19,6 +19,20 @@ async function replaceNodePlatform(platform: 'node' | 'bun', playgroundPath: str
   const platformPkg = await readPackageJSON(targetPath)
   platformPkg.dependencies![`@intlify/utils`] = `file:${utilsTgzPath}`
   await writePackageJSON(targetPath, platformPkg)
+  return true
+}
+
+async function replaceBrowserPlatform(platform: 'browser', playgroundPath: string) {
+  if (!replaceNodePlatform(platform, playgroundPath)) {
+    return false
+  }
+  const codePath = resolve(playgroundPath, platform, 'index.js')
+  const code = await fs.readFile(codePath, 'utf-8')
+  const replacedCode = code.replace(
+    'https://esm.sh/@intlify/utils',
+    './node_modules/@intlify/utils/dist/index.mjs',
+  )
+  await fs.writeFile(codePath, replacedCode, 'utf-8')
   return true
 }
 
@@ -44,8 +58,12 @@ async function main() {
       if (!await replaceDenoPlatform(playgroundPath)) {
         console.error(`cannot replace '@intlify/utils' dependency on ${platform}`)
       }
-    } else { // for browser
-      // TODO:
+    } else if (platform === 'browser') {
+      if (!await replaceBrowserPlatform(platform, playgroundPath)) {
+        console.error(`cannot replace '@intlify/utils' dependency on ${platform}`)
+      }
+    } else {
+      throw new Error(`no support '${platform}' platform`)
     }
   }
 }
