@@ -72,7 +72,7 @@
     "fix": "run-p lint format",
     "lint": "deno lint",
     "format": "deno fmt",
-    "build": "unbuild",
+    "build": "unbuild && bun run ./scripts/deno.ts",
     "test": "npm run test:typecheck && npm run test:unit",
     "test:unit": "NODE_OPTIONS=--experimental-vm-modules vitest run ./src",
     "test:typecheck": "vitest typecheck --config ./vitest.type.config.ts --run",

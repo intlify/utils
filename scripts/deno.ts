@@ -25,20 +25,26 @@ async function main() {
     throw new Error(`not found ${destPath}`)
   }
 
+  console.log('copy some source files to denoland hosting directries 🦕 ...')
+
   // copy docs
   for (const p of ['README.md', 'LICENSE']) {
     fs.copyFile(resolve(projectPath, p), resolve(destPath, p))
+    console.log(`${resolve(projectPath, p)} -> ${resolve(destPath, p)}`)
   }
 
   // copy source files
   for (const target of TARGETS) {
     fs.copyFile(resolve(sourcePath, target), resolve(destPath, target))
+    console.log(`${resolve(sourcePath, target)} -> ${resolve(destPath, target)}`)
   }
 
   // add `npm:` prefix
   const webCode = await fs.readFile(resolve(destPath, 'web.ts'), 'utf-8')
   const replacedWebCode = webCode.replace('from \'cookie-es\'', 'from \'npm:cookie-es\'')
   await fs.writeFile(resolve(destPath, 'web.ts'), replacedWebCode, 'utf8')
+
+  console.log('... 🦕 done!')
 }
 
 main().catch((err) => {
