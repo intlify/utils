@@ -6,7 +6,7 @@ import handler from 'serve-handler'
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
-async function getText(page, selector, options) {
+function getText(page, selector, options) {
   return page.locator(selector, options).innerText()
 }
 
