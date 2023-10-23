@@ -1,18 +1,10 @@
-import { constants as FS_CONSTANTS, promises as fs } from 'node:fs'
+import { promises as fs } from 'node:fs'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { readPackageJSON, writePackageJSON } from 'pkg-types'
+import { isExists } from './utils.ts'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
-
-export async function isExists(path: string) {
-  try {
-    await fs.access(path, FS_CONSTANTS.F_OK)
-    return true
-  } catch {
-    return false
-  }
-}
 
 type Platform = 'browser' | 'node' | 'deno' | 'bun'
 
