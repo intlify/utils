@@ -95,7 +95,7 @@ in your HTML:
  * you can install via other CDN URL such as skypack,
  * or, you can also use import maps
  */
-import { isLocale } from 'https://esm.sh/@intlify/utils'
+import { isLocale } from 'https://deno.land/x/intlify_utils/mod.ts'
 
 // something todo
 // ...
