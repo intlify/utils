@@ -61,23 +61,11 @@ in your code:
  * or, you can also use import maps
  * https://docs.deno.com/runtime/manual/basics/import_maps
  */
-import { ... } from 'https://esm.sh/@intlify/utils'
+import { ... } from 'https://deno.land/x/intlify_utils/mod.ts'
 
 // something todo
 // ...
 ```
-
-<details>
-  <summary>Using Edge Releases</summary>
-
-```ts
-import { ... } from 'https://esm.sh/@intlify/utils-edge'
-
-// something todo
-// ...
-```
-
-</details>
 
 ### 🥟 Bun
 
@@ -95,12 +83,24 @@ in your HTML:
  * you can install via other CDN URL such as skypack,
  * or, you can also use import maps
  */
-import { isLocale } from 'https://deno.land/x/intlify_utils/mod.ts'
+import { isLocale } from 'https://esm.sh/@intlify/utils'
 
 // something todo
 // ...
 </script>
 ```
+
+<details>
+  <summary>Using Edge Releases</summary>
+
+```ts
+import { isLocale } from 'https://esm.sh/@intlify/utils-edge'
+
+// something todo
+// ...
+```
+
+</details>
 
 ## 🍭 Playground
 
