@@ -4,12 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "dev": "npx --no-install serve -l 3000"
   },
   "devDependencies": {
-    "typescript": "^5.0.2",
-    "vite": "^4.4.5"
+    "serve": "^14.2.1"
   }
 }
