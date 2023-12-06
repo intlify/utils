@@ -10,6 +10,11 @@ import {
   getPathLocale,
   getQueryLocale,
   setCookieLocale,
+  tryCookieLocale,
+  tryHeaderLocale,
+  tryHeaderLocales,
+  tryPathLocale,
+  tryQueryLocale,
 } from './h3.ts'
 import { parseAcceptLanguage } from './shared.ts'
 import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
@@ -219,6 +224,37 @@ describe('getHeaderLocales', () => {
   })
 })
 
+describe('tryHeaderLocales', () => {
+  test('success', () => {
+    const mockEvent = {
+      node: {
+        req: {
+          method: 'GET',
+          headers: {
+            'accept-language': 'en-US,en;q=0.9,ja;q=0.8',
+          },
+        },
+      },
+    } as H3Event
+    expect(tryHeaderLocales(mockEvent)!.map((locale) => locale.baseName))
+      .toEqual(['en-US', 'en', 'ja'])
+  })
+
+  test('failed', () => {
+    const mockEvent = {
+      node: {
+        req: {
+          method: 'GET',
+          headers: {
+            'accept-language': 'hoge',
+          },
+        },
+      },
+    } as H3Event
+    expect(tryHeaderLocales(mockEvent)).toBeNull()
+  })
+})
+
 describe('getHeaderLocale', () => {
   test('basic', () => {
     const mockEvent = {
@@ -308,6 +344,41 @@ describe('getHeaderLocale', () => {
   })
 })
 
+describe('tryHeaderLocale', () => {
+  test('success', () => {
+    const mockEvent = {
+      node: {
+        req: {
+          method: 'GET',
+          headers: {
+            'accept-language': 'en-US,en;q=0.9,ja;q=0.8',
+          },
+        },
+      },
+    } as H3Event
+    const locale = tryHeaderLocale(mockEvent)!
+
+    expect(locale.baseName).toEqual('en-US')
+    expect(locale.language).toEqual('en')
+    expect(locale.region).toEqual('US')
+  })
+
+  test('failed', () => {
+    const mockEvent = {
+      node: {
+        req: {
+          method: 'GET',
+          headers: {
+            'accept-language': 's',
+          },
+        },
+      },
+    } as H3Event
+
+    expect(tryHeaderLocale(mockEvent)).toBeNull()
+  })
+})
+
 describe('getCookieLocale', () => {
   test('basic', () => {
     const mockEvent = {
@@ -385,6 +456,41 @@ describe('getCookieLocale', () => {
 
     expect(() => getCookieLocale(mockEvent, { name: 'intlify_locale' }))
       .toThrowError(RangeError)
+  })
+})
+
+describe('tryCookieLocale', () => {
+  test('success', () => {
+    const mockEvent = {
+      node: {
+        req: {
+          method: 'GET',
+          headers: {
+            cookie: `${DEFAULT_COOKIE_NAME}=en-US`,
+          },
+        },
+      },
+    } as H3Event
+    const locale = tryCookieLocale(mockEvent)!
+
+    expect(locale.baseName).toEqual('en-US')
+    expect(locale.language).toEqual('en')
+    expect(locale.region).toEqual('US')
+  })
+
+  test('failed', () => {
+    const mockEvent = {
+      node: {
+        req: {
+          method: 'GET',
+          headers: {
+            cookie: 'intlify_locale=f',
+          },
+        },
+      },
+    } as H3Event
+
+    expect(tryCookieLocale(mockEvent, { name: 'intlify_locale' })).toBeNull()
   })
 })
 
@@ -469,6 +575,36 @@ test('getPathLocale', async () => {
   expect(res.body).toEqual({ locale: 'en' })
 })
 
+describe('tryPathLocale', () => {
+  test('success', async () => {
+    const app = createApp({ debug: false })
+    const request = supertest(toNodeListener(app))
+
+    app.use(
+      '/',
+      eventHandler((event) => {
+        return { locale: tryPathLocale(event)!.toString() }
+      }),
+    )
+    const res = await request.get('/en/foo')
+    expect(res.body).toEqual({ locale: 'en' })
+  })
+
+  test('failed', async () => {
+    const app = createApp({ debug: false })
+    const request = supertest(toNodeListener(app))
+
+    app.use(
+      '/',
+      eventHandler((event) => {
+        return { locale: tryPathLocale(event) }
+      }),
+    )
+    const res = await request.get('/s/foo')
+    expect(res.body).toEqual({ locale: null })
+  })
+})
+
 test('getQueryLocale', async () => {
   const app = createApp({ debug: false })
   const request = supertest(toNodeListener(app))
@@ -481,4 +617,34 @@ test('getQueryLocale', async () => {
   )
   const res = await request.get('/?locale=ja')
   expect(res.body).toEqual({ locale: 'ja' })
+})
+
+describe('tryQueryLocale', () => {
+  test('success', async () => {
+    const app = createApp({ debug: false })
+    const request = supertest(toNodeListener(app))
+
+    app.use(
+      '/',
+      eventHandler((event) => {
+        return { locale: tryQueryLocale(event)!.toString() }
+      }),
+    )
+    const res = await request.get('/?locale=ja')
+    expect(res.body).toEqual({ locale: 'ja' })
+  })
+
+  test('failed', async () => {
+    const app = createApp({ debug: false })
+    const request = supertest(toNodeListener(app))
+
+    app.use(
+      '/',
+      eventHandler((event) => {
+        return { locale: tryQueryLocale(event) }
+      }),
+    )
+    const res = await request.get('/?locale=j')
+    expect(res.body).toEqual({ locale: null })
+  })
 })

@@ -10,6 +10,11 @@ import {
   getPathLocale,
   getQueryLocale,
   setCookieLocale,
+  tryCookieLocale,
+  tryHeaderLocale,
+  tryHeaderLocales,
+  tryPathLocale,
+  tryQueryLocale,
 } from './hono.ts'
 import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 import { Hono } from 'hono'
@@ -156,6 +161,27 @@ describe('getHeaderLocales', () => {
   })
 })
 
+describe('tryHeaderLocales', () => {
+  test('success', () => {
+    const mockContext = {
+      req: {
+        header: (_name) => 'en-US,en;q=0.9,ja;q=0.8',
+      },
+    } as Context
+    expect(tryHeaderLocales(mockContext)!.map((locale) => locale.baseName))
+      .toEqual(['en-US', 'en', 'ja'])
+  })
+
+  test('failed', () => {
+    const mockContext = {
+      req: {
+        header: (_name) => 'hoge',
+      },
+    } as Context
+    expect(tryHeaderLocales(mockContext)).toBeNull()
+  })
+})
+
 describe('getHeaderLocale', () => {
   test('basic', () => {
     const mockContext = {
@@ -216,6 +242,31 @@ describe('getHeaderLocale', () => {
         parser: (header) => header.split(','),
       }).toString(),
     ).toEqual('en-US')
+  })
+})
+
+describe('tryHeaderLocale', () => {
+  test('success', () => {
+    const mockContext = {
+      req: {
+        header: (_name) => 'en-US,en;q=0.9,ja;q=0.8',
+      },
+    } as Context
+    const locale = tryHeaderLocale(mockContext)!
+
+    expect(locale.baseName).toEqual('en-US')
+    expect(locale.language).toEqual('en')
+    expect(locale.region).toEqual('US')
+  })
+
+  test('failed', () => {
+    const mockContext = {
+      req: {
+        header: (_name) => 'x',
+      },
+    } as Context
+
+    expect(tryHeaderLocale(mockContext)).toBeNull()
   })
 })
 
@@ -298,6 +349,39 @@ describe('getCookieLocale', () => {
   })
 })
 
+describe('tryCookieLocale', () => {
+  test('success', () => {
+    const mockContext = {
+      req: {
+        raw: {
+          headers: {
+            get: (_name) => `${DEFAULT_COOKIE_NAME}=en-US`,
+          },
+        },
+      },
+    } as Context
+    const locale = tryCookieLocale(mockContext)!
+
+    expect(locale.baseName).toEqual('en-US')
+    expect(locale.language).toEqual('en')
+    expect(locale.region).toEqual('US')
+  })
+
+  test('failed', () => {
+    const mockContext = {
+      req: {
+        raw: {
+          headers: {
+            get: (_name) => 'intlify_locale=f',
+          },
+        },
+      },
+    } as Context
+
+    expect(tryCookieLocale(mockContext, { name: 'intlify_locale' })).toBeNull()
+  })
+})
+
 describe('setCookieLocale', () => {
   test('specify Locale instance', async () => {
     const app = new Hono()
@@ -362,6 +446,28 @@ test('getPathLocale', async () => {
   expect(result).toEqual({ locale: 'en' })
 })
 
+describe('tryPathLocale', () => {
+  test('success', async () => {
+    const app = new Hono()
+    app.get('*', (c) => {
+      return c.json({ locale: tryPathLocale(c)!.toString() })
+    })
+    const res = await app.request('http://localhost/en/foo')
+    const result = await res.json()
+    expect(result).toEqual({ locale: 'en' })
+  })
+
+  test('failed', async () => {
+    const app = new Hono()
+    app.get('*', (c) => {
+      return c.json({ locale: tryPathLocale(c) })
+    })
+    const res = await app.request('http://localhost/e/foo')
+    const result = await res.json()
+    expect(result).toEqual({ locale: null })
+  })
+})
+
 test('getQueryLocale', async () => {
   const app = new Hono()
   app.get('/', (c) => {
@@ -370,4 +476,26 @@ test('getQueryLocale', async () => {
   const res = await app.request('http://localhost/?locale=ja')
   const result = await res.json()
   expect(result).toEqual({ locale: 'ja' })
+})
+
+describe('tryQueryLocale', () => {
+  test('success', async () => {
+    const app = new Hono()
+    app.get('/', (c) => {
+      return c.json({ locale: tryQueryLocale(c)!.toString() })
+    })
+    const res = await app.request('http://localhost/?locale=ja')
+    const result = await res.json()
+    expect(result).toEqual({ locale: 'ja' })
+  })
+
+  test('failed', async () => {
+    const app = new Hono()
+    app.get('/', (c) => {
+      return c.json({ locale: tryQueryLocale(c) })
+    })
+    const res = await app.request('http://localhost/?locale=s')
+    const result = await res.json()
+    expect(result).toEqual({ locale: null })
+  })
 })

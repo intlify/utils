@@ -10,6 +10,11 @@ import {
   getPathLocale,
   getQueryLocale,
   setCookieLocale,
+  tryCookieLocale,
+  tryHeaderLocale,
+  tryHeaderLocales,
+  tryPathLocale,
+  tryQueryLocale,
 } from './web.ts'
 import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 
@@ -69,6 +74,21 @@ describe('getHeaderLocales', () => {
         parser: (header) => header.split(','),
       }),
     ).toEqual('en-US')
+  })
+})
+
+describe('tryHeaderLocales', () => {
+  test('success', () => {
+    const mockRequest = new Request('https://example.com')
+    mockRequest.headers.set('accept-language', 'en-US,en;q=0.9,ja;q=0.8')
+    expect(tryHeaderLocales(mockRequest)!.map((locale) => locale.baseName))
+      .toEqual(['en-US', 'en', 'ja'])
+  })
+
+  test('failed', () => {
+    const mockRequest = new Request('https://example.com')
+    mockRequest.headers.set('accept-language', 'hoge')
+    expect(tryHeaderLocales(mockRequest)).toBeNull()
   })
 })
 
@@ -149,6 +169,24 @@ describe('getHeaderLocale', () => {
   })
 })
 
+describe('tryHeaderLocale', () => {
+  test('success', () => {
+    const mockRequest = new Request('https://example.com')
+    mockRequest.headers.set('accept-language', 'en-US,en;q=0.9,ja;q=0.8')
+    const locale = tryHeaderLocale(mockRequest)!
+
+    expect(locale.baseName).toEqual('en-US')
+    expect(locale.language).toEqual('en')
+    expect(locale.region).toEqual('US')
+  })
+
+  test('failed', () => {
+    const mockRequest = new Request('https://example.com')
+    mockRequest.headers.set('accept-language', 's')
+    expect(tryHeaderLocale(mockRequest, { lang: 'ja-JP' })).toBeNull()
+  })
+})
+
 describe('getCookieLocale', () => {
   test('basic', () => {
     const mockRequest = new Request('https://example.com')
@@ -191,6 +229,24 @@ describe('getCookieLocale', () => {
   })
 })
 
+describe('tryCookieLocale', () => {
+  test('success', () => {
+    const mockRequest = new Request('https://example.com')
+    mockRequest.headers.set('cookie', `${DEFAULT_COOKIE_NAME}=en-US`)
+    const locale = tryCookieLocale(mockRequest)!
+
+    expect(locale.baseName).toEqual('en-US')
+    expect(locale.language).toEqual('en')
+    expect(locale.region).toEqual('US')
+  })
+
+  test('failed', () => {
+    const mockRequest = new Request('https://example.com')
+    mockRequest.headers.set('cookie', 'intlify_locale=f')
+    expect(tryCookieLocale(mockRequest, { name: 'intlify_locale' })).toBeNull()
+  })
+})
+
 describe('setCookieLocale', () => {
   test('specify Locale instance', () => {
     const res = new Response('hello world!')
@@ -230,10 +286,38 @@ test('getPathLocale', () => {
   expect(locale.toString()).toEqual('en')
 })
 
+describe('tryPathLocale', () => {
+  test('success', () => {
+    const mockRequest = new Request('https://locahost:3000/en/foo')
+    const locale = tryPathLocale(mockRequest)!
+    expect(locale.toString()).toEqual('en')
+  })
+
+  test('failed', () => {
+    const mockRequest = new Request('https://locahost:3000/e/foo')
+    const locale = tryPathLocale(mockRequest)
+    expect(locale).toBeNull()
+  })
+})
+
 test('getQueryLocale', () => {
   const mockRequest = new Request('https://locahost:3000/?intlify=ja')
   const locale = getQueryLocale(mockRequest, { name: 'intlify' })
   expect(locale.toString()).toEqual('ja')
+})
+
+describe('tryQueryLocale', () => {
+  test('success', () => {
+    const mockRequest = new Request('https://locahost:3000/?intlify=ja')
+    const locale = tryQueryLocale(mockRequest, { name: 'intlify' })!
+    expect(locale.toString()).toEqual('ja')
+  })
+
+  test('failed', () => {
+    const mockRequest = new Request('https://locahost:3000/?intlify=j')
+    const locale = tryQueryLocale(mockRequest, { name: 'intlify' })
+    expect(locale).toBeNull()
+  })
 })
 
 describe('getNavigatorLocales', () => {
