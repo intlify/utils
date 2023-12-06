@@ -9,6 +9,11 @@ import {
   getPathLocale,
   getQueryLocale,
   setCookieLocale,
+  tryCookieLocale,
+  tryHeaderLocale,
+  tryHeaderLocales,
+  tryPathLocale,
+  tryQueryLocale,
 } from './node.ts'
 import { createServer, IncomingMessage, OutgoingMessage } from 'node:http'
 import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
@@ -138,6 +143,27 @@ describe('getHeaderLocales', () => {
   })
 })
 
+describe('tryHeaderLocales', () => {
+  test('success', () => {
+    const mockRequest = {
+      headers: {
+        'accept-language': 'en-US,en;q=0.9,ja;q=0.8',
+      },
+    } as IncomingMessage
+    expect(tryHeaderLocales(mockRequest)!.map((locale) => locale.baseName))
+      .toEqual(['en-US', 'en', 'ja'])
+  })
+
+  test('failed', () => {
+    const mockRequest = {
+      headers: {
+        'accept-language': 'hoge',
+      },
+    } as IncomingMessage
+    expect(tryHeaderLocales(mockRequest)).toBeNull()
+  })
+})
+
 describe('getHeaderLocale', () => {
   test('basic', () => {
     const mockRequest = {
@@ -183,6 +209,30 @@ describe('getHeaderLocale', () => {
     expect(() => getHeaderLocale(mockRequest, { lang: 'ja-JP' })).toThrowError(
       RangeError,
     )
+  })
+})
+
+describe('tryHeaderLocale', () => {
+  test('success', () => {
+    const mockRequest = {
+      headers: {
+        'accept-language': 'en-US,en;q=0.9,ja;q=0.8',
+      },
+    } as IncomingMessage
+    const locale = tryHeaderLocale(mockRequest)!
+
+    expect(locale.baseName).toEqual('en-US')
+    expect(locale.language).toEqual('en')
+    expect(locale.region).toEqual('US')
+  })
+
+  test('failed', () => {
+    const mockRequest = {
+      headers: {
+        'accept-language': 's',
+      },
+    } as IncomingMessage
+    expect(tryHeaderLocale(mockRequest)).toBeNull()
   })
 })
 
@@ -258,6 +308,31 @@ describe('getCookieLocale', () => {
   })
 })
 
+describe('tryCookieLocale', () => {
+  test('success', () => {
+    const mockRequest = {
+      headers: {
+        cookie: `${DEFAULT_COOKIE_NAME}=en-US`,
+      },
+    } as IncomingMessage
+    const locale = tryCookieLocale(mockRequest)!
+
+    expect(locale.baseName).toEqual('en-US')
+    expect(locale.language).toEqual('en')
+    expect(locale.region).toEqual('US')
+  })
+
+  test('failed', () => {
+    const mockRequest = {
+      headers: {
+        cookie: 'intlify_locale=f',
+      },
+    } as IncomingMessage
+
+    expect(tryCookieLocale(mockRequest, { name: 'intlify_locale' })).toBeNull()
+  })
+})
+
 describe('setCookieLocale', () => {
   test('specify Locale instance', async () => {
     const server = createServer((_req, res) => {
@@ -318,6 +393,30 @@ test('getPathLocale', async () => {
   expect(result.body).toEqual({ locale: 'en-US' })
 })
 
+describe('tryPathLocale', () => {
+  test('success', async () => {
+    const server = createServer((req, res) => {
+      const locale = tryPathLocale(req)!
+      res.writeHead(200, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify({ locale: locale.toString() }))
+    })
+    const request = supertest(server)
+    const result = await request.get('/en-US/foo')
+    expect(result.body).toEqual({ locale: 'en-US' })
+  })
+
+  test('failed', async () => {
+    const server = createServer((req, res) => {
+      const locale = tryPathLocale(req)
+      res.writeHead(200, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify({ locale }))
+    })
+    const request = supertest(server)
+    const result = await request.get('/s/foo')
+    expect(result.body).toEqual({ locale: null })
+  })
+})
+
 test('getQueryLocale', async () => {
   const server = createServer((req, res) => {
     const locale = getQueryLocale(req, { name: 'lang' })
@@ -327,4 +426,28 @@ test('getQueryLocale', async () => {
   const request = supertest(server)
   const result = await request.get('/?lang=ja')
   expect(result.body).toEqual({ locale: 'ja' })
+})
+
+describe('tryQueryLocale', () => {
+  test('success', async () => {
+    const server = createServer((req, res) => {
+      const locale = tryQueryLocale(req, { name: 'lang' })!
+      res.writeHead(200, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify({ locale: locale.toString() }))
+    })
+    const request = supertest(server)
+    const result = await request.get('/?lang=ja')
+    expect(result.body).toEqual({ locale: 'ja' })
+  })
+
+  test('failed', async () => {
+    const server = createServer((req, res) => {
+      const locale = tryQueryLocale(req, { name: 'lang' })
+      res.writeHead(200, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify({ locale }))
+    })
+    const request = supertest(server)
+    const result = await request.get('/?lang=j')
+    expect(result.body).toEqual({ locale: null })
+  })
 })
