@@ -112,7 +112,7 @@
     "h3": "^1.8.1",
     "hono": "^3.8.1",
     "lint-staged": "^15.0.0",
-    "npm-run-all2": "^5.0.0",
+    "npm-run-all2": "^6.0.0",
     "miniflare": "^3.20231016.0",
     "supertest": "^6.3.3",
     "playwright": "^1.38.1",
