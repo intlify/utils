@@ -1,7 +1,5 @@
 {
-  "imports": {
-    "@intlify/utils": "https://deno.land/x/intlify_utils/mod.ts"
-  },
+  "imports": { "@intlify/utils": "jsr:@intlify/utils@^0.12.0" },
   "tasks": {
     "dev": "deno run --watch main.ts",
     "test": "deno test --allow-read=$(which deno) --allow-run --allow-net ./deno.spec.ts"
