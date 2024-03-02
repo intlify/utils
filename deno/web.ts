@@ -1,4 +1,4 @@
-import { parse, serialize } from 'npm:cookie-es'
+import { parse, serialize } from 'npm:cookie-es@^1.0.0'
 import {
   getExistCookies,
   getHeaderLanguagesWithGetter,
