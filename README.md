@@ -134,7 +134,8 @@ You can do `import { ... } from '@intlify/utils'` the above utilities
 
 You can do `import { ... } from '@intlify/utils'` the above utilities
 
-> ⚠NOTE: for Node.js You need to do `import { ... } from '@intlify/utils/node'`
+> [!NOTE]
+> for Node.js You need to do `import { ... } from '@intlify/utils/node'`
 
 ### HTTP
 
