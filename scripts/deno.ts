@@ -41,7 +41,7 @@ async function main() {
 
   // add `npm:` prefix
   const webCode = await fs.readFile(resolve(destPath, 'web.ts'), 'utf-8')
-  const replacedWebCode = webCode.replace('from \'cookie-es\'', 'from \'npm:cookie-es\'')
+  const replacedWebCode = webCode.replace("from 'cookie-es'", "from 'npm:cookie-es'")
   await fs.writeFile(resolve(destPath, 'web.ts'), replacedWebCode, 'utf8')
 
   console.log('... 🦕 done!')
