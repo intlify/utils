@@ -2,6 +2,7 @@ import { promises as fs } from 'node:fs'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { isExists } from './utils.ts'
+import { readPackageJSON } from 'pkg-types'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
@@ -39,9 +40,15 @@ async function main() {
     console.log(`${resolve(sourcePath, target)} -> ${resolve(destPath, target)}`)
   }
 
+  const pkgJSON = await readPackageJSON(projectPath)
+  const devDependencies = pkgJSON.devDependencies || {}
+
   // add `npm:` prefix
   const webCode = await fs.readFile(resolve(destPath, 'web.ts'), 'utf-8')
-  const replacedWebCode = webCode.replace("from 'cookie-es'", "from 'npm:cookie-es'")
+  const replacedWebCode = webCode.replace(
+    "from 'cookie-es'",
+    `from 'npm:cookie-es@${devDependencies['cookie-es']}'`,
+  )
   await fs.writeFile(resolve(destPath, 'web.ts'), replacedWebCode, 'utf8')
 
   console.log('... 🦕 done!')
