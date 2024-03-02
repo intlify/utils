@@ -1,6 +1,6 @@
 {
   "name": "@intlify/utils",
-  "version": "0.13.0",
+  "version": "0.12.0",
   "description": "Collection of i18n utilities",
   "keywords": [
     "i18n",
@@ -68,7 +68,7 @@
   "scripts": {
     "prepare": "git config --local core.hooksPath .githooks",
     "changelog": "gh-changelogen --repo=intlify/utils",
-    "release": "bumpp --commit \"release: v%s\" --push --tag",
+    "release": "bumpp --commit \"release: v%s\" --all --push --tag",
     "version": "npx tsx scripts/bump-deno.ts",
     "fix": "run-p lint format",
     "lint": "deno lint",
