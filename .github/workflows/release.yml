@@ -6,6 +6,9 @@ on:
       - '**'
     tags:
       - 'v*'
+permissions:
+  contents: read
+  id-token: write
 
 jobs:
   release:
@@ -62,7 +65,10 @@ jobs:
           file_pattern: '*.md'
           commit_message: 'chore: sync changelog'
 
-      - name: Publish package
+      - name: Publish package for NPM
         run: ./scripts/release.sh
         env:
           NPM_TOKEN: ${{secrets.NPM_ORG_TOKEN}}
+
+      - name: Publish package for JSR
+        run: npx jsr publish
