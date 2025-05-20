@@ -55,7 +55,7 @@ export function getHeaderLanguages(
 /**
  * get language from header
  *
- * @description parse header string, default `accept-language`. if you use `accept-language`, this function retuns the **first language tag** of `accept-language` header.
+ * @description parse header string, default `accept-language`. if you use `accept-language`, this function returns the **first language tag** of `accept-language` header.
  *
  * @example
  * example for Node.js request:
@@ -577,7 +577,7 @@ let navigatorLanguage = ''
  * @description
  * You can get the language tag from system environment variables.
  *
- * @returns {string} {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 language tag}, if you can't get the language tag, return a enmpty string.
+ * @returns {string} {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 language tag}, if you can't get the language tag, return a empty string.
  */
 function getNavigatorLanguage(): string {
   return navigatorLanguage ||

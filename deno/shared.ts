@@ -131,7 +131,7 @@ export let pathLanguageParser: PathLanguageParser = /* #__PURE__*/ createPathInd
 /**
  * register the path language parser
  *
- * @description register a parser to be used in the `getPathLanugage` utility function
+ * @description register a parser to be used in the `getPathLanguage` utility function
  *
  * @param {PathLanguageParser} parser the path language parser
  */

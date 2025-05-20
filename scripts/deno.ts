@@ -26,7 +26,7 @@ async function main() {
     throw new Error(`not found ${destPath}`)
   }
 
-  console.log('copy some source files to denoland hosting directries 🦕 ...')
+  console.log('copy some source files to denoland hosting directories 🦕 ...')
 
   // copy docs
   for (const p of ['README.md', 'LICENSE']) {

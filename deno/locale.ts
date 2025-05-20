@@ -258,7 +258,7 @@ export type ParseScriptSubtag<
 > = Result
 
 /**
- * paser unicode script subtag (EBNF: = alpha{4};)
+ * parser unicode script subtag (EBNF: = alpha{4};)
  * https://unicode.org/reports/tr35/#unicode_script_subtag
  */
 // TODO: Check if the script subtag is in CLDR
