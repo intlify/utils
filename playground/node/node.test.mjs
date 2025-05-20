@@ -2,6 +2,7 @@ import assert from 'node:assert'
 import test from 'node:test'
 import { spawn } from 'node:child_process'
 import { fetch } from 'ofetch'
+import process from 'node:process'
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 

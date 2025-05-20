@@ -5,6 +5,7 @@ import semver from 'semver'
 import { readPackageJSON } from 'pkg-types'
 
 import type { ParseError } from 'jsonc-parser'
+import process from 'node:process'
 
 async function main() {
   const npmPath = resolve(process.cwd(), 'package.json')

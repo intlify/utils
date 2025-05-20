@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { isExists } from './utils.ts'
 import { readPackageJSON } from 'pkg-types'
+import process from 'node:process'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 

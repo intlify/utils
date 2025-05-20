@@ -1,4 +1,4 @@
-import { IncomingMessage, OutgoingMessage } from 'node:http'
+import type { IncomingMessage, OutgoingMessage } from 'node:http'
 import { parse, serialize } from 'cookie-es'
 import {
   getExistCookies,
@@ -14,6 +14,7 @@ import { ACCEPT_LANGUAGE_HEADER, DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from '.
 import { normalizeLanguageName, pathLanguageParser } from './shared.ts'
 
 import type { CookieOptions, HeaderOptions, PathOptions, QueryOptions } from './http.ts'
+import process from 'node:process'
 
 /**
  * get languages from header

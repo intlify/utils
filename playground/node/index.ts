@@ -1,5 +1,6 @@
 import { createServer } from 'node:http'
 import { getHeaderLanguages } from '@intlify/utils/node'
+import process from 'node:process'
 
 const server = createServer((req, res) => {
   const languages = getHeaderLanguages(req)
