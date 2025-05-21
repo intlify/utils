@@ -64,7 +64,7 @@ export function parseAcceptLanguage(value: string): string[] {
 }
 
 /**
- * nomralize the language name
+ * normalize the language name
  *
  * @description
  * This function normalizes the locale name defined in {@link https://www.gnu.org/software/gettext/manual/gettext.html#Locale-Names | gettext(libc) style} to {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 language tag}
@@ -72,7 +72,7 @@ export function parseAcceptLanguage(value: string): string[] {
  * @example
  * ```ts
  * const oldLangName = 'en_US'
- * const langTag = nomralizeLanguageName(oldLangName)
+ * const langTag = normalizeLanguageName(oldLangName)
  * conosle.log(langTag) // en-US
  * ```
  *
