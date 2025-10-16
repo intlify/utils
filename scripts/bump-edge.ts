@@ -1,6 +1,7 @@
 import { execSync } from 'node:child_process'
 import { promises as fs } from 'node:fs'
 import { resolve } from 'node:path'
+import process from 'node:process'
 
 async function main() {
   const commit = execSync('git rev-parse --short HEAD').toString('utf-8').trim()

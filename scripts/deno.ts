@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { isExists } from './utils.ts'
 import { readPackageJSON } from 'pkg-types'
+import process from 'node:process'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
@@ -26,7 +27,7 @@ async function main() {
     throw new Error(`not found ${destPath}`)
   }
 
-  console.log('copy some source files to denoland hosting directries 🦕 ...')
+  console.log('copy some source files to denoland hosting directories 🦕 ...')
 
   // copy docs
   for (const p of ['README.md', 'LICENSE']) {

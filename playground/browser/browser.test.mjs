@@ -3,6 +3,7 @@ import test from 'node:test'
 import { createServer } from 'node:http'
 import playwright from 'playwright'
 import handler from 'serve-handler'
+import process from 'node:process'
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 

@@ -15,7 +15,7 @@ import {
   tryPathLocale,
   tryQueryLocale,
 } from './node.ts'
-import { createServer, IncomingMessage, OutgoingMessage } from 'node:http'
+import { createServer, type IncomingMessage, type OutgoingMessage } from 'node:http'
 import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 
 describe('getHeaderLanguages', () => {

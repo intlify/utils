@@ -55,7 +55,7 @@ export function getHeaderLanguages(context: Context, {
 /**
  * get language from header
  *
- * @description parse header string, default `accept-language`. if you use `accept-language`, this function retuns the **first language tag** of `accept-language` header.
+ * @description parse header string, default `accept-language`. if you use `accept-language`, this function returns the **first language tag** of `accept-language` header.
  *
  * @example
  * example for Hone:

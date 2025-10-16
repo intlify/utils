@@ -286,7 +286,7 @@ test('ParseVariantsSubtag', () => {
   >()
 })
 
-test('ParseUnicodeLangugageId', () => {
+test('ParseUnicodeLanguageId', () => {
   /**
    * Success cases
    */
@@ -312,7 +312,7 @@ test('ParseUnicodeLangugageId', () => {
     ]
   >()
 
-  /** Erros */
+  /** Errors */
   expectTypeOf<ParseUnicodeLanguageId<'a-ana-p-jauer-jauer'>>().toMatchTypeOf<
     [
       { lang: never; script: never; region: never; variants: [] },

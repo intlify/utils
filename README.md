@@ -153,7 +153,7 @@ You can do `import { ... } from '@intlify/utils'` the above utilities
 - `tryPathLocale`
 - `tryQueryLocale`
 
-The about utilies functions accpet Web APIs such as [Request](https://developer.mozilla.org/en-US/docs/Web/API/Request) and [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response) that is supported by JS environments (such as Deno, Bun, and Browser)
+The about utilities functions accept Web APIs such as [Request](https://developer.mozilla.org/en-US/docs/Web/API/Request) and [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response) that is supported by JS environments (such as Deno, Bun, and Browser)
 
 #### Specialized environments
 
@@ -161,7 +161,7 @@ If you will use Node.js and H3, You can do `import { ... } from '@intlify/utils/
 
 The namespace `{ENV}` is one of the following:
 
-- `node`: accpet `IncomingMessage` and `Outgoing` by Node.js [http](https://nodejs.org/api/http.html) module
+- `node`: accept `IncomingMessage` and `Outgoing` by Node.js [http](https://nodejs.org/api/http.html) module
 - `h3`: accept `H3Event` by HTTP framework [h3](https://github.com/unjs/h3)
 - `hono`: accept `Context` by edge-side web framework [hono](https://github.com/honojs/hono)
 
