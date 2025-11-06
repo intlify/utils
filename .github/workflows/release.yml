@@ -36,6 +36,9 @@ jobs:
       - name: Enable corepack
         run: corepack enable
 
+      - name: Update npm
+        run: npm install -g npm@latest
+
       - name: Extract version tag
         if: startsWith( github.ref, 'refs/tags/v' )
         uses: jungwinter/split@v2
@@ -68,7 +71,7 @@ jobs:
       - name: Publish package for NPM
         run: ./scripts/release.sh
         env:
-          NPM_TOKEN: ${{secrets.NPM_ORG_TOKEN}}
+          NPM_CONFIG_PROVENANCE: true
 
       - name: Publish package for JSR
         run: npx jsr publish
