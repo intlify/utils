@@ -2,6 +2,9 @@
 
 set -e
 
+# Install playwright
+pnpm exec playwright install
+
 # Pack packages
 pnpm pack
 
