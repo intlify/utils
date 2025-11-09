@@ -3,6 +3,10 @@ packages:
 
 catalog:
   deno: ^2.5.6
+catalogs:
+  vitest:
+    vitest: ^4.0.8
+    '@vitest/coverage-v8': ^4.0.8
 
 minimumReleaseAge: 1440
 minimumReleaseAgeExclude:

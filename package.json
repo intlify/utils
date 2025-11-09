@@ -39,28 +39,24 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs",
       "browser": "./dist/index.mjs",
-      "default": "./dist/index.mjs"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
     },
     "./h3": {
       "types": "./dist/h3.d.ts",
       "import": "./dist/h3.mjs",
-      "require": "./dist/h3.cjs",
-      "default": "./dist/h3.mjs"
+      "require": "./dist/h3.cjs"
     },
     "./hono": {
       "types": "./dist/hono.d.ts",
       "import": "./dist/hono.mjs",
-      "require": "./dist/hono.cjs",
-      "default": "./dist/hono.mjs"
+      "require": "./dist/hono.cjs"
     },
     "./node": {
       "types": "./dist/node.d.ts",
       "import": "./dist/node.mjs",
-      "require": "./dist/node.cjs",
-      "default": "./dist/node.mjs"
+      "require": "./dist/node.cjs"
     },
     "./dist/*": "./dist/*",
     "./package.json": "./package.json"
@@ -85,15 +81,14 @@
     "play:node": "pnpm run --filter example-node dev",
     "prepare": "git config --local core.hooksPath .githooks",
     "release": "bumpp \"package.json\" \"jsr.json\" --commit \"release: v%s\" --all --push --tag",
-    "test": "pnpm run test:typecheck && pnpm run test:unit",
+    "test": "pnpm run test:unit",
     "test:coverage": "pnpm test -- --reporter verbose --coverage",
     "test:e2e": "pnpm run --color \"/^test:e2e:/\"",
     "test:e2e:browser": "pnpm run --filter example-browser test",
     "test:e2e:bun": "pnpm run --filter example-bun test",
     "test:e2e:deno": "pnpm run --filter example-deno test",
     "test:e2e:node": "pnpm run --filter example-node test",
-    "test:typecheck": "vitest --typecheck --config ./vitest.type.config.ts --run",
-    "test:unit": "NODE_OPTIONS=--experimental-vm-modules vitest run ./src"
+    "test:unit": "vitest run --typecheck"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20251109.0",
@@ -103,7 +98,7 @@
     "@kazupon/prettier-config": "^0.1.1",
     "@types/node": "^24.10.0",
     "@types/supertest": "^2.0.16",
-    "@vitest/coverage-v8": "^1.6.1",
+    "@vitest/coverage-v8": "catalog:vitest",
     "@vitest/eslint-plugin": "^1.4.1",
     "bumpp": "^9.11.1",
     "cookie-es": "^1.2.2",
@@ -134,7 +129,7 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.3",
     "unbuild": "^3.6.1",
-    "vitest": "^1.6.1",
+    "vitest": "catalog:vitest",
     "vitest-environment-miniflare": "^2.14.1"
   },
   "prettier": "@kazupon/prettier-config",
