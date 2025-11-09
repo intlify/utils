@@ -5,8 +5,9 @@ set -e
 # Pack packages
 pnpm pack
 
+# TODO(kazupon): Remove this when jsr supports pnpm workspace
 # Replace deps
-pnpx tsx run ./scripts/replaceDeps.ts
+pnpx tsx ./scripts/replaceDeps.ts
 
 # just do e2e!
 pnpm run test:e2e
