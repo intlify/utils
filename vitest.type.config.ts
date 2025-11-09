@@ -6,7 +6,7 @@ export default defineConfig({
   test: {
     ...config.test,
     typecheck: {
-      tsconfig: './tsconfig.vitest.json',
-    },
-  },
+      tsconfig: './tsconfig.vitest.json'
+    }
+  }
 })

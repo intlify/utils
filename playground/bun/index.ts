@@ -6,6 +6,6 @@ Bun.serve({
   fetch(req: Request) {
     const locale = getHeaderLocale(req)
     return new Response(`detect locale: ${locale.toString()}`)
-  },
+  }
 })
 console.log(`server listening on ${port}`)

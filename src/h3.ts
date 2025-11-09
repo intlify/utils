@@ -1,3 +1,9 @@
+/**
+ * @author kazuya kawaguchi (a.k.a. kazupon)
+ * @license MIT
+ */
+
+import { getCookie, getHeaders, getRequestURL, setCookie } from 'h3'
 import { ACCEPT_LANGUAGE_HEADER, DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 import {
   getHeaderLanguagesWithGetter,
@@ -6,10 +12,9 @@ import {
   getQueryLocale as _getQueryLocale,
   mapToLocaleFromLanguageTag,
   parseDefaultHeader,
-  validateLocale,
+  validateLocale
 } from './http.ts'
 import { pathLanguageParser } from './shared.ts'
-import { getCookie, getHeaders, getRequestURL, setCookie } from 'h3'
 
 import type { H3Event } from 'h3'
 import type { CookieOptions, HeaderOptions, PathOptions, QueryOptions } from './http.ts'
@@ -40,10 +45,10 @@ import type { CookieOptions, HeaderOptions, PathOptions, QueryOptions } from './
  *
  * @returns {Array<string>} The array of language tags, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array.
  */
-export function getHeaderLanguages(event: H3Event, {
-  name = ACCEPT_LANGUAGE_HEADER,
-  parser = parseDefaultHeader,
-}: HeaderOptions = {}): string[] {
+export function getHeaderLanguages(
+  event: H3Event,
+  { name = ACCEPT_LANGUAGE_HEADER, parser = parseDefaultHeader }: HeaderOptions = {}
+): string[] {
   const getter = () => {
     const headers = getHeaders(event)
     return headers[name]
@@ -77,10 +82,10 @@ export function getHeaderLanguages(event: H3Event, {
  *
  * @returns {string} The **first language tag** of header, if header is not exists, or `*` (any language), return empty string.
  */
-export function getHeaderLanguage(event: H3Event, {
-  name = ACCEPT_LANGUAGE_HEADER,
-  parser = parseDefaultHeader,
-}: HeaderOptions = {}): string {
+export function getHeaderLanguage(
+  event: H3Event,
+  { name = ACCEPT_LANGUAGE_HEADER, parser = parseDefaultHeader }: HeaderOptions = {}
+): string {
   return getHeaderLanguages(event, { name, parser })[0] || ''
 }
 
@@ -113,11 +118,9 @@ export function getHeaderLanguage(event: H3Event, {
  */
 export function getHeaderLocales(
   event: H3Event,
-  {
-    name = ACCEPT_LANGUAGE_HEADER,
-    parser = parseDefaultHeader,
-  }: HeaderOptions = {},
+  { name = ACCEPT_LANGUAGE_HEADER, parser = parseDefaultHeader }: HeaderOptions = {}
 ): Intl.Locale[] {
+  // @ts-expect-error -- FIXME: this type error needs to be fixed
   return mapToLocaleFromLanguageTag(getHeaderLanguages, event, { name, parser })
 }
 
@@ -134,10 +137,7 @@ export function getHeaderLocales(
  */
 export function tryHeaderLocales(
   event: H3Event,
-  {
-    name = ACCEPT_LANGUAGE_HEADER,
-    parser = parseDefaultHeader,
-  }: HeaderOptions = {},
+  { name = ACCEPT_LANGUAGE_HEADER, parser = parseDefaultHeader }: HeaderOptions = {}
 ): Intl.Locale[] | null {
   try {
     return getHeaderLocales(event, { name, parser })
@@ -179,8 +179,8 @@ export function getHeaderLocale(
   {
     lang = DEFAULT_LANG_TAG,
     name = ACCEPT_LANGUAGE_HEADER,
-    parser = parseDefaultHeader,
-  }: HeaderOptions & { lang?: string } = {},
+    parser = parseDefaultHeader
+  }: HeaderOptions & { lang?: string } = {}
 ): Intl.Locale {
   return getLocaleWithGetter(() => getHeaderLanguages(event, { name, parser })[0] || lang)
 }
@@ -202,8 +202,8 @@ export function tryHeaderLocale(
   {
     lang = DEFAULT_LANG_TAG,
     name = ACCEPT_LANGUAGE_HEADER,
-    parser = parseDefaultHeader,
-  }: HeaderOptions & { lang?: string } = {},
+    parser = parseDefaultHeader
+  }: HeaderOptions & { lang?: string } = {}
 ): Intl.Locale | null {
   try {
     return getHeaderLocale(event, { lang, name, parser })
@@ -239,7 +239,7 @@ export function tryHeaderLocale(
  */
 export function getCookieLocale(
   event: H3Event,
-  { lang = DEFAULT_LANG_TAG, name = DEFAULT_COOKIE_NAME } = {},
+  { lang = DEFAULT_LANG_TAG, name = DEFAULT_COOKIE_NAME } = {}
 ): Intl.Locale {
   return getLocaleWithGetter(() => getCookie(event, name) || lang)
 }
@@ -257,7 +257,7 @@ export function getCookieLocale(
  */
 export function tryCookieLocale(
   event: H3Event,
-  { lang = DEFAULT_LANG_TAG, name = DEFAULT_COOKIE_NAME } = {},
+  { lang = DEFAULT_LANG_TAG, name = DEFAULT_COOKIE_NAME } = {}
 ): Intl.Locale | null {
   try {
     return getCookieLocale(event, { lang, name })
@@ -291,7 +291,7 @@ export function tryCookieLocale(
 export function setCookieLocale(
   event: H3Event,
   locale: string | Intl.Locale,
-  options: CookieOptions = { name: DEFAULT_COOKIE_NAME },
+  options: CookieOptions = { name: DEFAULT_COOKIE_NAME } // eslint-disable-line unicorn/no-object-as-default-parameter -- NOTE: allow
 ): void {
   validateLocale(locale)
   setCookie(event, options.name!, locale.toString(), options)
@@ -310,7 +310,7 @@ export function setCookieLocale(
  */
 export function getPathLocale(
   event: H3Event,
-  { lang = DEFAULT_LANG_TAG, parser = pathLanguageParser }: PathOptions = {},
+  { lang = DEFAULT_LANG_TAG, parser = pathLanguageParser }: PathOptions = {}
 ): Intl.Locale {
   return _getPathLocale(getRequestURL(event), { lang, parser })
 }
@@ -328,7 +328,7 @@ export function getPathLocale(
  */
 export function tryPathLocale(
   event: H3Event,
-  { lang = DEFAULT_LANG_TAG, parser = pathLanguageParser }: PathOptions = {},
+  { lang = DEFAULT_LANG_TAG, parser = pathLanguageParser }: PathOptions = {}
 ): Intl.Locale | null {
   try {
     return getPathLocale(event, { lang, parser })
@@ -350,7 +350,7 @@ export function tryPathLocale(
  */
 export function getQueryLocale(
   event: H3Event,
-  { lang = DEFAULT_LANG_TAG, name = 'locale' }: QueryOptions = {},
+  { lang = DEFAULT_LANG_TAG, name = 'locale' }: QueryOptions = {}
 ): Intl.Locale {
   return _getQueryLocale(getRequestURL(event), { lang, name })
 }
@@ -368,7 +368,7 @@ export function getQueryLocale(
  */
 export function tryQueryLocale(
   event: H3Event,
-  { lang = DEFAULT_LANG_TAG, name = 'locale' }: QueryOptions = {},
+  { lang = DEFAULT_LANG_TAG, name = 'locale' }: QueryOptions = {}
 ): Intl.Locale | null {
   try {
     return getQueryLocale(event, { lang, name })

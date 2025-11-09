@@ -5,7 +5,7 @@ import playwright from 'playwright'
 import handler from 'serve-handler'
 import process from 'node:process'
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 function getText(page, selector, options) {
   return page.locator(selector, options).innerText()

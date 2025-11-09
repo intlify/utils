@@ -3,7 +3,7 @@ import { expect, test } from 'bun:test'
 test('bun integration test', async () => {
   const process = Bun.spawn(['bun', 'run', './index.ts'], {
     stdin: 'inherit',
-    cwd: import.meta.dir,
+    cwd: import.meta.dir
   })
   await Bun.sleep(1000)
 

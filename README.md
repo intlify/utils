@@ -55,6 +55,8 @@ You can install via `import`.
 
 in your code:
 
+<!-- eslint-skip -->
+
 ```ts
 /**
  * you can install via other CDN URL such as skypack,
@@ -79,19 +81,21 @@ in your HTML:
 
 ```html
 <script type="module">
-/**
- * you can install via other CDN URL such as skypack,
- * or, you can also use import maps
- */
-import { isLocale } from 'https://esm.sh/@intlify/utils'
+  /**
+   * you can install via other CDN URL such as skypack,
+   * or, you can also use import maps
+   */
+  import { isLocale } from 'https://esm.sh/@intlify/utils'
 
-// something todo
-// ...
+  // something todo
+  // ...
 </script>
 ```
 
 <details>
   <summary>Using Edge Releases</summary>
+
+<!-- eslint-skip -->
 
 ```ts
 import { isLocale } from 'https://esm.sh/@intlify/utils-edge'
@@ -134,8 +138,12 @@ You can do `import { ... } from '@intlify/utils'` the above utilities
 
 You can do `import { ... } from '@intlify/utils'` the above utilities
 
+<!-- eslint-disable markdown/no-missing-label-refs -->
+
 > [!NOTE]
 > for Node.js You need to do `import { ... } from '@intlify/utils/node'`
+
+<!-- eslint-enable markdown/no-missing-label-refs -->
 
 ### HTTP
 

@@ -14,7 +14,7 @@ import {
   tryHeaderLocale,
   tryHeaderLocales,
   tryPathLocale,
-  tryQueryLocale,
+  tryQueryLocale
 } from './h3.ts'
 import { parseAcceptLanguage } from './shared.ts'
 import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
@@ -29,10 +29,10 @@ describe('getHeaderLanguages', () => {
         req: {
           method: 'GET',
           headers: {
-            'accept-language': 'en-US,en;q=0.9,ja;q=0.8',
-          },
-        },
-      },
+            'accept-language': 'en-US,en;q=0.9,ja;q=0.8'
+          }
+        }
+      }
     } as H3Event
     expect(getHeaderLanguages(mockEvent)).toEqual(['en-US', 'en', 'ja'])
   })
@@ -43,10 +43,10 @@ describe('getHeaderLanguages', () => {
         req: {
           method: 'GET',
           headers: {
-            'accept-language': '*',
-          },
-        },
-      },
+            'accept-language': '*'
+          }
+        }
+      }
     } as H3Event
     expect(getHeaderLanguages(mockEvent)).toEqual([])
   })
@@ -56,9 +56,9 @@ describe('getHeaderLanguages', () => {
       node: {
         req: {
           method: 'GET',
-          headers: {},
-        },
-      },
+          headers: {}
+        }
+      }
     } as H3Event
     expect(getHeaderLanguages(mockEvent)).toEqual([])
   })
@@ -69,13 +69,16 @@ describe('getHeaderLanguages', () => {
         req: {
           method: 'GET',
           headers: {
-            'accept-language': 'en-US,en;q=0.9,ja;q=0.8',
-          },
-        },
-      },
+            'accept-language': 'en-US,en;q=0.9,ja;q=0.8'
+          }
+        }
+      }
     } as H3Event
-    expect(getHeaderLanguages(mockEvent, { parser: parseAcceptLanguage }))
-      .toEqual(['en-US', 'en', 'ja'])
+    expect(getHeaderLanguages(mockEvent, { parser: parseAcceptLanguage })).toEqual([
+      'en-US',
+      'en',
+      'ja'
+    ])
   })
 
   test('custom header', () => {
@@ -85,16 +88,16 @@ describe('getHeaderLanguages', () => {
         req: {
           method: 'GET',
           headers: {
-            'x-inlitfy-language': 'en-US,en,ja',
-          },
-        },
-      },
+            'x-inlitfy-language': 'en-US,en,ja'
+          }
+        }
+      }
     } as H3Event
     expect(
       getHeaderLanguages(mockEvent, {
         name: 'x-inlitfy-language',
-        parser: (header) => header.split(','),
-      }),
+        parser: header => header.split(',')
+      })
     ).toEqual(['en-US', 'en', 'ja'])
   })
 })
@@ -106,10 +109,10 @@ describe('getAcceptLanguage', () => {
         req: {
           method: 'GET',
           headers: {
-            'accept-language': 'en-US,en;q=0.9,ja;q=0.8',
-          },
-        },
-      },
+            'accept-language': 'en-US,en;q=0.9,ja;q=0.8'
+          }
+        }
+      }
     } as H3Event
     expect(getHeaderLanguage(mockEvent)).toEqual('en-US')
   })
@@ -120,10 +123,10 @@ describe('getAcceptLanguage', () => {
         req: {
           method: 'GET',
           headers: {
-            'accept-language': '*',
-          },
-        },
-      },
+            'accept-language': '*'
+          }
+        }
+      }
     } as H3Event
     expect(getHeaderLanguage(mockEvent)).toEqual('')
   })
@@ -133,9 +136,9 @@ describe('getAcceptLanguage', () => {
       node: {
         req: {
           method: 'GET',
-          headers: {},
-        },
-      },
+          headers: {}
+        }
+      }
     } as H3Event
     expect(getHeaderLanguage(mockEvent)).toEqual('')
   })
@@ -147,16 +150,16 @@ describe('getAcceptLanguage', () => {
         req: {
           method: 'GET',
           headers: {
-            'x-inlitfy-language': 'en-US,en,ja',
-          },
-        },
-      },
+            'x-inlitfy-language': 'en-US,en,ja'
+          }
+        }
+      }
     } as H3Event
     expect(
       getHeaderLanguage(mockEvent, {
         name: 'x-inlitfy-language',
-        parser: (header) => header.split(','),
-      }),
+        parser: header => header.split(',')
+      })
     ).toEqual('en-US')
   })
 })
@@ -168,13 +171,16 @@ describe('getHeaderLocales', () => {
         req: {
           method: 'GET',
           headers: {
-            'accept-language': 'en-US,en;q=0.9,ja;q=0.8',
-          },
-        },
-      },
+            'accept-language': 'en-US,en;q=0.9,ja;q=0.8'
+          }
+        }
+      }
     } as H3Event
-    expect(getHeaderLocales(mockEvent).map((locale) => locale.baseName))
-      .toEqual(['en-US', 'en', 'ja'])
+    expect(getHeaderLocales(mockEvent).map(locale => locale.baseName)).toEqual([
+      'en-US',
+      'en',
+      'ja'
+    ])
   })
 
   test('any language', () => {
@@ -183,10 +189,10 @@ describe('getHeaderLocales', () => {
         req: {
           method: 'GET',
           headers: {
-            'accept-language': '*',
-          },
-        },
-      },
+            'accept-language': '*'
+          }
+        }
+      }
     } as H3Event
     expect(getHeaderLocales(mockEvent)).toEqual([])
   })
@@ -196,9 +202,9 @@ describe('getHeaderLocales', () => {
       node: {
         req: {
           method: 'GET',
-          headers: {},
-        },
-      },
+          headers: {}
+        }
+      }
     } as H3Event
     expect(getHeaderLocales(mockEvent)).toEqual([])
   })
@@ -210,16 +216,16 @@ describe('getHeaderLocales', () => {
         req: {
           method: 'GET',
           headers: {
-            'x-inlitfy-language': 'en-US,en,ja',
-          },
-        },
-      },
+            'x-inlitfy-language': 'en-US,en,ja'
+          }
+        }
+      }
     } as H3Event
     expect(
       getHeaderLocales(mockEvent, {
         name: 'x-inlitfy-language',
-        parser: (header) => header.split(','),
-      }).map((locale) => locale.baseName),
+        parser: header => header.split(',')
+      }).map(locale => locale.baseName)
     ).toEqual(['en-US', 'en', 'ja'])
   })
 })
@@ -231,13 +237,16 @@ describe('tryHeaderLocales', () => {
         req: {
           method: 'GET',
           headers: {
-            'accept-language': 'en-US,en;q=0.9,ja;q=0.8',
-          },
-        },
-      },
+            'accept-language': 'en-US,en;q=0.9,ja;q=0.8'
+          }
+        }
+      }
     } as H3Event
-    expect(tryHeaderLocales(mockEvent)!.map((locale) => locale.baseName))
-      .toEqual(['en-US', 'en', 'ja'])
+    expect(tryHeaderLocales(mockEvent)!.map(locale => locale.baseName)).toEqual([
+      'en-US',
+      'en',
+      'ja'
+    ])
   })
 
   test('failed', () => {
@@ -246,10 +255,10 @@ describe('tryHeaderLocales', () => {
         req: {
           method: 'GET',
           headers: {
-            'accept-language': 'hoge',
-          },
-        },
-      },
+            'accept-language': 'hoge'
+          }
+        }
+      }
     } as H3Event
     expect(tryHeaderLocales(mockEvent)).toBeNull()
   })
@@ -262,10 +271,10 @@ describe('getHeaderLocale', () => {
         req: {
           method: 'GET',
           headers: {
-            'accept-language': 'en-US,en;q=0.9,ja;q=0.8',
-          },
-        },
-      },
+            'accept-language': 'en-US,en;q=0.9,ja;q=0.8'
+          }
+        }
+      }
     } as H3Event
     const locale = getHeaderLocale(mockEvent)
 
@@ -280,10 +289,10 @@ describe('getHeaderLocale', () => {
         req: {
           method: 'GET',
           headers: {
-            'accept-language': '*',
-          },
-        },
-      },
+            'accept-language': '*'
+          }
+        }
+      }
     } as H3Event
     const locale = getHeaderLocale(mockEvent)
 
@@ -296,10 +305,10 @@ describe('getHeaderLocale', () => {
         req: {
           method: 'GET',
           headers: {
-            'accept-language': '*',
-          },
-        },
-      },
+            'accept-language': '*'
+          }
+        }
+      }
     } as H3Event
     const locale = getHeaderLocale(mockEvent, { lang: 'ja-JP' })
 
@@ -312,15 +321,13 @@ describe('getHeaderLocale', () => {
         req: {
           method: 'GET',
           headers: {
-            'accept-language': 's',
-          },
-        },
-      },
+            'accept-language': 's'
+          }
+        }
+      }
     } as H3Event
 
-    expect(() => getHeaderLocale(mockEvent, { lang: 'ja-JP' })).toThrowError(
-      RangeError,
-    )
+    expect(() => getHeaderLocale(mockEvent, { lang: 'ja-JP' })).toThrowError(RangeError)
   })
 
   test('custom header', () => {
@@ -330,16 +337,16 @@ describe('getHeaderLocale', () => {
         req: {
           method: 'GET',
           headers: {
-            'x-inlitfy-language': 'en-US,en,ja',
-          },
-        },
-      },
+            'x-inlitfy-language': 'en-US,en,ja'
+          }
+        }
+      }
     } as H3Event
     expect(
       getHeaderLocale(mockEvent, {
         name: 'x-inlitfy-language',
-        parser: (header) => header.split(','),
-      }).toString(),
+        parser: header => header.split(',')
+      }).toString()
     ).toEqual('en-US')
   })
 })
@@ -351,10 +358,10 @@ describe('tryHeaderLocale', () => {
         req: {
           method: 'GET',
           headers: {
-            'accept-language': 'en-US,en;q=0.9,ja;q=0.8',
-          },
-        },
-      },
+            'accept-language': 'en-US,en;q=0.9,ja;q=0.8'
+          }
+        }
+      }
     } as H3Event
     const locale = tryHeaderLocale(mockEvent)!
 
@@ -369,10 +376,10 @@ describe('tryHeaderLocale', () => {
         req: {
           method: 'GET',
           headers: {
-            'accept-language': 's',
-          },
-        },
-      },
+            'accept-language': 's'
+          }
+        }
+      }
     } as H3Event
 
     expect(tryHeaderLocale(mockEvent)).toBeNull()
@@ -386,10 +393,10 @@ describe('getCookieLocale', () => {
         req: {
           method: 'GET',
           headers: {
-            cookie: `${DEFAULT_COOKIE_NAME}=ja-US`,
-          },
-        },
-      },
+            cookie: `${DEFAULT_COOKIE_NAME}=ja-US`
+          }
+        }
+      }
     } as H3Event
     const locale = getCookieLocale(mockEvent)
 
@@ -403,9 +410,9 @@ describe('getCookieLocale', () => {
       node: {
         req: {
           method: 'GET',
-          headers: {},
-        },
-      },
+          headers: {}
+        }
+      }
     } as H3Event
     const locale = getCookieLocale(mockEvent)
 
@@ -417,9 +424,9 @@ describe('getCookieLocale', () => {
       node: {
         req: {
           method: 'GET',
-          headers: {},
-        },
-      },
+          headers: {}
+        }
+      }
     } as H3Event
     const locale = getCookieLocale(mockEvent, { lang: 'ja-JP' })
 
@@ -432,10 +439,10 @@ describe('getCookieLocale', () => {
         req: {
           method: 'GET',
           headers: {
-            cookie: 'intlify_locale=fr-FR',
-          },
-        },
-      },
+            cookie: 'intlify_locale=fr-FR'
+          }
+        }
+      }
     } as H3Event
     const locale = getCookieLocale(mockEvent, { name: 'intlify_locale' })
 
@@ -448,14 +455,13 @@ describe('getCookieLocale', () => {
         req: {
           method: 'GET',
           headers: {
-            cookie: 'intlify_locale=f',
-          },
-        },
-      },
+            cookie: 'intlify_locale=f'
+          }
+        }
+      }
     } as H3Event
 
-    expect(() => getCookieLocale(mockEvent, { name: 'intlify_locale' }))
-      .toThrowError(RangeError)
+    expect(() => getCookieLocale(mockEvent, { name: 'intlify_locale' })).toThrowError(RangeError)
   })
 })
 
@@ -466,10 +472,10 @@ describe('tryCookieLocale', () => {
         req: {
           method: 'GET',
           headers: {
-            cookie: `${DEFAULT_COOKIE_NAME}=en-US`,
-          },
-        },
-      },
+            cookie: `${DEFAULT_COOKIE_NAME}=en-US`
+          }
+        }
+      }
     } as H3Event
     const locale = tryCookieLocale(mockEvent)!
 
@@ -484,10 +490,10 @@ describe('tryCookieLocale', () => {
         req: {
           method: 'GET',
           headers: {
-            cookie: 'intlify_locale=f',
-          },
-        },
-      },
+            cookie: 'intlify_locale=f'
+          }
+        }
+      }
     } as H3Event
 
     expect(tryCookieLocale(mockEvent, { name: 'intlify_locale' })).toBeNull()
@@ -506,44 +512,38 @@ describe('setCookieLocale', () => {
   test('specify Locale instance', async () => {
     app.use(
       '/',
-      eventHandler((event) => {
+      eventHandler(event => {
         const locale = new Intl.Locale('ja-JP')
         setCookieLocale(event, locale)
         return '200'
-      }),
+      })
     )
     const result = await request.get('/')
-    expect(result.headers['set-cookie']).toEqual([
-      'i18n_locale=ja-JP; Path=/',
-    ])
+    expect(result.headers['set-cookie']).toEqual(['i18n_locale=ja-JP; Path=/'])
   })
 
   test('specify language tag', async () => {
     app.use(
       '/',
-      eventHandler((event) => {
+      eventHandler(event => {
         setCookieLocale(event, 'ja-JP')
         return '200'
-      }),
+      })
     )
     const result = await request.get('/')
-    expect(result.headers['set-cookie']).toEqual([
-      'i18n_locale=ja-JP; Path=/',
-    ])
+    expect(result.headers['set-cookie']).toEqual(['i18n_locale=ja-JP; Path=/'])
   })
 
   test('specify cookie name', async () => {
     app.use(
       '/',
-      eventHandler((event) => {
+      eventHandler(event => {
         setCookieLocale(event, 'ja-JP', { name: 'intlify_locale' })
         return '200'
-      }),
+      })
     )
     const result = await request.get('/')
-    expect(result.headers['set-cookie']).toEqual([
-      'intlify_locale=ja-JP; Path=/',
-    ])
+    expect(result.headers['set-cookie']).toEqual(['intlify_locale=ja-JP; Path=/'])
   })
 
   test('Syntax Error', () => {
@@ -551,13 +551,12 @@ describe('setCookieLocale', () => {
       node: {
         req: {
           method: 'GET',
-          headers: {},
-        },
-      },
+          headers: {}
+        }
+      }
     } as H3Event
 
-    expect(() => setCookieLocale(eventMock, 'j'))
-      .toThrowError(/locale is invalid: j/)
+    expect(() => setCookieLocale(eventMock, 'j')).toThrowError(/locale is invalid: j/)
   })
 })
 
@@ -567,9 +566,9 @@ test('getPathLocale', async () => {
 
   app.use(
     '/',
-    eventHandler((event) => {
+    eventHandler(event => {
       return { locale: getPathLocale(event).toString() }
-    }),
+    })
   )
   const res = await request.get('/en/foo')
   expect(res.body).toEqual({ locale: 'en' })
@@ -582,9 +581,9 @@ describe('tryPathLocale', () => {
 
     app.use(
       '/',
-      eventHandler((event) => {
+      eventHandler(event => {
         return { locale: tryPathLocale(event)!.toString() }
-      }),
+      })
     )
     const res = await request.get('/en/foo')
     expect(res.body).toEqual({ locale: 'en' })
@@ -596,9 +595,9 @@ describe('tryPathLocale', () => {
 
     app.use(
       '/',
-      eventHandler((event) => {
+      eventHandler(event => {
         return { locale: tryPathLocale(event) }
-      }),
+      })
     )
     const res = await request.get('/s/foo')
     expect(res.body).toEqual({ locale: null })
@@ -611,9 +610,9 @@ test('getQueryLocale', async () => {
 
   app.use(
     '/',
-    eventHandler((event) => {
+    eventHandler(event => {
       return { locale: getQueryLocale(event).toString() }
-    }),
+    })
   )
   const res = await request.get('/?locale=ja')
   expect(res.body).toEqual({ locale: 'ja' })
@@ -626,9 +625,9 @@ describe('tryQueryLocale', () => {
 
     app.use(
       '/',
-      eventHandler((event) => {
+      eventHandler(event => {
         return { locale: tryQueryLocale(event)!.toString() }
-      }),
+      })
     )
     const res = await request.get('/?locale=ja')
     expect(res.body).toEqual({ locale: 'ja' })
@@ -640,9 +639,9 @@ describe('tryQueryLocale', () => {
 
     app.use(
       '/',
-      eventHandler((event) => {
+      eventHandler(event => {
         return { locale: tryQueryLocale(event) }
-      }),
+      })
     )
     const res = await request.get('/?locale=j')
     expect(res.body).toEqual({ locale: null })

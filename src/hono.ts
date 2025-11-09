@@ -1,3 +1,9 @@
+/**
+ * @author kazuya kawaguchi (a.k.a. kazupon)
+ * @license MIT
+ */
+
+import { getCookie, setCookie } from 'hono/cookie'
 import { ACCEPT_LANGUAGE_HEADER, DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 import {
   getHeaderLanguagesWithGetter,
@@ -6,10 +12,9 @@ import {
   getQueryLocale as _getQueryLocale,
   mapToLocaleFromLanguageTag,
   parseDefaultHeader,
-  validateLocale,
+  validateLocale
 } from './http.ts'
 import { pathLanguageParser } from './shared.ts'
-import { getCookie, setCookie } from 'hono/cookie'
 
 import type { Context } from 'hono'
 import type { HeaderOptions, PathOptions, QueryOptions } from './http.ts'
@@ -42,13 +47,13 @@ type CookieOptions = Parameters<typeof setCookie>[3] & { name?: string }
  *
  * @returns {Array<string>} An array of language tags, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array.
  */
-export function getHeaderLanguages(context: Context, {
-  name = ACCEPT_LANGUAGE_HEADER,
-  parser = parseDefaultHeader,
-}: HeaderOptions = {}): string[] {
+export function getHeaderLanguages(
+  context: Context,
+  { name = ACCEPT_LANGUAGE_HEADER, parser = parseDefaultHeader }: HeaderOptions = {}
+): string[] {
   return getHeaderLanguagesWithGetter(() => context.req.header(name), {
     name,
-    parser,
+    parser
   })
 }
 
@@ -78,10 +83,10 @@ export function getHeaderLanguages(context: Context, {
  *
  * @returns {string} A **first language tag** of header, if header is not exists, or `*` (any language), return empty string.
  */
-export function getHeaderLanguage(context: Context, {
-  name = ACCEPT_LANGUAGE_HEADER,
-  parser = parseDefaultHeader,
-}: HeaderOptions = {}): string {
+export function getHeaderLanguage(
+  context: Context,
+  { name = ACCEPT_LANGUAGE_HEADER, parser = parseDefaultHeader }: HeaderOptions = {}
+): string {
   return getHeaderLanguages(context, { name, parser })[0] || ''
 }
 
@@ -115,14 +120,12 @@ export function getHeaderLanguage(context: Context, {
  */
 export function getHeaderLocales(
   context: Context,
-  {
-    name = ACCEPT_LANGUAGE_HEADER,
-    parser = parseDefaultHeader,
-  }: HeaderOptions = {},
+  { name = ACCEPT_LANGUAGE_HEADER, parser = parseDefaultHeader }: HeaderOptions = {}
 ): Intl.Locale[] {
+  // @ts-expect-error -- FIXME: this type error needs to be fixed
   return mapToLocaleFromLanguageTag(getHeaderLanguages, context, {
     name,
-    parser,
+    parser
   })
 }
 
@@ -139,10 +142,7 @@ export function getHeaderLocales(
  */
 export function tryHeaderLocales(
   context: Context,
-  {
-    name = ACCEPT_LANGUAGE_HEADER,
-    parser = parseDefaultHeader,
-  }: HeaderOptions = {},
+  { name = ACCEPT_LANGUAGE_HEADER, parser = parseDefaultHeader }: HeaderOptions = {}
 ): Intl.Locale[] | null {
   try {
     return getHeaderLocales(context, { name, parser })
@@ -185,8 +185,8 @@ export function getHeaderLocale(
   {
     lang = DEFAULT_LANG_TAG,
     name = ACCEPT_LANGUAGE_HEADER,
-    parser = parseDefaultHeader,
-  }: HeaderOptions & { lang?: string } = {},
+    parser = parseDefaultHeader
+  }: HeaderOptions & { lang?: string } = {}
 ): Intl.Locale {
   return getLocaleWithGetter(() => getHeaderLanguages(context, { name, parser })[0] || lang)
 }
@@ -208,8 +208,8 @@ export function tryHeaderLocale(
   {
     lang = DEFAULT_LANG_TAG,
     name = ACCEPT_LANGUAGE_HEADER,
-    parser = parseDefaultHeader,
-  }: HeaderOptions & { lang?: string } = {},
+    parser = parseDefaultHeader
+  }: HeaderOptions & { lang?: string } = {}
 ): Intl.Locale | null {
   try {
     return getHeaderLocale(context, { lang, name, parser })
@@ -246,7 +246,7 @@ export function tryHeaderLocale(
  */
 export function getCookieLocale(
   context: Context,
-  { lang = DEFAULT_LANG_TAG, name = DEFAULT_COOKIE_NAME } = {},
+  { lang = DEFAULT_LANG_TAG, name = DEFAULT_COOKIE_NAME } = {}
 ): Intl.Locale {
   return getLocaleWithGetter(() => getCookie(context, name) || lang)
 }
@@ -264,7 +264,7 @@ export function getCookieLocale(
  */
 export function tryCookieLocale(
   context: Context,
-  { lang = DEFAULT_LANG_TAG, name = DEFAULT_COOKIE_NAME } = {},
+  { lang = DEFAULT_LANG_TAG, name = DEFAULT_COOKIE_NAME } = {}
 ): Intl.Locale | null {
   try {
     return getCookieLocale(context, { lang, name })
@@ -299,7 +299,7 @@ export function tryCookieLocale(
 export function setCookieLocale(
   context: Context,
   locale: string | Intl.Locale,
-  options: CookieOptions = { name: DEFAULT_COOKIE_NAME },
+  options: CookieOptions = { name: DEFAULT_COOKIE_NAME } // eslint-disable-line unicorn/no-object-as-default-parameter -- NOTE: allow
 ): void {
   validateLocale(locale)
   setCookie(context, options.name!, locale.toString(), options)
@@ -318,7 +318,7 @@ export function setCookieLocale(
  */
 export function getPathLocale(
   context: Context,
-  { lang = DEFAULT_LANG_TAG, parser = pathLanguageParser }: PathOptions = {},
+  { lang = DEFAULT_LANG_TAG, parser = pathLanguageParser }: PathOptions = {}
 ): Intl.Locale {
   return _getPathLocale(new URL(context.req.url), { lang, parser })
 }
@@ -336,7 +336,7 @@ export function getPathLocale(
  */
 export function tryPathLocale(
   context: Context,
-  { lang = DEFAULT_LANG_TAG, parser = pathLanguageParser }: PathOptions = {},
+  { lang = DEFAULT_LANG_TAG, parser = pathLanguageParser }: PathOptions = {}
 ): Intl.Locale | null {
   try {
     return getPathLocale(context, { lang, parser })
@@ -358,7 +358,7 @@ export function tryPathLocale(
  */
 export function getQueryLocale(
   context: Context,
-  { lang = DEFAULT_LANG_TAG, name = 'locale' }: QueryOptions = {},
+  { lang = DEFAULT_LANG_TAG, name = 'locale' }: QueryOptions = {}
 ): Intl.Locale {
   return _getQueryLocale(new URL(context.req.url), { lang, name })
 }
@@ -376,7 +376,7 @@ export function getQueryLocale(
  */
 export function tryQueryLocale(
   context: Context,
-  { lang = DEFAULT_LANG_TAG, name = 'locale' }: QueryOptions = {},
+  { lang = DEFAULT_LANG_TAG, name = 'locale' }: QueryOptions = {}
 ): Intl.Locale | null {
   try {
     return getQueryLocale(context, { lang, name })

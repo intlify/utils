@@ -1,4 +1,5 @@
 import { describe, expect, test, vi } from 'vitest'
+import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 import {
   getCookieLocale,
   getHeaderLanguage,
@@ -14,9 +15,8 @@ import {
   tryHeaderLocale,
   tryHeaderLocales,
   tryPathLocale,
-  tryQueryLocale,
+  tryQueryLocale
 } from './web.ts'
-import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 
 describe('getHeaderLanguages', () => {
   test('basic', () => {
@@ -39,10 +39,12 @@ describe('getHeaderLanguages', () => {
   test('custom header', () => {
     const mockRequest = new Request('https://example.com')
     mockRequest.headers.set('x-inlitfy-language', 'en-US,en,ja')
-    expect(getHeaderLanguages(mockRequest, {
-      name: 'x-inlitfy-language',
-      parser: (header) => header.split(','),
-    })).toEqual(['en-US', 'en', 'ja'])
+    expect(
+      getHeaderLanguages(mockRequest, {
+        name: 'x-inlitfy-language',
+        parser: header => header.split(',')
+      })
+    ).toEqual(['en-US', 'en', 'ja'])
   })
 })
 
@@ -50,8 +52,11 @@ describe('getHeaderLocales', () => {
   test('basic', () => {
     const mockRequest = new Request('https://example.com')
     mockRequest.headers.set('accept-language', 'en-US,en;q=0.9,ja;q=0.8')
-    expect(getHeaderLocales(mockRequest).map((locale) => locale.baseName))
-      .toEqual(['en-US', 'en', 'ja'])
+    expect(getHeaderLocales(mockRequest).map(locale => locale.baseName)).toEqual([
+      'en-US',
+      'en',
+      'ja'
+    ])
   })
 
   test('any language', () => {
@@ -71,8 +76,8 @@ describe('getHeaderLocales', () => {
     expect(
       getHeaderLanguage(mockRequest, {
         name: 'x-inlitfy-language',
-        parser: (header) => header.split(','),
-      }),
+        parser: header => header.split(',')
+      })
     ).toEqual('en-US')
   })
 })
@@ -81,8 +86,11 @@ describe('tryHeaderLocales', () => {
   test('success', () => {
     const mockRequest = new Request('https://example.com')
     mockRequest.headers.set('accept-language', 'en-US,en;q=0.9,ja;q=0.8')
-    expect(tryHeaderLocales(mockRequest)!.map((locale) => locale.baseName))
-      .toEqual(['en-US', 'en', 'ja'])
+    expect(tryHeaderLocales(mockRequest)!.map(locale => locale.baseName)).toEqual([
+      'en-US',
+      'en',
+      'ja'
+    ])
   })
 
   test('failed', () => {
@@ -116,8 +124,8 @@ describe('getAcceptLanguage', () => {
     expect(
       getHeaderLocales(mockRequest, {
         name: 'x-inlitfy-language',
-        parser: (header) => header.split(','),
-      }).map((locale) => locale.baseName),
+        parser: header => header.split(',')
+      }).map(locale => locale.baseName)
     ).toEqual(['en-US', 'en', 'ja'])
   })
 })
@@ -152,9 +160,7 @@ describe('getHeaderLocale', () => {
   test('RangeError', () => {
     const mockRequest = new Request('https://example.com')
     mockRequest.headers.set('accept-language', 's')
-    expect(() => getHeaderLocale(mockRequest, { lang: 'ja-JP' })).toThrowError(
-      RangeError,
-    )
+    expect(() => getHeaderLocale(mockRequest, { lang: 'ja-JP' })).toThrowError(RangeError)
   })
 
   test('custom header', () => {
@@ -163,8 +169,8 @@ describe('getHeaderLocale', () => {
     expect(
       getHeaderLocale(mockRequest, {
         name: 'x-inlitfy-language',
-        parser: (header) => header.split(','),
-      }).toString(),
+        parser: header => header.split(',')
+      }).toString()
     ).toEqual('en-US')
   })
 })
@@ -224,8 +230,7 @@ describe('getCookieLocale', () => {
   test('RangeError', () => {
     const mockRequest = new Request('https://example.com')
     mockRequest.headers.set('cookie', 'intlify_locale=f')
-    expect(() => getCookieLocale(mockRequest, { name: 'intlify_locale' }))
-      .toThrowError(RangeError)
+    expect(() => getCookieLocale(mockRequest, { name: 'intlify_locale' })).toThrowError(RangeError)
   })
 })
 
@@ -252,31 +257,24 @@ describe('setCookieLocale', () => {
     const res = new Response('hello world!')
     const locale = new Intl.Locale('ja-JP')
     setCookieLocale(res, locale)
-    expect(res.headers.getSetCookie()).toEqual([
-      `${DEFAULT_COOKIE_NAME}=ja-JP; Path=/`,
-    ])
+    expect(res.headers.getSetCookie()).toEqual([`${DEFAULT_COOKIE_NAME}=ja-JP; Path=/`])
   })
 
   test('specify language tag', () => {
     const res = new Response('hello world!')
     setCookieLocale(res, 'ja-JP')
-    expect(res.headers.getSetCookie()).toEqual([
-      `${DEFAULT_COOKIE_NAME}=ja-JP; Path=/`,
-    ])
+    expect(res.headers.getSetCookie()).toEqual([`${DEFAULT_COOKIE_NAME}=ja-JP; Path=/`])
   })
 
   test('specify cookie name', () => {
     const res = new Response('hello world!')
     setCookieLocale(res, 'ja-JP', { name: 'intlify_locale' })
-    expect(res.headers.getSetCookie()).toEqual([
-      'intlify_locale=ja-JP; Path=/',
-    ])
+    expect(res.headers.getSetCookie()).toEqual(['intlify_locale=ja-JP; Path=/'])
   })
 
   test('Syntax Error', () => {
     const res = new Response('hello world!')
-    expect(() => setCookieLocale(res, 'j'))
-      .toThrowError(/locale is invalid: j/)
+    expect(() => setCookieLocale(res, 'j')).toThrowError(/locale is invalid: j/)
   })
 })
 
@@ -323,39 +321,31 @@ describe('tryQueryLocale', () => {
 describe('getNavigatorLocales', () => {
   test('basic', () => {
     vi.stubGlobal('navigator', {
-      languages: ['en-US', 'en', 'ja'],
+      languages: ['en-US', 'en', 'ja']
     })
 
-    expect(getNavigatorLocales().map((locale) => locale.toString())).toEqual([
-      'en-US',
-      'en',
-      'ja',
-    ])
+    expect(getNavigatorLocales().map(locale => locale.toString())).toEqual(['en-US', 'en', 'ja'])
   })
 
   test('error', () => {
-    vi.stubGlobal('navigator', undefined)
+    vi.stubGlobal('navigator', void 0)
 
-    expect(() => getNavigatorLocales()).toThrowError(
-      /not support `navigator`/,
-    )
+    expect(() => getNavigatorLocales()).toThrowError(/not support `navigator`/)
   })
 })
 
 describe('getNavigatorLocale', () => {
   test('basic', () => {
     vi.stubGlobal('navigator', {
-      language: 'en-US',
+      language: 'en-US'
     })
 
     expect(getNavigatorLocale().toString()).toEqual('en-US')
   })
 
   test('error', () => {
-    vi.stubGlobal('navigator', undefined)
+    vi.stubGlobal('navigator', void 0)
 
-    expect(() => getNavigatorLocale()).toThrowError(
-      /not support `navigator`/,
-    )
+    expect(() => getNavigatorLocale()).toThrowError(/not support `navigator`/)
   })
 })

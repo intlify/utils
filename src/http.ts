@@ -1,3 +1,9 @@
+/**
+ * @author kazuya kawaguchi (a.k.a. kazupon)
+ * @license MIT
+ */
+
+import { ACCEPT_LANGUAGE_HEADER, DEFAULT_LANG_TAG } from './constants.ts'
 import {
   isLocale,
   isURL,
@@ -5,9 +11,8 @@ import {
   parseAcceptLanguage,
   pathLanguageParser,
   toLocale,
-  validateLangTag,
+  validateLangTag
 } from './shared.ts'
-import { ACCEPT_LANGUAGE_HEADER, DEFAULT_LANG_TAG } from './constants.ts'
 
 import type { PathLanguageParser } from './shared.ts'
 // import type { CookieSerializeOptions } from 'cookie-es'
@@ -123,15 +128,14 @@ export function parseDefaultHeader(input: string): string[] {
 
 export function getHeaderLanguagesWithGetter(
   getter: () => string | null | undefined,
-  {
-    name = ACCEPT_LANGUAGE_HEADER,
-    parser = parseDefaultHeader,
-  }: HeaderOptions = {},
+  { name = ACCEPT_LANGUAGE_HEADER, parser = parseDefaultHeader }: HeaderOptions = {}
 ): string[] {
   const langString = getter()
   return langString
     ? name === ACCEPT_LANGUAGE_HEADER
-      ? parser === parseDefaultHeader ? parseAcceptLanguage(langString) : parser(langString)
+      ? parser === parseDefaultHeader
+        ? parseAcceptLanguage(langString)
+        : parser(langString)
       : parser(langString)
     : []
 }
@@ -141,34 +145,25 @@ export function getLocaleWithGetter(getter: () => string): Intl.Locale {
 }
 
 export function validateLocale(locale: string | Intl.Locale): void {
-  if (
-    !(isLocale(locale) ||
-      typeof locale === 'string' && validateLangTag(locale))
-  ) {
+  if (!(isLocale(locale) || (typeof locale === 'string' && validateLangTag(locale)))) {
     throw new SyntaxError(`locale is invalid: ${locale.toString()}`)
   }
 }
 
 export function mapToLocaleFromLanguageTag(
-  // deno-lint-ignore no-explicit-any
-  getter: (...args: any[]) => string[],
+  getter: (...args: unknown[]) => string[],
   ...args: unknown[]
 ): Intl.Locale[] {
-  return (Reflect.apply(getter, null, args) as string[]).map((lang) =>
-    getLocaleWithGetter(() => lang)
-  )
+  return Reflect.apply(getter, null, args).map(lang => getLocaleWithGetter(() => lang))
 }
 
-export function getExistCookies(
-  name: string,
-  getter: () => unknown,
-) {
+export function getExistCookies(name: string, getter: () => unknown) {
   let setCookies = getter()
   if (!Array.isArray(setCookies)) {
     setCookies = [setCookies]
   }
-  setCookies = (setCookies as string[]).filter((cookieValue: string) =>
-    cookieValue && !cookieValue.startsWith(name + '=')
+  setCookies = (setCookies as string[]).filter(
+    (cookieValue: string) => cookieValue && !cookieValue.startsWith(name + '=')
   )
   return setCookies as string[]
 }
@@ -189,7 +184,7 @@ export type PathOptions = {
  */
 export function getPathLanguage(
   path: string | URL,
-  { lang = DEFAULT_LANG_TAG, parser = pathLanguageParser }: PathOptions = {},
+  { lang = DEFAULT_LANG_TAG, parser = pathLanguageParser }: PathOptions = {}
 ): string {
   return (parser || pathLanguageParser)(path) || lang
 }
@@ -207,14 +202,12 @@ export function getPathLanguage(
  */
 export function getPathLocale(
   path: string | URL,
-  { lang = DEFAULT_LANG_TAG, parser = pathLanguageParser }: PathOptions = {},
+  { lang = DEFAULT_LANG_TAG, parser = pathLanguageParser }: PathOptions = {}
 ): Intl.Locale {
   return new Intl.Locale(getPathLanguage(path, { lang, parser }))
 }
 
-function getURLSearchParams(
-  input: string | URL | URLSearchParams,
-): URLSearchParams {
+function getURLSearchParams(input: string | URL | URLSearchParams): URLSearchParams {
   if (isURLSearchParams(input)) {
     return input
   } else if (isURL(input)) {
@@ -240,7 +233,7 @@ export type QueryOptions = {
  */
 export function getQueryLanguage(
   query: string | URL | URLSearchParams,
-  { lang = DEFAULT_LANG_TAG, name = 'lang' }: QueryOptions = {},
+  { lang = DEFAULT_LANG_TAG, name = 'lang' }: QueryOptions = {}
 ): string {
   const queryParams = getURLSearchParams(query)
   return queryParams.get(name) || lang
@@ -259,7 +252,7 @@ export function getQueryLanguage(
  */
 export function getQueryLocale(
   query: string | URL | URLSearchParams,
-  { lang = DEFAULT_LANG_TAG, name = 'locale' }: QueryOptions = {},
+  { lang = DEFAULT_LANG_TAG, name = 'locale' }: QueryOptions = {}
 ): Intl.Locale {
   return new Intl.Locale(getQueryLanguage(query, { lang, name }))
 }

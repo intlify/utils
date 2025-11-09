@@ -39,10 +39,9 @@
 - It's OK to have multiple small commits as you work on the PR - we will let
   GitHub automatically squash it before merging.
 
-- Make sure `npm test` passes. (see [development setup](#development-setup))
+- Make sure `pnpm test` passes. (see [development setup](#development-setup))
 
 - If adding new feature:
-
   - Add accompanying test case.
   - Provide convincing reason to add this feature. Ideally you should open a
     suggestion issue first and have it greenlighted before working on it.
@@ -65,13 +64,13 @@
 You will need to install the below JavaScript runtime:
 
 - [Node.js](http://nodejs.org) **version 18+**
-- [Bun](https://bun.sh/) **version 1.0+**
+- [Bun](https://bun.sh/) **version 2.0+**
 - [Deno](https://deno.com/) **version 1.36+**
 
 After cloning the repo, run:
 
-```bash
-$ bun install # install the dependencies of the project
+```sh
+$ pnpm install # install the dependencies of the project
 ```
 
 A high level overview of tools used:
@@ -81,14 +80,16 @@ A high level overview of tools used:
 
 ### Commonly used NPM scripts
 
-    # lint source codes
-    $ npm run lint
+```sh
+# lint source codes
+$ pnpm lint
 
-    # format source codes
-    $ npm run format
+# fix source codes
+$ pnpm format
 
-    # run the full test suite
-    $ npm run test
+# run the full test suite
+$ pnpm test
+```
 
 There are some other scripts available in the `scripts` section of the
 `package.json` file.

@@ -1,9 +1,8 @@
 import { promises as fs } from 'node:fs'
-import { resolve } from 'node:path'
+import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { isExists } from './utils.ts'
 import { readPackageJSON } from 'pkg-types'
-import process from 'node:process'
+import { isExists } from './utils.ts'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
@@ -15,15 +14,15 @@ const TARGETS = [
   'shared.ts',
   'shim.d.ts',
   'types.ts',
-  'web.ts',
+  'web.ts'
 ]
 
 async function main() {
-  const projectPath = resolve(__dirname, '..')
-  const sourcePath = resolve(__dirname, '../src')
-  const destPath = resolve(__dirname, '../deno')
+  const projectPath = path.resolve(__dirname, '..')
+  const sourcePath = path.resolve(__dirname, '../src')
+  const destPath = path.resolve(__dirname, '../deno')
 
-  if (!await isExists(destPath)) {
+  if (!(await isExists(destPath))) {
     throw new Error(`not found ${destPath}`)
   }
 
@@ -31,31 +30,28 @@ async function main() {
 
   // copy docs
   for (const p of ['README.md', 'LICENSE']) {
-    fs.copyFile(resolve(projectPath, p), resolve(destPath, p))
-    console.log(`${resolve(projectPath, p)} -> ${resolve(destPath, p)}`)
+    await fs.copyFile(path.resolve(projectPath, p), path.resolve(destPath, p))
+    console.log(`${path.resolve(projectPath, p)} -> ${path.resolve(destPath, p)}`)
   }
 
   // copy source files
   for (const target of TARGETS) {
-    fs.copyFile(resolve(sourcePath, target), resolve(destPath, target))
-    console.log(`${resolve(sourcePath, target)} -> ${resolve(destPath, target)}`)
+    await fs.copyFile(path.resolve(sourcePath, target), path.resolve(destPath, target))
+    console.log(`${path.resolve(sourcePath, target)} -> ${path.resolve(destPath, target)}`)
   }
 
   const pkgJSON = await readPackageJSON(projectPath)
   const devDependencies = pkgJSON.devDependencies || {}
 
   // add `npm:` prefix
-  const webCode = await fs.readFile(resolve(destPath, 'web.ts'), 'utf-8')
+  const webCode = await fs.readFile(path.resolve(destPath, 'web.ts'), 'utf8')
   const replacedWebCode = webCode.replace(
     "from 'cookie-es'",
-    `from 'npm:cookie-es@${devDependencies['cookie-es']}'`,
+    `from 'npm:cookie-es@${devDependencies['cookie-es']}'`
   )
-  await fs.writeFile(resolve(destPath, 'web.ts'), replacedWebCode, 'utf8')
+  await fs.writeFile(path.resolve(destPath, 'web.ts'), replacedWebCode, 'utf8')
 
   console.log('... 🦕 done!')
 }
 
-main().catch((err) => {
-  console.error(err)
-  process.exit(1)
-})
+await main()

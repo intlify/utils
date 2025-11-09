@@ -1,20 +1,25 @@
-import type { IncomingMessage, OutgoingMessage } from 'node:http'
+/**
+ * @author kazuya kawaguchi (a.k.a. kazupon)
+ * @license MIT
+ */
+
 import { parse, serialize } from 'cookie-es'
+import type { IncomingMessage, OutgoingMessage } from 'node:http'
+import { ACCEPT_LANGUAGE_HEADER, DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 import {
+  getPathLocale as _getPathLocale,
+  getQueryLocale as _getQueryLocale,
   getExistCookies,
   getHeaderLanguagesWithGetter,
   getLocaleWithGetter,
-  getPathLocale as _getPathLocale,
-  getQueryLocale as _getQueryLocale,
   mapToLocaleFromLanguageTag,
   parseDefaultHeader,
-  validateLocale,
+  validateLocale
 } from './http.ts'
-import { ACCEPT_LANGUAGE_HEADER, DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 import { normalizeLanguageName, pathLanguageParser } from './shared.ts'
 
-import type { CookieOptions, HeaderOptions, PathOptions, QueryOptions } from './http.ts'
 import process from 'node:process'
+import type { CookieOptions, HeaderOptions, PathOptions, QueryOptions } from './http.ts'
 
 /**
  * get languages from header
@@ -44,10 +49,7 @@ import process from 'node:process'
  */
 export function getHeaderLanguages(
   request: IncomingMessage,
-  {
-    name = ACCEPT_LANGUAGE_HEADER,
-    parser = parseDefaultHeader,
-  }: HeaderOptions = {},
+  { name = ACCEPT_LANGUAGE_HEADER, parser = parseDefaultHeader }: HeaderOptions = {}
 ): string[] {
   const getter = () => request.headers[name] as string | undefined
   return getHeaderLanguagesWithGetter(getter, { name, parser })
@@ -81,10 +83,7 @@ export function getHeaderLanguages(
  */
 export function getHeaderLanguage(
   request: IncomingMessage,
-  {
-    name = ACCEPT_LANGUAGE_HEADER,
-    parser = parseDefaultHeader,
-  }: HeaderOptions = {},
+  { name = ACCEPT_LANGUAGE_HEADER, parser = parseDefaultHeader }: HeaderOptions = {}
 ): string {
   return getHeaderLanguages(request, { name, parser })[0] || ''
 }
@@ -119,14 +118,12 @@ export function getHeaderLanguage(
  */
 export function getHeaderLocales(
   request: IncomingMessage,
-  {
-    name = ACCEPT_LANGUAGE_HEADER,
-    parser = parseDefaultHeader,
-  }: HeaderOptions = {},
+  { name = ACCEPT_LANGUAGE_HEADER, parser = parseDefaultHeader }: HeaderOptions = {}
 ): Intl.Locale[] {
+  // @ts-expect-error -- FIXME: this type error needs to be fixed
   return mapToLocaleFromLanguageTag(getHeaderLanguages, request, {
     name,
-    parser,
+    parser
   })
 }
 
@@ -143,10 +140,7 @@ export function getHeaderLocales(
  */
 export function tryHeaderLocales(
   request: IncomingMessage,
-  {
-    name = ACCEPT_LANGUAGE_HEADER,
-    parser = parseDefaultHeader,
-  }: HeaderOptions = {},
+  { name = ACCEPT_LANGUAGE_HEADER, parser = parseDefaultHeader }: HeaderOptions = {}
 ): Intl.Locale[] | null {
   try {
     return getHeaderLocales(request, { name, parser })
@@ -189,8 +183,8 @@ export function getHeaderLocale(
   {
     lang = DEFAULT_LANG_TAG,
     name = ACCEPT_LANGUAGE_HEADER,
-    parser = parseDefaultHeader,
-  }: HeaderOptions & { lang?: string } = {},
+    parser = parseDefaultHeader
+  }: HeaderOptions & { lang?: string } = {}
 ): Intl.Locale {
   return getLocaleWithGetter(() => getHeaderLanguages(request, { name, parser })[0] || lang)
 }
@@ -212,8 +206,8 @@ export function tryHeaderLocale(
   {
     lang = DEFAULT_LANG_TAG,
     name = ACCEPT_LANGUAGE_HEADER,
-    parser = parseDefaultHeader,
-  }: HeaderOptions & { lang?: string } = {},
+    parser = parseDefaultHeader
+  }: HeaderOptions & { lang?: string } = {}
 ): Intl.Locale | null {
   try {
     return getHeaderLocale(request, { lang, name, parser })
@@ -249,7 +243,7 @@ export function tryHeaderLocale(
  */
 export function getCookieLocale(
   request: IncomingMessage,
-  { lang = DEFAULT_LANG_TAG, name = DEFAULT_COOKIE_NAME } = {},
+  { lang = DEFAULT_LANG_TAG, name = DEFAULT_COOKIE_NAME } = {}
 ): Intl.Locale {
   const getter = () => {
     const cookieRaw = request.headers.cookie
@@ -272,7 +266,7 @@ export function getCookieLocale(
  */
 export function tryCookieLocale(
   request: IncomingMessage,
-  { lang = DEFAULT_LANG_TAG, name = DEFAULT_COOKIE_NAME } = {},
+  { lang = DEFAULT_LANG_TAG, name = DEFAULT_COOKIE_NAME } = {}
 ): Intl.Locale | null {
   try {
     return getCookieLocale(request, { lang, name })
@@ -306,38 +300,25 @@ export function tryCookieLocale(
 export function setCookieLocale(
   response: OutgoingMessage,
   locale: string | Intl.Locale,
-  options: CookieOptions = { name: DEFAULT_COOKIE_NAME },
+  options: CookieOptions = { name: DEFAULT_COOKIE_NAME } // eslint-disable-line unicorn/no-object-as-default-parameter -- NOTE: allow
 ): void {
   validateLocale(locale)
-  const setCookies = getExistCookies(
-    options.name!,
-    () => response.getHeader('set-cookie'),
-  )
+  const setCookies = getExistCookies(options.name!, () => response.getHeader('set-cookie'))
   const target = serialize(options.name!, locale.toString(), {
     path: '/',
-    ...options,
+    ...options
   })
   response.setHeader('set-cookie', [...setCookies, target])
 }
 
-function getRequestProtocol(
-  request: IncomingMessage,
-  opts: { xForwardedProto?: boolean } = {},
-) {
-  if (
-    opts.xForwardedProto !== false &&
-    request.headers['x-forwarded-proto'] === 'https'
-  ) {
+function getRequestProtocol(request: IncomingMessage, opts: { xForwardedProto?: boolean } = {}) {
+  if (opts.xForwardedProto !== false && request.headers['x-forwarded-proto'] === 'https') {
     return 'https'
   }
-  // deno-lint-ignore no-explicit-any
-  return (request.socket as any).encrypted ? 'https' : 'http'
+  return (request.socket as { encrypted?: boolean }).encrypted ? 'https' : 'http'
 }
 
-function getRequestHost(
-  request: IncomingMessage,
-  opts: { xForwardedHost?: boolean } = {},
-) {
+function getRequestHost(request: IncomingMessage, opts: { xForwardedHost?: boolean } = {}) {
   if (opts.xForwardedHost) {
     const xForwardedHost = request.headers['x-forwarded-host'] as string
     if (xForwardedHost) {
@@ -348,12 +329,8 @@ function getRequestHost(
 }
 
 function getPath(request: IncomingMessage) {
-  // deno-lint-ignore no-explicit-any
-  const raw = (request as any).originalUrl || request.url || '/'
-  return raw.replace(
-    /^[/\\]+/g,
-    '/',
-  )
+  const raw = (request as { originalUrl?: string }).originalUrl || request.url || '/'
+  return raw.replaceAll(/^[/\\]+/g, '/')
 }
 
 function getURL(request: IncomingMessage): URL {
@@ -376,7 +353,7 @@ function getURL(request: IncomingMessage): URL {
  */
 export function getPathLocale(
   request: IncomingMessage,
-  { lang = DEFAULT_LANG_TAG, parser = pathLanguageParser }: PathOptions = {},
+  { lang = DEFAULT_LANG_TAG, parser = pathLanguageParser }: PathOptions = {}
 ): Intl.Locale {
   return _getPathLocale(getURL(request), { lang, parser })
 }
@@ -394,7 +371,7 @@ export function getPathLocale(
  */
 export function tryPathLocale(
   request: IncomingMessage,
-  { lang = DEFAULT_LANG_TAG, parser = pathLanguageParser }: PathOptions = {},
+  { lang = DEFAULT_LANG_TAG, parser = pathLanguageParser }: PathOptions = {}
 ): Intl.Locale | null {
   try {
     return getPathLocale(request, { lang, parser })
@@ -416,7 +393,7 @@ export function tryPathLocale(
  */
 export function getQueryLocale(
   request: IncomingMessage,
-  { lang = DEFAULT_LANG_TAG, name = 'locale' }: QueryOptions = {},
+  { lang = DEFAULT_LANG_TAG, name = 'locale' }: QueryOptions = {}
 ): Intl.Locale {
   return _getQueryLocale(getURL(request), { lang, name })
 }
@@ -434,7 +411,7 @@ export function getQueryLocale(
  */
 export function tryQueryLocale(
   request: IncomingMessage,
-  { lang = DEFAULT_LANG_TAG, name = 'locale' }: QueryOptions = {},
+  { lang = DEFAULT_LANG_TAG, name = 'locale' }: QueryOptions = {}
 ): Intl.Locale | null {
   try {
     return getQueryLocale(request, { lang, name })
@@ -461,12 +438,20 @@ function getNavigatorLanguages(): readonly string[] {
   const env = process.env
   const langs = new Set<string>()
 
-  env.LC_ALL && langs.add(normalizeLanguageName(env.LC_ALL))
-  env.LC_MESSAGES && langs.add(normalizeLanguageName(env.LC_MESSAGES))
-  env.LANG && langs.add(normalizeLanguageName(env.LANG))
-  env.LANGUAGE && langs.add(normalizeLanguageName(env.LANGUAGE))
+  if (env.LC_ALL) {
+    langs.add(normalizeLanguageName(env.LC_ALL))
+  }
+  if (env.LC_MESSAGES) {
+    langs.add(normalizeLanguageName(env.LC_MESSAGES))
+  }
+  if (env.LANG) {
+    langs.add(normalizeLanguageName(env.LANG))
+  }
+  if (env.LANGUAGE) {
+    langs.add(normalizeLanguageName(env.LANGUAGE))
+  }
 
-  return navigatorLanguages = [...langs].filter(Boolean)
+  return (navigatorLanguages = [...langs].filter(Boolean))
 }
 
 /**
@@ -478,7 +463,7 @@ function getNavigatorLanguages(): readonly string[] {
  * @returns {Array<Intl.Locale>}
  */
 export function getNavigatorLocales(): readonly Intl.Locale[] {
-  return getNavigatorLanguages().map((lang) => new Intl.Locale(lang))
+  return getNavigatorLanguages().map(lang => new Intl.Locale(lang))
 }
 
 /**
@@ -498,15 +483,10 @@ if (import.meta.vitest) {
         LC_ALL: 'en-GB',
         LC_MESSAGES: 'en-US',
         LANG: 'ja-JP',
-        LANGUAGE: 'en',
+        LANGUAGE: 'en'
       })
 
-      const values = [
-        'en-GB',
-        'en-US',
-        'ja-JP',
-        'en',
-      ]
+      const values = ['en-GB', 'en-US', 'ja-JP', 'en']
       expect(getNavigatorLanguages()).toEqual(values)
       // cache checking
       expect(navigatorLanguages).toEqual(values)
@@ -517,13 +497,10 @@ if (import.meta.vitest) {
         LC_ALL: 'en-US',
         LC_MESSAGES: 'en-US',
         LANG: 'ja-JP',
-        LANGUAGE: 'ja-JP',
+        LANGUAGE: 'ja-JP'
       })
 
-      const values = [
-        'en-US',
-        'ja-JP',
-      ]
+      const values = ['en-US', 'ja-JP']
       expect(getNavigatorLanguages()).toEqual(values)
       // cache checking
       expect(navigatorLanguages).toEqual(values)
@@ -549,20 +526,15 @@ if (import.meta.vitest) {
         LC_ALL: 'en-GB',
         LC_MESSAGES: 'en-US',
         LANG: 'ja-JP',
-        LANGUAGE: 'en',
+        LANGUAGE: 'en'
       })
 
-      const values = [
+      const values = ['en-GB', 'en-US', 'ja-JP', 'en']
+      expect(getNavigatorLocales().map(locale => locale.toString())).toEqual([
         'en-GB',
         'en-US',
         'ja-JP',
-        'en',
-      ]
-      expect(getNavigatorLocales().map((locale) => locale.toString())).toEqual([
-        'en-GB',
-        'en-US',
-        'ja-JP',
-        'en',
+        'en'
       ])
       // cache checking
       expect(navigatorLanguages).toEqual(values)
@@ -581,8 +553,7 @@ let navigatorLanguage = ''
  * @returns {string} {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 language tag}, if you can't get the language tag, return a empty string.
  */
 function getNavigatorLanguage(): string {
-  return navigatorLanguage ||
-    (navigatorLanguage = getNavigatorLanguages()[0] || '')
+  return navigatorLanguage || (navigatorLanguage = getNavigatorLanguages()[0] || '')
 }
 
 /**
@@ -615,7 +586,7 @@ if (import.meta.vitest) {
         LC_ALL: 'en-GB',
         LC_MESSAGES: 'en-US',
         LANG: 'ja-JP',
-        LANGUAGE: 'en',
+        LANGUAGE: 'en'
       })
 
       expect(getNavigatorLanguage()).toEqual('en-GB')
@@ -628,7 +599,7 @@ if (import.meta.vitest) {
         LC_ALL: 'en-US',
         LC_MESSAGES: 'en-US',
         LANG: 'ja-JP',
-        LANGUAGE: 'ja-JP',
+        LANGUAGE: 'ja-JP'
       })
 
       expect(getNavigatorLanguage()).toEqual('en-US')
@@ -657,7 +628,7 @@ if (import.meta.vitest) {
         LC_ALL: 'en-GB',
         LC_MESSAGES: 'en-US',
         LANG: 'ja-JP',
-        LANGUAGE: 'en',
+        LANGUAGE: 'en'
       })
 
       expect(getNavigatorLocale().toString()).toEqual('en-GB')

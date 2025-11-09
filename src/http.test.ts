@@ -41,10 +41,7 @@ describe('getPathLocale', () => {
 
   test('RangeError', () => {
     const nullLangParser = () => 'null'
-    expect(() => getPathLocale('/en/foo', { parser: nullLangParser }))
-      .toThrowError(
-        RangeError,
-      )
+    expect(() => getPathLocale('/en/foo', { parser: nullLangParser })).toThrowError(RangeError)
   })
 })
 
@@ -72,8 +69,7 @@ describe('getQueryLanguage', () => {
 
 describe('getQueryLocale', () => {
   test('basic', () => {
-    expect(getQueryLocale('lang=en-US&flag=1', { name: 'lang' }).toString())
-      .toBe('en-US')
+    expect(getQueryLocale('lang=en-US&flag=1', { name: 'lang' }).toString()).toBe('en-US')
   })
 
   test('URL instance', () => {

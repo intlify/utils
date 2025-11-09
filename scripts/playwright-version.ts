@@ -1,14 +1,13 @@
-import { resolve } from 'node:path'
+import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { readPackageJSON } from 'pkg-types'
 import { isExists } from './utils.ts'
-import process from 'node:process'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
 async function main() {
-  const playwrightPath = resolve(__dirname, '../node_modules/playwright')
-  if (!await isExists(playwrightPath)) {
+  const playwrightPath = path.resolve(__dirname, '../node_modules/playwright')
+  if (!(await isExists(playwrightPath))) {
     throw new Error(`not found '${playwrightPath}'`)
   }
 
@@ -19,7 +18,4 @@ async function main() {
   console.log(playwrightPkg.version)
 }
 
-main().catch((err) => {
-  console.error(err)
-  process.exit(1)
-})
+await main()
