@@ -1,4 +1,9 @@
-const objectToString = Object.prototype.toString
+/**
+ * @author kazuya kawaguchi (a.k.a. kazupon)
+ * @license MIT
+ */
+
+const objectToString = Object.prototype.toString // eslint-disable-line @typescript-eslint/unbound-method -- ignore
 const toTypeString = (value: unknown): string => objectToString.call(value)
 
 export function isURL(val: unknown): val is URL {
@@ -58,9 +63,10 @@ export function validateLangTag(lang: string): boolean {
  * @returns {Array<string>} The array of language tags, if `*` (any language) or empty string is detected, return an empty array.
  */
 export function parseAcceptLanguage(value: string): string[] {
-  return value.split(',').map((tag) => tag.split(';')[0]).filter((tag) =>
-    !(tag === '*' || tag === '')
-  )
+  return value
+    .split(',')
+    .map(tag => tag.split(';')[0])
+    .filter(tag => !(tag === '*' || tag === ''))
 }
 
 /**
@@ -106,9 +112,7 @@ export interface PathLanguageParser {
  *
  * @returns A return a parser, which has {@link PathLanguageParser} interface
  */
-export function createPathIndexLanguageParser(
-  index = 0,
-): PathLanguageParser {
+export function createPathIndexLanguageParser(index = 0): PathLanguageParser {
   return (path: string | URL): string => {
     const rawPath = typeof path === 'string' ? path : path.pathname
     const normalizedPath = rawPath.split('?')[0]
@@ -135,8 +139,6 @@ export let pathLanguageParser: PathLanguageParser = /* #__PURE__*/ createPathInd
  *
  * @param {PathLanguageParser} parser the path language parser
  */
-export function registerPathLanguageParser(
-  parser: PathLanguageParser,
-): void {
+export function registerPathLanguageParser(parser: PathLanguageParser): void {
   pathLanguageParser = parser
 }

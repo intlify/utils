@@ -1,8 +1,7 @@
-import { promises as fs } from 'node:fs'
+import fsSync, { promises as fs } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { readPackageJSON } from 'pkg-types'
-import { isExists } from './utils.ts'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
@@ -22,7 +21,7 @@ async function main() {
   const sourcePath = path.resolve(__dirname, '../src')
   const destPath = path.resolve(__dirname, '../deno')
 
-  if (!(await isExists(destPath))) {
+  if (!fsSync.existsSync(destPath)) {
     throw new Error(`not found ${destPath}`)
   }
 

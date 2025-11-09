@@ -138,7 +138,7 @@ export type ValidCharacters<
     ? [Includes<UnionToTuple<UnionChars>, Target>, ...ValidCharacters<Rest, UnionChars>]
     : []
 
-export const localeErrors = /* @__PURE__ */ {
+const localeErrors = /* @__PURE__ */ {
   1: 'missing unicode language subtag',
   2: 'malformed unicode language subtag',
   3: 'requires 2-3 or 5-8 alphabet lower characters',

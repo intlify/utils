@@ -1,0 +1,37 @@
+{
+  "version": "5",
+  "specifiers": {
+    "jsr:@intlify/utils@~0.14.1": "0.14.1",
+    "jsr:@std/assert@1": "1.0.15",
+    "jsr:@std/internal@^1.0.12": "1.0.12",
+    "npm:cookie-es@1": "1.2.2"
+  },
+  "jsr": {
+    "@intlify/utils@0.14.1": {
+      "integrity": "0638a6bca6aac068c3aa75c583818bcb0e5b83870b5e3089132fce7cd1ba401d",
+      "dependencies": [
+        "npm:cookie-es"
+      ]
+    },
+    "@std/assert@1.0.15": {
+      "integrity": "d64018e951dbdfab9777335ecdb000c0b4e3df036984083be219ce5941e4703b",
+      "dependencies": [
+        "jsr:@std/internal"
+      ]
+    },
+    "@std/internal@1.0.12": {
+      "integrity": "972a634fd5bc34b242024402972cd5143eac68d8dffaca5eaa4dba30ce17b027"
+    }
+  },
+  "npm": {
+    "cookie-es@1.2.2": {
+      "integrity": "sha512-+W7VmiVINB+ywl1HGXJXmrqkOhpKrIiVZV6tQuV54ZyQC7MMuBt81Vc336GMLoHBq5hV/F9eXgt5Mnx0Rha5Fg=="
+    }
+  },
+  "workspace": {
+    "dependencies": [
+      "jsr:@intlify/utils@~0.14.1",
+      "jsr:@std/assert@1"
+    ]
+  }
+}

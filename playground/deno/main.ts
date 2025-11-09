@@ -1,5 +1,4 @@
-// @ts-ignore: this is example
-import { getHeaderLanguages } from '@intlify/utils' // module is mapped by `deno.jsonc`
+import { getHeaderLanguages } from '@intlify/utils'; // module is mapped by `deno.jsonc`
 // import { getHeaderLanguages } from 'https://deno.land/x/intlify_utils/mod.ts'
 
 const port = 8125
