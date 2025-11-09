@@ -78,6 +78,7 @@
     "lint:eslint": "eslint . --cache",
     "lint:knip": "knip",
     "lint:prettier": "prettier . --check --experimental-cli",
+    "lint:typecheck": "tsc --noEmit --diagnostics",
     "play:browser": "pnpm run --filter example-browser dev",
     "play:bun": "pnpm run --filter example-bun dev",
     "play:deno": "pnpm run --filter example-deno dev",
