@@ -18,9 +18,9 @@ export type Join<T extends unknown[], U extends string | number> = T extends [in
   : never
 export type Shift<T extends unknown[]> = T extends [unknown, ...infer U] ? U : never
 export type First<T extends unknown[]> = T extends [infer A, ...infer _rest] ? A : never
-export type Last<T extends unknown[]> = [unknown, ...T][T['length']]
+type _Last<T extends unknown[]> = [unknown, ...T][T['length']]
 export type Length<T extends readonly unknown[]> = T['length']
-export type IsEqual<X, Y> =
+type IsEqual<X, Y> =
   (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? true : false
 export type All<T extends unknown[], U> = T extends [infer L, ...infer R]
   ? IsEqual<L, U> extends true
@@ -33,7 +33,7 @@ export type Includes<T extends unknown[], U> = T extends [infer A, ...infer B]
     ? true
     : Includes<B, U>
   : false
-export type Tuple = readonly unknown[]
+type Tuple = readonly unknown[]
 export type Concat<T extends Tuple, U extends Tuple> = [...T, ...U]
 export type Filter<T extends unknown[], F> = T extends [infer R, ...infer Rest]
   ? [R] extends [F]
@@ -41,20 +41,20 @@ export type Filter<T extends unknown[], F> = T extends [infer R, ...infer Rest]
     : [R, ...Filter<Rest, F>]
   : []
 
-export type UnionToIntersection<U> = (U extends unknown ? (arg: U) => 0 : never) extends (
+type UnionToIntersection<U> = (U extends unknown ? (arg: U) => 0 : never) extends (
   arg: infer I
 ) => 0
   ? I
   : never
-export type LastInUnion<U> =
+type LastInUnion<U> =
   UnionToIntersection<U extends unknown ? (x: U) => 0 : never> extends (x: infer L) => 0 ? L : never
 export type UnionToTuple<U, Last = LastInUnion<U>> = [U] extends [never]
   ? []
   : [...UnionToTuple<Exclude<U, Last>>, Last]
 export type TupleToUnion<T extends readonly unknown[]> = T extends Array<infer R> ? R : never
 
-export type StringToUnion<T extends string> = T extends `${infer Letter}${infer Rest}`
-  ? Letter | StringToUnion<Rest>
+type _StringToUnion<T extends string> = T extends `${infer Letter}${infer Rest}`
+  ? Letter | _StringToUnion<Rest>
   : never
 
 export type StringToArray<T extends string> = T extends `${infer Letter}${infer Rest}`

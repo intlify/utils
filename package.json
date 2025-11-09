@@ -72,6 +72,7 @@
     "dev:eslint": "pnpx @eslint/config-inspector --config eslint.config.ts",
     "fix": "pnpm run --color \"/^fix:/\"",
     "fix:eslint": "eslint . --fix",
+    "fix:knip": "knip --fix --no-exit-code",
     "fix:prettier": "prettier . --write --experimental-cli",
     "lint": "pnpm run --color \"/^lint:/\"",
     "lint:eslint": "eslint . --cache",
