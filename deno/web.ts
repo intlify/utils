@@ -3,7 +3,7 @@
  * @license MIT
  */
 
-import { parse, serialize } from 'npm:cookie-es@^1.0.0'
+import { parse, serialize } from 'npm:cookie-es@^1.2.2'
 import { ACCEPT_LANGUAGE_HEADER, DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 import {
   getExistCookies,

@@ -27,34 +27,34 @@ import type {
   UnionToTuple
 } from './types.ts'
 
-export interface UnicodeLocaleId {
+interface UnicodeLocaleId {
   lang: UnicodeLanguageId
   extensions: Array<UnicodeExtension | TransformedExtension | PuExtension | OtherExtension>
 }
 
-export type KV = [string, string] | [string]
+type KV = [string, string] | [string]
 
-export interface Extension {
+interface Extension {
   type: string
 }
 
-export interface UnicodeExtension extends Extension {
+interface UnicodeExtension extends Extension {
   type: 'u'
   keywords: KV[]
   attributes: string[]
 }
 
-export interface TransformedExtension extends Extension {
+interface TransformedExtension extends Extension {
   type: 't'
   fields: KV[]
   lang?: UnicodeLanguageId
 }
-export interface PuExtension extends Extension {
+interface PuExtension extends Extension {
   type: 'x'
   value: string
 }
 
-export interface OtherExtension extends Extension {
+interface OtherExtension extends Extension {
   type:
     | 'a'
     | 'b'
@@ -82,7 +82,7 @@ export interface OtherExtension extends Extension {
   value: string
 }
 
-export interface UnicodeLanguageId {
+interface UnicodeLanguageId {
   lang: string
   script?: string
   region?: string
@@ -128,7 +128,7 @@ export type CheckRange<T extends unknown[], Indexes extends number[]> =
   Includes<Indexes, Length<T>> extends true ? true : false
 
 // deno-fmt-ignore
-export type ValidCharacters<
+type ValidCharacters<
   T extends unknown[],
   UnionChars = Alphabets, // default alphabets
   Target = First<T>,
@@ -138,7 +138,7 @@ export type ValidCharacters<
     ? [Includes<UnionToTuple<UnionChars>, Target>, ...ValidCharacters<Rest, UnionChars>]
     : []
 
-export const localeErrors = /* @__PURE__ */ {
+const localeErrors = /* @__PURE__ */ {
   1: 'missing unicode language subtag',
   2: 'malformed unicode language subtag',
   3: 'requires 2-3 or 5-8 alphabet lower characters',
@@ -215,7 +215,7 @@ export type ParseLangSubtag<
  */
 // TODO: Check if the language subtag is in CLDR
 // deno-fmt-ignore
-export type ParseUnicodeLanguageSubtag<
+type ParseUnicodeLanguageSubtag<
   Chunk extends string,
   RestChunks extends unknown[] = [],
   Chars extends unknown[] = StringToArray<Chunk>
@@ -249,7 +249,7 @@ export type ParseScriptSubtag<
  */
 // TODO: Check if the script subtag is in CLDR
 // deno-fmt-ignore
-export type ParseUnicodeScriptSubtag<
+type ParseUnicodeScriptSubtag<
   Chunk extends string,
   RestChunks extends unknown[] = [],
   Chars extends unknown[] = StringToArray<Chunk>
@@ -285,7 +285,7 @@ export type ParseRegionSubtag<
  */
 // TODO: Check if the region subtag is in CLDR
 // deno-fmt-ignore
-export type ParseUnicodeRegionSubtag<
+type ParseUnicodeRegionSubtag<
   Chunk extends string,
   RestChunks extends unknown[] = [],
   Chars extends unknown[] = StringToArray<Chunk>,
@@ -578,7 +578,7 @@ type t1 = ParseUnicodeExtension<['co', 'standard']>
 type t2 = ParseUnicodeExtension<['foo', 'bar', 'co', 'standard']>
 
 // deno-fmt-ignore
-export type CollectFirstKeywords<
+type CollectFirstKeywords<
   Chunks extends unknown[],
   Sep extends string = '-',
   Keywords extends unknown[] = [],
@@ -607,7 +607,7 @@ export type CollectFirstKeywords<
  * (= alphanum{3,8} ;)
  */
 // deno-fmt-ignore
-export type ParseAttribute<
+type ParseAttribute<
   Chunks extends unknown[],
   Attributes extends unknown[] = [],
   RestChunks extends unknown[] = Shift<Chunks>,
@@ -823,7 +823,7 @@ export type ParsePuExtension<
     : [{ type: 'x'; value: Join<ResultExts0, Sep> }, never, ResultExts1]
 > = Result
 
-export type _ParsePuExtension<
+type _ParsePuExtension<
   Chunks extends unknown[],
   Exts extends unknown[] = [],
   Chunk extends string = Chunks[0] extends string ? Chunks[0] : never,

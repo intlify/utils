@@ -2,9 +2,11 @@ packages:
   - playground/**
 
 catalog:
-  deno: ^2.5.4
+  deno: ^2.5.6
 
 minimumReleaseAge: 1440
+minimumReleaseAgeExclude:
+  - '@cloudflare/workers-types'
 
 onlyBuiltDependencies:
   - deno
