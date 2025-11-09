@@ -64,6 +64,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "unbuild && pnpx tsx ./scripts/deno.ts",
+    "build:docs": "typedoc --excludeInternal",
     "changelog": "gh-changelogen --repo=intlify/utils",
     "dev:eslint": "pnpx @eslint/config-inspector --config eslint.config.ts",
     "fix": "pnpm run --color \"/^fix:/\"",
@@ -128,6 +129,8 @@
     "supertest": "^6.3.3",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.3",
+    "typedoc": "^0.28.14",
+    "typedoc-plugin-markdown": "^4.9.0",
     "unbuild": "^3.6.1",
     "vitest": "catalog:vitest",
     "vitest-environment-miniflare": "^2.14.1"
