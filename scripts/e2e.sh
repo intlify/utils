@@ -12,5 +12,7 @@ pnpm pack
 # Replace deps
 pnpx tsx ./scripts/replaceDeps.ts
 
+pnpm install
+
 # just do e2e!
 pnpm run test:e2e
