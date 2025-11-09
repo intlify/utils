@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "npx --no-install serve -l 3000",
+    "dev": "pnpx serve -l 3000",
     "test": "node --test"
   },
   "devDependencies": {
@@ -12,6 +12,6 @@
     "serve-handler": "^6.1.5"
   },
   "dependencies": {
-    "@intlify/utils": "npm:@intlify/utils-edge@latest"
+    "@intlify/utils": "workspace:*"
   }
 }

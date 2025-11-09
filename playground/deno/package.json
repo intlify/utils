@@ -1,0 +1,9 @@
+{
+  "name": "example-deno",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "deno run --allow-net main.ts",
+    "test": "deno task test"
+  }
+}

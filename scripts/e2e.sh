@@ -3,13 +3,10 @@
 set -e
 
 # Pack packages
-npm pack
+pnpm pack
 
 # Replace deps
-bun run ./scripts/replaceDeps.ts
-
-# setup playground/* for e2e
-npm run setup
+pnpx tsx run ./scripts/replaceDeps.ts
 
 # just do e2e!
-npm run test:e2e
+pnpm run test:e2e

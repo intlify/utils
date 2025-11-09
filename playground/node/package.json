@@ -3,11 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "npx tsx index.ts",
+    "dev": "pnpx tsx index.ts",
     "test": "node --test"
   },
   "dependencies": {
-    "@intlify/utils": "file:/Users/kazuya.kawaguchi/Projects/oss/intlify/utils/intlify-utils-0.10.0.tgz"
+    "@intlify/utils": "workspace:*"
   },
   "peerDependencies": {
     "typescript": "^5.2.2"
