@@ -71,8 +71,8 @@
     "release": "bumpp --commit \"release: v%s\" --all --push --tag",
     "version": "pnpx tsx scripts/bump-deno.ts",
     "fix": "pnpm run --stream --color \"/^(lint|format)$/\"",
-    "lint": "deno lint",
-    "format": "deno fmt",
+    "lint": "pnpm exec deno lint",
+    "format": "pnpm exec deno fmt",
     "build": "unbuild && pnpx tsx ./scripts/deno.ts",
     "test": "pnpm run test:typecheck && pnpm run test:unit",
     "test:unit": "NODE_OPTIONS=--experimental-vm-modules vitest run ./src",
@@ -90,10 +90,10 @@
   },
   "lint-staged": {
     "*.{js,ts,jsx,tsx,json,jsonc}": [
-      "deno fmt"
+      "pnpm exec deno fmt"
     ],
     "*.{js,ts,jsx,tsx}": [
-      "deno lint"
+      "pnpm exec deno lint"
     ]
   },
   "devDependencies": {
@@ -107,6 +107,7 @@
     "gh-changelogen": "^0.2.8",
     "h3": "^1.8.1",
     "hono": "^3.8.1",
+    "deno": "catalog:",
     "jsonc-parser": "^3.2.1",
     "lint-staged": "^15.0.0",
     "miniflare": "^3.20231016.0",

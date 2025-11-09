@@ -5,5 +5,8 @@
   "scripts": {
     "dev": "deno run --allow-net main.ts",
     "test": "deno task test"
+  },
+  "devDependencies": {
+    "deno": "catalog:"
   }
 }

@@ -1,8 +1,12 @@
 packages:
   - playground/**
 
+catalog:
+  deno: ^2.5.4
+
 minimumReleaseAge: 1440
 
 onlyBuiltDependencies:
+  - deno
   - esbuild
   - workerd
