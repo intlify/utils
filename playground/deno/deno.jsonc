@@ -3,7 +3,7 @@
     "@std/assert": "jsr:@std/assert@1",
     "@intlify/utils": "jsr:@intlify/utils@^0.14.1"
   },
-  "nodeModulesDir": true,
+  "nodeModulesDir": "auto",
   "tasks": {
     "dev": "deno run --watch main.ts",
     "test": "deno test --allow-read=$(which deno) --allow-run --allow-net ./deno.spec.ts"
