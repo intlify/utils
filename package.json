@@ -112,6 +112,7 @@
     "lint-staged": "^15.0.0",
     "miniflare": "^3.20231016.0",
     "pkg-types": "^1.0.2",
+    "pkg-pr-new": "^0.0.60",
     "playwright": "^1.38.1",
     "semver": "^7.6.0",
     "supertest": "^6.3.3",

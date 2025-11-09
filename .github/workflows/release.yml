@@ -67,7 +67,7 @@ jobs:
           commit_message: 'chore: sync changelog'
 
       - name: Publish package for NPM
-        run: ./scripts/release.sh
+        run: pnpm publish
         env:
           NPM_CONFIG_PROVENANCE: true
 
