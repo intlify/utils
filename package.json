@@ -71,7 +71,9 @@
     "release": "bumpp --commit \"release: v%s\" --all --push --tag",
     "version": "pnpx tsx scripts/bump-deno.ts",
     "fix": "pnpm run --stream --color \"/^(lint|format)$/\"",
+    "fix:prettier": "prettier . --write --experimental-cli",
     "lint": "pnpm exec deno lint",
+    "lint:prettier": "prettier . --check --experimental-cli",
     "format": "pnpm exec deno fmt",
     "build": "unbuild && pnpx tsx ./scripts/deno.ts",
     "test": "pnpm run test:typecheck && pnpm run test:unit",
@@ -88,16 +90,23 @@
     "play:deno": "pnpm run --filter example-deno dev",
     "play:bun": "pnpm run --filter example-bun dev"
   },
+  "prettier": "@kazupon/prettier-config",
   "lint-staged": {
-    "*.{js,ts,jsx,tsx,json,jsonc}": [
+    "*.ts?(x)": [
+      "prettier --parser=typescript --write",
       "pnpm exec deno fmt"
     ],
-    "*.{js,ts,jsx,tsx}": [
-      "pnpm exec deno lint"
+    "*.{js,mjs,cjs}": [
+      "prettier --write",
+      "pnpm exec deno fmt"
+    ],
+    "*.{json,jsonc,json5,md,yml,yaml}": [
+      "prettier --write"
     ]
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20231016.0",
+    "@kazupon/prettier-config": "^0.1.1",
     "@types/node": "^20.11.24",
     "@types/semver": "^7.5.8",
     "@types/supertest": "^2.0.12",
@@ -114,6 +123,7 @@
     "pkg-types": "^1.0.2",
     "pkg-pr-new": "^0.0.60",
     "playwright": "^1.38.1",
+    "prettier": "^3.6.2",
     "semver": "^7.6.0",
     "supertest": "^6.3.3",
     "typescript": "^5.4.1-rc",
