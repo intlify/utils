@@ -1,17 +1,17 @@
 {
   "name": "example-browser",
   "private": true,
-  "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "pnpx serve -l 3000",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "test": "node --test"
-  },
-  "devDependencies": {
-    "serve": "^14.2.1",
-    "serve-handler": "^6.1.5"
   },
   "dependencies": {
     "@intlify/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "vite": "^7.1.7"
   }
 }
