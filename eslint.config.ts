@@ -4,6 +4,7 @@ import {
   defineConfig,
   imports,
   javascript,
+  jsdoc,
   jsonc,
   markdown,
   prettier,
@@ -36,11 +37,10 @@ const config: ReturnType<typeof defineConfig> = defineConfig(
       ]
     }
   }),
-  // TODO(kazupon): Enable jsdoc rule later
-  // jsdoc({
-  //   typescript: 'syntax',
-  //   ignores: ['./playground/**']
-  // }),
+  jsdoc({
+    typescript: 'syntax',
+    ignores: ['./playground/**', './src/types.ts']
+  }),
   imports({
     typescript: true,
     rules: {

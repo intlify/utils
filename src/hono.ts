@@ -6,10 +6,10 @@
 import { getCookie, setCookie } from 'hono/cookie'
 import { ACCEPT_LANGUAGE_HEADER, DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 import {
-  getHeaderLanguagesWithGetter,
-  getLocaleWithGetter,
   getPathLocale as _getPathLocale,
   getQueryLocale as _getQueryLocale,
+  getHeaderLanguagesWithGetter,
+  getLocaleWithGetter,
   mapToLocaleFromLanguageTag,
   parseDefaultHeader,
   validateLocale
@@ -41,11 +41,11 @@ type CookieOptions = Parameters<typeof setCookie>[3] & { name?: string }
  * })
  * ```
  *
- * @param {Context} context A {@link Context | Hono} context
- * @param {HeaderOptions['name']} options.name A header name, which is as default `accept-language`.
- * @param {HeaderOptions['parser']} options.parser A parser function, which is as default {@link parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
+ * @param context - A {@link Context | Hono} context
+ * @param options.name - A header name, which is as default `accept-language`.
+ * @param options.parser - A parser function, which is as default {@linkcode parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
  *
- * @returns {Array<string>} An array of language tags, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array.
+ * @returns An array of language tags, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array.
  */
 export function getHeaderLanguages(
   context: Context,
@@ -77,11 +77,11 @@ export function getHeaderLanguages(
  * })
  * ```
  *
- * @param {Context} context A {@link Context | Hono} context
- * @param {HeaderOptions['name']} options.name A header name, which is as default `accept-language`.
- * @param {HeaderOptions['parser']} options.parser A parser function, which is as default {@link parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
+ * @param context - A {@link Context | Hono} context
+ * @param options.name - A header name, which is as default `accept-language`.
+ * @param options.parser - A parser function, which is as default {@linkcode parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
  *
- * @returns {string} A **first language tag** of header, if header is not exists, or `*` (any language), return empty string.
+ * @returns A **first language tag** of header, if header is not exists, or `*` (any language), return empty string.
  */
 export function getHeaderLanguage(
   context: Context,
@@ -110,13 +110,13 @@ export function getHeaderLanguage(
  * })
  * ```
  *
- * @param {Context} context A {@link Context | Hono} context
- * @param {HeaderOptions['name']} options.name A header name, which is as default `accept-language`.
- * @param {HeaderOptions['parser']} options.parser A parser function, which is as default {@link parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
+ * @param context - A {@link Context | Hono} context
+ * @param options.name - A header name, which is as default `accept-language`.
+ * @param options.parser - A parser function, which is as default {@linkcode parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
  *
- * @throws {RangeError} Throws the {@link RangeError} if header are not a well-formed BCP 47 language tag.
+ * @throws {RangeError} Throws the {@linkcode RangeError} if header are not a well-formed BCP 47 language tag.
  *
- * @returns {Array<Intl.Locale>} Some locales that wrapped from header, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array.
+ * @returns Some locales that wrapped from header, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array.
  */
 export function getHeaderLocales(
   context: Context,
@@ -134,11 +134,11 @@ export function getHeaderLocales(
  *
  * @description wrap language tags with {@link Intl.Locale | locale}, languages tags will be parsed from `accept-language` header as default. Unlike {@link getHeaderLocales}, this function does not throw an error if the locale cannot be obtained, this function returns `null`.
  *
- * @param {Context} context A {@link Context | Hono} context
- * @param {HeaderOptions['name']} options.name A header name, which is as default `accept-language`.
- * @param {HeaderOptions['parser']} options.parser A parser function, which is as default {@link parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
+ * @param context - A {@link Context | Hono} context
+ * @param options.name - A header name, which is as default `accept-language`.
+ * @param options.parser - A parser function, which is as default {@linkcode parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
  *
- * @returns {Array<Intl.Locale> | null} Some locales that wrapped from header, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array. if header are not a well-formed BCP 47 language tag, return `null`.
+ * @returns Some locales that wrapped from header, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array. if header are not a well-formed BCP 47 language tag, return `null`.
  */
 export function tryHeaderLocales(
   context: Context,
@@ -171,14 +171,14 @@ export function tryHeaderLocales(
  * })
  * ```
  *
- * @param {Context} context A {@link Context | Hono} context
- * @param {string} options.lang A default language tag, Optional. default value is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
- * @param {HeaderOptions['name']} options.name A header name, which is as default `accept-language`.
- * @param {HeaderOptions['parser']} options.parser A parser function, which is as default {@link parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
+ * @param context - A {@link Context | Hono} context
+ * @param options.lang - A default language tag, Optional. default value is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
+ * @param options.name - A header name, which is as default `accept-language`.
+ * @param options.parser - A parser function, which is as default {@linkcode parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
  *
- * @throws {RangeError} Throws the {@link RangeError} if `lang` option or header are not a well-formed BCP 47 language tag.
+ * @throws {RangeError} Throws the {@linkcode RangeError} if `lang` option or header are not a well-formed BCP 47 language tag.
  *
- * @returns {Intl.Locale} A first locale that resolved from header string. if you use `accept-language` header and `*` (any language) or empty string is detected, return `en-US`.
+ * @returns A first locale that resolved from header string. if you use `accept-language` header and `*` (any language) or empty string is detected, return `en-US`.
  */
 export function getHeaderLocale(
   context: Context,
@@ -196,12 +196,12 @@ export function getHeaderLocale(
  *
  * @description wrap language tag with {@link Intl.Locale | locale}, languages tags will be parsed from `accept-language` header as default. Unlike {@link getHeaderLocale}, this function does not throw an error if the locale cannot be obtained, this function returns `null`.
  *
- * @param {Context} context A {@link Context | Hono} context
- * @param {string} options.lang A default language tag, Optional. default value is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
- * @param {HeaderOptions['name']} options.name A header name, which is as default `accept-language`.
- * @param {HeaderOptions['parser']} options.parser A parser function, which is as default {@link parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
+ * @param context - A {@link Context | Hono} context
+ * @param options.lang - A default language tag, Optional. default value is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
+ * @param options.name - A header name, which is as default `accept-language`.
+ * @param options.parser - A parser function, which is as default {@linkcode parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
  *
- * @returns {Intl.Locale | null} A first locale that resolved from header string. if you use `accept-language` header and `*` (any language) or empty string is detected, return `en-US`. if `lang` option or header are not a well-formed BCP 47 language tag, return `null`.
+ * @returns A first locale that resolved from header string. if you use `accept-language` header and `*` (any language) or empty string is detected, return `en-US`. if `lang` option or header are not a well-formed BCP 47 language tag, return `null`.
  */
 export function tryHeaderLocale(
   context: Context,
@@ -236,13 +236,13 @@ export function tryHeaderLocale(
  * })
  * ```
  *
- * @param {Context} context A {@link Context | Hono} context
- * @param {string} options.lang A default language tag, default is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
- * @param {string} options.name A cookie name, default is `i18n_locale`
+ * @param context - A {@link Context | Hono} context
+ * @param options.lang - A default language tag, default is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
+ * @param options.name - A cookie name, default is `i18n_locale`
  *
- * @throws {RangeError} Throws a {@link RangeError} if `lang` option or cookie name value are not a well-formed BCP 47 language tag.
+ * @throws {RangeError} Throws a {@linkcode RangeError} if `lang` option or cookie name value are not a well-formed BCP 47 language tag.
  *
- * @returns {Intl.Locale} The locale that resolved from cookie
+ * @returns The locale that resolved from cookie
  */
 export function getCookieLocale(
   context: Context,
@@ -254,13 +254,13 @@ export function getCookieLocale(
 /**
  * try to get locale from cookie
  *
- * @description Unlike {@link getCookieLocale}, this function does not throw an error if the locale cannot be obtained, this function returns `null`.
+ * @description Unlike {@linkcode getCookieLocale}, this function does not throw an error if the locale cannot be obtained, this function returns `null`.
  *
- * @param {Context} context A {@link Context | Hono} context
- * @param {string} options.lang A default language tag, default is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
- * @param {string} options.name A cookie name, default is `i18n_locale`
+ * @param context - A {@link Context | Hono} context
+ * @param options.lang - A default language tag, default is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
+ * @param options.name - A cookie name, default is `i18n_locale`
  *
- * @returns {Intl.Locale | null} The locale that resolved from cookie, if `lang` option or cookie name value are not a well-formed BCP 47 language tag, return `null`.
+ * @returns The locale that resolved from cookie, if `lang` option or cookie name value are not a well-formed BCP 47 language tag, return `null`.
  */
 export function tryCookieLocale(
   context: Context,
@@ -290,11 +290,11 @@ export function tryCookieLocale(
  * })
  * ```
  *
- * @param {Context} context A {@link Context | Hono} context
- * @param {string | Intl.Locale} locale A locale value
- * @param {CookieOptions} options A cookie options, `name` option is `i18n_locale` as default, and `path` option is `/` as default.
+ * @param context - A {@link Context | Hono} context
+ * @param locale - A locale value
+ * @param options - A cookie options, `name` option is `i18n_locale` as default, and `path` option is `/` as default.
  *
- * @throws {SyntaxError} Throws the {@link SyntaxError} if `locale` is invalid.
+ * @throws {SyntaxError} Throws the {@linkcode SyntaxError} if `locale` is invalid.
  */
 export function setCookieLocale(
   context: Context,
@@ -308,13 +308,13 @@ export function setCookieLocale(
 /**
  * get the locale from the path
  *
- * @param {Context} context A {@link Context | Hono} context
- * @param {PathOptions['lang']} options.lang A language tag, which is as default `'en-US'`. optional
- * @param {PathOptions['parser']} options.parser the path language parser, default {@link pathLanguageParser}, optional
+ * @param context - A {@link Context | Hono} context
+ * @param options.lang - A language tag, which is as default `'en-US'`. optional
+ * @param options.parser - the path language parser, default {@linkcode pathLanguageParser}, optional
  *
- * @throws {RangeError} Throws the {@link RangeError} if the language in the path, that is not a well-formed BCP 47 language tag.
+ * @throws {RangeError} Throws the {@linkcode RangeError} if the language in the path, that is not a well-formed BCP 47 language tag.
  *
- * @returns {Intl.Locale} The locale that resolved from path
+ * @returns The locale that resolved from path
  */
 export function getPathLocale(
   context: Context,
@@ -326,13 +326,13 @@ export function getPathLocale(
 /**
  * try to get the locale from the path
  *
- * @description Unlike {@link getPathLocale}, this function does not throw an error if the locale cannot be obtained, this function returns `null`.
+ * @description Unlike {@linkcode getPathLocale}, this function does not throw an error if the locale cannot be obtained, this function returns `null`.
  *
- * @param {Context} context A {@link Context | Hono} context
- * @param {PathOptions['lang']} options.lang A language tag, which is as default `'en-US'`. optional
- * @param {PathOptions['parser']} options.parser the path language parser, default {@link pathLanguageParser}, optional
+ * @param context - A {@link Context | Hono} context
+ * @param options.lang - A language tag, which is as default `'en-US'`. optional
+ * @param options.parser - the path language parser, default {@linkcode pathLanguageParser}, optional
  *
- * @returns {Intl.Locale | null} The locale that resolved from path. if the language in the path, that is not a well-formed BCP 47 language tag, return `null`.
+ * @returns The locale that resolved from path. if the language in the path, that is not a well-formed BCP 47 language tag, return `null`.
  */
 export function tryPathLocale(
   context: Context,
@@ -348,13 +348,13 @@ export function tryPathLocale(
 /**
  * get the locale from the query
  *
- * @param {Context} context A {@link Context | Hono} context
- * @param {QueryOptions['lang']} options.lang A language tag, which is as default `'en-US'`. optional
- * @param {QueryOptions['name']} options.name A query param name, default `'locale'`. optional
+ * @param context - A {@link Context | Hono} context
+ * @param options.lang - A language tag, which is as default `'en-US'`. optional
+ * @param options.name - A query param name, default `'locale'`. optional
  *
- * @throws {RangeError} Throws the {@link RangeError} if the language in the query, that is not a well-formed BCP 47 language tag.
+ * @throws {RangeError} Throws the {@linkcode RangeError} if the language in the query, that is not a well-formed BCP 47 language tag.
  *
- * @returns {Intl.Locale} The locale that resolved from query
+ * @returns The locale that resolved from query
  */
 export function getQueryLocale(
   context: Context,
@@ -366,13 +366,13 @@ export function getQueryLocale(
 /**
  * try to get the locale from the query
  *
- * @description Unlike {@link getQueryLocale}, this function does not throw an error if the locale cannot be obtained, this function returns `null`.
+ * @description Unlike {@linkcode getQueryLocale}, this function does not throw an error if the locale cannot be obtained, this function returns `null`.
  *
- * @param {Context} context A {@link Context | Hono} context
- * @param {QueryOptions['lang']} options.lang A language tag, which is as default `'en-US'`. optional
- * @param {QueryOptions['name']} options.name A query param name, default `'locale'`. optional
+ * @param context - A {@link Context | Hono} context
+ * @param options.lang - A language tag, which is as default `'en-US'`. optional
+ * @param options.name - A query param name, default `'locale'`. optional
  *
- * @returns {Intl.Locale | null} The locale that resolved from query. if the language in the query, that is not a well-formed BCP 47 language tag, return `null`.
+ * @returns The locale that resolved from query. if the language in the query, that is not a well-formed BCP 47 language tag, return `null`.
  */
 export function tryQueryLocale(
   context: Context,

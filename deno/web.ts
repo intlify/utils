@@ -6,11 +6,11 @@
 import { parse, serialize } from 'npm:cookie-es@^1.2.2'
 import { ACCEPT_LANGUAGE_HEADER, DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 import {
+  getPathLocale as _getPathLocale,
+  getQueryLocale as _getQueryLocale,
   getExistCookies,
   getHeaderLanguagesWithGetter,
   getLocaleWithGetter,
-  getPathLocale as _getPathLocale,
-  getQueryLocale as _getQueryLocale,
   mapToLocaleFromLanguageTag,
   parseDefaultHeader,
   validateLocale
@@ -39,11 +39,11 @@ import type { CookieOptions, HeaderOptions, PathOptions, QueryOptions } from './
  * })
  * ```
  *
- * @param {Request} request The {@link Request | request}
- * @param {HeaderOptions['name']} options.name The header name, which is as default `accept-language`.
- * @param {HeaderOptions['parser']} options.parser The parser function, which is as default {@link parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
+ * @param request - The {@link Request | request}
+ * @param options.name - The header name, which is as default `accept-language`.
+ * @param options.parser - The parser function, which is as default {@linkcode parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
  *
- * @returns {Array<string>} The array of language tags, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array.
+ * @returns The array of language tags, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array.
  */
 export function getHeaderLanguages(
   request: Request,
@@ -73,11 +73,11 @@ export function getHeaderLanguages(
  * })
  * ```
  *
- * @param {Request} request The {@link Request | request}
- * @param {HeaderOptions['name']} options.name The header name, which is as default `accept-language`.
- * @param {HeaderOptions['parser']} options.parser The parser function, which is as default {@link parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
+ * @param request - The {@link Request | request}
+ * @param options.name - The header name, which is as default `accept-language`.
+ * @param options.parser - The parser function, which is as default {@linkcode parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
  *
- * @returns {string} The **first language tag** of header, if header is not exists, or `*` (any language), return empty string.
+ * @returns The **first language tag** of header, if header is not exists, or `*` (any language), return empty string.
  */
 export function getHeaderLanguage(
   request: Request,
@@ -94,6 +94,7 @@ export function getHeaderLanguage(
  * @example
  * example for Web API request on Bun:
  *
+ * ```ts
  * import { getHeaderLocales } from '@intlify/utils/web'
  *
  * Bun.serve({
@@ -106,13 +107,13 @@ export function getHeaderLanguage(
  * })
  * ```
  *
- * @param {Request} request The {@link Request | request}
- * @param {HeaderOptions['name']} options.name The header name, which is as default `accept-language`.
- * @param {HeaderOptions['parser']} options.parser The parser function, which is as default {@link parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
+ * @param request - The {@link Request | request}
+ * @param options.name - The header name, which is as default `accept-language`.
+ * @param options.parser - The parser function, which is as default {@linkcode parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
  *
- * @throws {RangeError} Throws the {@link RangeError} if header are not a well-formed BCP 47 language tag.
+ * @throws {RangeError} Throws the {@linkcode RangeError} if header are not a well-formed BCP 47 language tag.
  *
- * @returns {Array<Intl.Locale>} The locales that wrapped from header, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array.
+ * @returns The locales that wrapped from header, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array.
  */
 export function getHeaderLocales(
   request: Request,
@@ -130,11 +131,11 @@ export function getHeaderLocales(
  *
  * @description wrap language tags with {@link Intl.Locale | locale}, languages tags will be parsed from `accept-language` header as default. Unlike {@link getHeaderLocales}, this function does not throw an error if the locale cannot be obtained, this function returns `null`.
  *
- * @param {Request} request The {@link Request | request}
- * @param {HeaderOptions['name']} options.name The header name, which is as default `accept-language`.
- * @param {HeaderOptions['parser']} options.parser The parser function, which is as default {@link parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
+ * @param request - The {@link Request | request}
+ * @param options.name - The header name, which is as default `accept-language`.
+ * @param options.parser - The parser function, which is as default {@linkcode parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
  *
- * @returns {Array<Intl.Locale> | null} The locales that wrapped from header, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array. if header are not a well-formed BCP 47 language tag, return `null`.
+ * @returns The locales that wrapped from header, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array. if header are not a well-formed BCP 47 language tag, return `null`.
  */
 export function tryHeaderLocales(
   request: Request,
@@ -166,14 +167,14 @@ export function tryHeaderLocales(
  *   },
  * })
  *
- * @param {Request} request The {@link Request | request}
- * @param {string} options.lang The default language tag, Optional. default value is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
- * @param {HeaderOptions['name']} options.name The header name, which is as default `accept-language`.
- * @param {HeaderOptions['parser']} options.parser The parser function, which is as default {@link parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
+ * @param request - The {@link Request | request}
+ * @param options.lang - The default language tag, Optional. default value is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
+ * @param options.name - The header name, which is as default `accept-language`.
+ * @param options.parser - The parser function, which is as default {@linkcode parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
  *
- * @throws {RangeError} Throws the {@link RangeError} if `lang` option or header are not a well-formed BCP 47 language tag.
+ * @throws {RangeError} Throws the {@linkcode RangeError} if `lang` option or header are not a well-formed BCP 47 language tag.
  *
- * @returns {Intl.Locale} The first locale that resolved from header string. if you use `accept-language` header and `*` (any language) or empty string is detected, return `en-US`.
+ * @returns The first locale that resolved from header string. if you use `accept-language` header and `*` (any language) or empty string is detected, return `en-US`.
  */
 export function getHeaderLocale(
   request: Request,
@@ -191,12 +192,12 @@ export function getHeaderLocale(
  *
  * @description wrap language tag with {@link Intl.Locale | locale}, languages tags will be parsed from `accept-language` header as default. Unlike {@link getHeaderLocale}, this function does not throw an error if the locale cannot be obtained, this function returns `null`.
  *
- * @param {Request} request The {@link Request | request}
- * @param {string} options.lang The default language tag, Optional. default value is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
- * @param {HeaderOptions['name']} options.name The header name, which is as default `accept-language`.
- * @param {HeaderOptions['parser']} options.parser The parser function, which is as default {@link parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
+ * @param request - The {@link Request | request}
+ * @param options.lang - The default language tag, Optional. default value is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
+ * @param options.name - The header name, which is as default `accept-language`.
+ * @param options.parser - The parser function, which is as default {@linkcode parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
  *
- * @returns {Intl.Locale | null} The first locale that resolved from header string. if you use `accept-language` header and `*` (any language) or empty string is detected, return `en-US`. if `lang` option or header are not a well-formed BCP 47 language tag, return `null`.
+ * @returns The first locale that resolved from header string. if you use `accept-language` header and `*` (any language) or empty string is detected, return `en-US`. if `lang` option or header are not a well-formed BCP 47 language tag, return `null`.
  */
 export function tryHeaderLocale(
   request: Request,
@@ -231,13 +232,13 @@ export function tryHeaderLocale(
  * })
  * ```
  *
- * @param {Request} request The {@link Request | request}
- * @param {string} options.lang The default language tag, default is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
- * @param {string} options.name The cookie name, default is `i18n_locale`
+ * @param request - The {@link Request | request}
+ * @param options.lang - The default language tag, default is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
+ * @param options.name - The cookie name, default is `i18n_locale`
  *
- * @throws {RangeError} Throws a {@link RangeError} if `lang` option or cookie name value are not a well-formed BCP 47 language tag.
+ * @throws {RangeError} Throws a {@linkcode RangeError} if `lang` option or cookie name value are not a well-formed BCP 47 language tag.
  *
- * @returns {Intl.Locale} The locale that resolved from cookie
+ * @returns The locale that resolved from cookie
  */
 export function getCookieLocale(
   request: Request,
@@ -254,13 +255,13 @@ export function getCookieLocale(
 /**
  * try to get locale from cookie
  *
- * @description Unlike {@link getCookieLocale}, this function does not throw an error if the locale cannot be obtained, this function returns `null`.
+ * @description Unlike {@linkcode getCookieLocale}, this function does not throw an error if the locale cannot be obtained, this function returns `null`.
  *
- * @param {Request} request The {@link Request | request}
- * @param {string} options.lang The default language tag, default is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
- * @param {string} options.name The cookie name, default is `i18n_locale`
+ * @param request - The {@link Request | request}
+ * @param options.lang - The default language tag, default is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
+ * @param options.name - The cookie name, default is `i18n_locale`
  *
- * @returns {Intl.Locale | null} The locale that resolved from cookie. if `lang` option or cookie name value are not a well-formed BCP 47 language tag, return `null`.
+ * @returns The locale that resolved from cookie. if `lang` option or cookie name value are not a well-formed BCP 47 language tag, return `null`.
  */
 export function tryCookieLocale(
   request: Request,
@@ -293,11 +294,11 @@ export function tryCookieLocale(
  * })
  * ```
  *
- * @param {Response} response The {@link Response | response}
- * @param {string | Intl.Locale} locale The locale value
- * @param {CookieOptions} options The cookie options, `name` option is `i18n_locale` as default, and `path` option is `/` as default.
+ * @param response - The {@link Response | response}
+ * @param locale - The locale value
+ * @param options - The cookie options, `name` option is `i18n_locale` as default, and `path` option is `/` as default.
  *
- * @throws {SyntaxError} Throws the {@link SyntaxError} if `locale` is invalid.
+ * @throws {SyntaxError} Throws the {@linkcode SyntaxError} if `locale` is invalid.
  */
 export function setCookieLocale(
   response: Response,
@@ -316,13 +317,13 @@ export function setCookieLocale(
 /**
  * get the locale from the path
  *
- * @param {Request} request the {@link Request | request}
- * @param {PathOptions['lang']} options.lang the language tag, which is as default `'en-US'`. optional
- * @param {PathOptions['parser']} options.parser the path language parser, default {@link pathLanguageParser}, optional
+ * @param request - the {@link Request | request}
+ * @param options.lang - the language tag, which is as default `'en-US'`. optional
+ * @param options.parser - the path language parser, default {@linkcode pathLanguageParser}, optional
  *
- * @throws {RangeError} Throws the {@link RangeError} if the language in the path, that is not a well-formed BCP 47 language tag.
+ * @throws {RangeError} Throws the {@linkcode RangeError} if the language in the path, that is not a well-formed BCP 47 language tag.
  *
- * @returns {Intl.Locale} The locale that resolved from path
+ * @returns The locale that resolved from path
  */
 export function getPathLocale(
   request: Request,
@@ -334,13 +335,13 @@ export function getPathLocale(
 /**
  * try to get the locale from the path
  *
- * @description Unlike {@link getPathLocale}, this function does not throw an error if the locale cannot be obtained, this function returns `null`.
+ * @description Unlike {@linkcode getPathLocale}, this function does not throw an error if the locale cannot be obtained, this function returns `null`.
  *
- * @param {Request} request the {@link Request | request}
- * @param {PathOptions['lang']} options.lang the language tag, which is as default `'en-US'`. optional
- * @param {PathOptions['parser']} options.parser the path language parser, default {@link pathLanguageParser}, optional
+ * @param request - the {@link Request | request}
+ * @param options.lang - the language tag, which is as default `'en-US'`. optional
+ * @param options.parser - the path language parser, default {@linkcode pathLanguageParser}, optional
  *
- * @returns {Intl.Locale | null} The locale that resolved from path. if the language in the path, that is not a well-formed BCP 47 language tag, return `null`.
+ * @returns The locale that resolved from path. if the language in the path, that is not a well-formed BCP 47 language tag, return `null`.
  */
 export function tryPathLocale(
   request: Request,
@@ -356,13 +357,13 @@ export function tryPathLocale(
 /**
  * get the locale from the query
  *
- * @param {Request} request the {@link Request | request}
- * @param {QueryOptions['lang']} options.lang the language tag, which is as default `'en-US'`. optional
- * @param {QueryOptions['name']} options.name the query param name, default `'locale'`. optional
+ * @param request - the {@link Request | request}
+ * @param options.lang - the language tag, which is as default `'en-US'`. optional
+ * @param options.name - the query param name, default `'locale'`. optional
  *
- * @throws {RangeError} Throws the {@link RangeError} if the language in the query, that is not a well-formed BCP 47 language tag.
+ * @throws {RangeError} Throws the {@linkcode RangeError} if the language in the query, that is not a well-formed BCP 47 language tag.
  *
- * @returns {Intl.Locale} The locale that resolved from query
+ * @returns The locale that resolved from query
  */
 export function getQueryLocale(
   request: Request,
@@ -374,13 +375,13 @@ export function getQueryLocale(
 /**
  * try to get the locale from the query
  *
- * @description Unlike {@link getQueryLocale}, this function does not throw an error if the locale cannot be obtained, this function returns `null`.
+ * @description Unlike {@linkcode getQueryLocale}, this function does not throw an error if the locale cannot be obtained, this function returns `null`.
  *
- * @param {Request} request the {@link Request | request}
- * @param {QueryOptions['lang']} options.lang the language tag, which is as default `'en-US'`. optional
- * @param {QueryOptions['name']} options.name the query param name, default `'locale'`. optional
+ * @param request - the {@link Request | request}
+ * @param options.lang - the language tag, which is as default `'en-US'`. optional
+ * @param options.name - the query param name, default `'locale'`. optional
  *
- * @returns {Intl.Locale | null} The locale that resolved from query. if the language in the query, that is not a well-formed BCP 47 language tag, return `null`.
+ * @returns The locale that resolved from query. if the language in the query, that is not a well-formed BCP 47 language tag, return `null`.
  */
 export function tryQueryLocale(
   request: Request,
@@ -399,9 +400,9 @@ export function tryQueryLocale(
  * @description
  * The value depends on the environments. if you use this function on the browser, you can get the languages, that are set in the browser, else if you use this function on the server side (Deno only), that value is the languages set in the server.
  *
- * @throws Throws the {@link Error} if the `navigator` is not exists.
+ * @throws {TypeError} Throws the {@linkcode TypeError} if the `navigator` is not exists.
  *
- * @returns {Array<string>} {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 language tags}
+ * @returns The array of language tags
  */
 function getNavigatorLanguages(): readonly string[] {
   if (typeof navigator === 'undefined') {
@@ -416,9 +417,9 @@ function getNavigatorLanguages(): readonly string[] {
  * @description
  * The value depends on the environments. if you use this function on the browser, you can get the languages, that are set in the browser, else if you use this function on the server side (Deno only), that value is the language set in the server.
  *
- * @throws Throws the {@link Error} if the `navigator` is not exists.
+ * @throws {TypeError} Throws the {@link TypeError} if the `navigator` is not exists.
  *
- * @returns {string} {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 language tag}
+ * @returns The language tag
  */
 function getNavigatorLanguage(): string {
   if (typeof navigator === 'undefined') {
@@ -431,12 +432,10 @@ function getNavigatorLanguage(): string {
  * get navigator locales
  *
  * @description
- * This function is a wrapper that maps in {@link Intl.Locale} in `navigator.languages`.
+ * This function is a wrapper that maps in {@linkcode Intl.Locale} in `navigator.languages`.
  * This function return values depends on the environments. if you use this function on the browser, you can get the languages, that are set in the browser, else if you use this function on the server side (Deno only), that value is the languages set in the server.
  *
- * @throws Throws the {@link Error} if the `navigator` is not exists.
- *
- * @returns {Array<Intl.Locale>}
+ * @returns The array of {@link Intl.Locale | locales}
  */
 export function getNavigatorLocales(): readonly Intl.Locale[] {
   return getNavigatorLanguages().map(lang => new Intl.Locale(lang))
@@ -446,12 +445,10 @@ export function getNavigatorLocales(): readonly Intl.Locale[] {
  * get navigator locale
  *
  * @description
- * This function is the {@link Intl.Locale} wrapper of `navigator.language`.
+ * This function is the {@linkcode Intl.Locale} wrapper of `navigator.language`.
  * The value depends on the environments. if you use this function on the browser, you can get the languages, that are set in the browser, else if you use this function on the server side (Deno only), that value is the language set in the server.
  *
- * @throws Throws the {@link Error} if the `navigator` is not exists.
- *
- * @returns {Intl.Locale}
+ * @returns The {@link Intl.Locale | locale}
  */
 export function getNavigatorLocale(): Intl.Locale {
   return new Intl.Locale(getNavigatorLanguage())

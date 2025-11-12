@@ -41,7 +41,7 @@ interface CookieSerializeOptions {
    * no expiration is set, and most clients will consider this a "non-persistent cookie" and will delete
    * it on a condition like exiting a web browser application.
    *
-   * *Note* the {@link https://tools.ietf.org/html/rfc6265#section-5.3|cookie storage model specification}
+   * Note* the {@link https://tools.ietf.org/html/rfc6265#section-5.3|cookie storage model specification}
    * states that if both `expires` and `maxAge` are set, then `maxAge` takes precedence, but it is
    * possible not all clients by obey this, so if both are set, they should
    * point to the same date and time.
@@ -52,7 +52,7 @@ interface CookieSerializeOptions {
    * When truthy, the `HttpOnly` attribute is set, otherwise it is not. By
    * default, the `HttpOnly` attribute is not set.
    *
-   * *Note* be careful when setting this to true, as compliant clients will
+   * Note* be careful when setting this to true, as compliant clients will
    * not allow client-side JavaScript to see the cookie in `document.cookie`.
    */
   httpOnly?: boolean | undefined
@@ -61,7 +61,7 @@ interface CookieSerializeOptions {
    * `Set-Cookie` attribute. The given number will be converted to an integer
    * by rounding down. By default, no maximum age is set.
    *
-   * *Note* the {@link https://tools.ietf.org/html/rfc6265#section-5.3|cookie storage model specification}
+   * Note* the {@link https://tools.ietf.org/html/rfc6265#section-5.3|cookie storage model specification}
    * states that if both `expires` and `maxAge` are set, then `maxAge` takes precedence, but it is
    * possible not all clients by obey this, so if both are set, they should
    * point to the same date and time.
@@ -101,31 +101,62 @@ interface CookieSerializeOptions {
    *
    * More information about the different enforcement levels can be found in {@link https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-03#section-4.1.2.7|the specification}.
    *
-   * *note* This is an attribute that has not yet been fully standardized, and may change in the future. This also means many clients may ignore this attribute until they understand it.
+   * note* This is an attribute that has not yet been fully standardized, and may change in the future. This also means many clients may ignore this attribute until they understand it.
    */
   sameSite?: true | false | 'lax' | 'strict' | 'none' | undefined
   /**
    * Specifies the boolean value for the {@link https://tools.ietf.org/html/rfc6265#section-5.2.5|`Secure` `Set-Cookie` attribute}. When truthy, the
    * `Secure` attribute is set, otherwise it is not. By default, the `Secure` attribute is not set.
    *
-   * *Note* be careful when setting this to `true`, as compliant clients will
+   * Note* be careful when setting this to `true`, as compliant clients will
    * not send the cookie back to the server in the future if the browser does
    * not have an HTTPS connection.
    */
   secure?: boolean | undefined
 }
 
-export type CookieOptions = CookieSerializeOptions & { name?: string }
-
-export type HeaderOptions = {
+/**
+ * Cookie options type
+ */
+export type CookieOptions = CookieSerializeOptions & {
+  /**
+   * Cookie name
+   */
   name?: string
+}
+
+/**
+ * Header options type
+ */
+export type HeaderOptions = {
+  /**
+   * Header name
+   */
+  name?: string
+  /**
+   * Header parser function
+   */
   parser?: typeof parseAcceptLanguage
 }
 
+/**
+ * default header parser
+ *
+ * @param input - the header string
+ *
+ * @returns The array that include the input string
+ */
 export function parseDefaultHeader(input: string): string[] {
   return [input]
 }
 
+/**
+ * get languages from header with getter function
+ *
+ * @param getter - the header string getter function
+ *
+ * @returns The array of language tags
+ */
 export function getHeaderLanguagesWithGetter(
   getter: () => string | null | undefined,
   { name = ACCEPT_LANGUAGE_HEADER, parser = parseDefaultHeader }: HeaderOptions = {}
@@ -140,16 +171,38 @@ export function getHeaderLanguagesWithGetter(
     : []
 }
 
+/**
+ * get locale from language tag with getter function
+ *
+ * @param getter - the language tag getter function
+ *
+ * @returns The {@link Intl.Locale} object
+ */
 export function getLocaleWithGetter(getter: () => string): Intl.Locale {
   return toLocale(getter())
 }
 
+/**
+ * validate the locale
+ *
+ * @param locale - the locale to validate
+ *
+ * @throws {SyntaxError} Throws the {@linkcode SyntaxError} if the locale is invalid.
+ */
 export function validateLocale(locale: string | Intl.Locale): void {
   if (!(isLocale(locale) || (typeof locale === 'string' && validateLangTag(locale)))) {
     throw new SyntaxError(`locale is invalid: ${locale.toString()}`)
   }
 }
 
+/**
+ * map to locale from language tag with getter function
+ *
+ * @param getter - the language tag getter function
+ * @param args - the arguments for the getter function
+ *
+ * @returns The array of {@linkcode Intl.Locale} objects
+ */
 export function mapToLocaleFromLanguageTag(
   getter: (...args: unknown[]) => string[],
   ...args: unknown[]
@@ -157,6 +210,14 @@ export function mapToLocaleFromLanguageTag(
   return Reflect.apply(getter, null, args).map(lang => getLocaleWithGetter(() => lang))
 }
 
+/**
+ * get existing cookies by name with getter function
+ *
+ * @param name - cookie name
+ * @param getter - cookie getter function
+ *
+ * @returns The array of existing cookies
+ */
 export function getExistCookies(name: string, getter: () => unknown) {
   let setCookies = getter()
   if (!Array.isArray(setCookies)) {
@@ -168,19 +229,28 @@ export function getExistCookies(name: string, getter: () => unknown) {
   return setCookies as string[]
 }
 
+/**
+ * path options type
+ */
 export type PathOptions = {
+  /**
+   * The language tag, which is as default `'en-US'`. optional
+   */
   lang?: string
+  /**
+   * The path language parser, optional
+   */
   parser?: PathLanguageParser
 }
 
 /**
  * get the language from the path
  *
- * @param {string | URL} path the target path
- * @param {PathOptions['lang']} options.lang the language tag, which is as default `'en-US'`. optional
- * @param {PathOptions['parser']} options.parser the path language parser, optional
+ * @param path - the target path
+ * @param options.lang - the language tag, which is as default `'en-US'`. optional
+ * @param options.parser - the path language parser, optional
  *
- * @returns {string} the language that is parsed by the path language parser, if the language is not detected, return a `options.lang` value
+ * @returns the language that is parsed by the path language parser, if the language is not detected, return a `options.lang` value
  */
 export function getPathLanguage(
   path: string | URL,
@@ -192,13 +262,13 @@ export function getPathLanguage(
 /**
  * get the locale from the path
  *
- * @param {string | URL} path the target path
- * @param {PathOptions['lang']} options.lang the language tag, which is as default `'en-US'`. optional
- * @param {PathOptions['parser']} options.parser the path language parser, optional
+ * @param path - the target path
+ * @param options.lang - the language tag, which is as default `'en-US'`. optional
+ * @param options.parser - the path language parser, optional
  *
  * @throws {RangeError} Throws the {@link RangeError} if the language in the path, that is not a well-formed BCP 47 language tag.
  *
- * @returns {Intl.Locale} The locale that resolved from path
+ * @returns The locale that resolved from path
  */
 export function getPathLocale(
   path: string | URL,
@@ -217,19 +287,28 @@ function getURLSearchParams(input: string | URL | URLSearchParams): URLSearchPar
   }
 }
 
+/**
+ * query options type
+ */
 export type QueryOptions = {
+  /**
+   * The language tag, which is as default `'en-US'`. optional
+   */
   lang?: string
+  /**
+   * The query param name, default `'lang'`. optional
+   */
   name?: string
 }
 
 /**
  * get the language from the query
  *
- * @param {string | URL | URLSearchParams} query the target query
- * @param {QueryOptions['lang']} options.lang the language tag, which is as default `'en-US'`. optional
- * @param {QueryOptions['name']} options.name the query param name, default `'lang'`. optional
+ * @param query - the target query
+ * @param options.lang - the language tag, which is as default `'en-US'`. optional
+ * @param options.name - the query param name, default `'lang'`. optional
  *
- * @returns {string} the language from query, if the language is not detected, return an `options.lang` option string.
+ * @returns the language from query, if the language is not detected, return an `options.lang` option string.
  */
 export function getQueryLanguage(
   query: string | URL | URLSearchParams,
@@ -242,13 +321,13 @@ export function getQueryLanguage(
 /**
  * get the locale from the query
  *
- * @param {string | URL | URLSearchParams} query the target query
- * @param {QueryOptions['lang']} options.lang the language tag, which is as default `'en-US'`. optional
- * @param {QueryOptions['name']} options.name the query param name, default `'locale'`. optional
+ * @param query - the target query
+ * @param options.lang - the language tag, which is as default `'en-US'`. optional
+ * @param options.name - the query param name, default `'locale'`. optional
  *
- * @throws {RangeError} Throws the {@link RangeError} if the language in the query, that is not a well-formed BCP 47 language tag.
+ * @throws {RangeError} Throws the {@linkcode RangeError} if the language in the query, that is not a well-formed BCP 47 language tag.
  *
- * @returns {Intl.Locale} The locale that resolved from query
+ * @returns The locale that resolved from query
  */
 export function getQueryLocale(
   query: string | URL | URLSearchParams,

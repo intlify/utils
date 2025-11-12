@@ -4,6 +4,7 @@
  */
 
 export type IsNever<T> = [T] extends [never] ? true : false
+
 export type Split<S extends string, SEP extends string> = string extends S
   ? string[]
   : S extends `${infer A}${SEP}${infer B}`
@@ -11,22 +12,28 @@ export type Split<S extends string, SEP extends string> = string extends S
     : SEP extends ''
       ? []
       : [S]
+
 export type Join<T extends unknown[], U extends string | number> = T extends [infer F, ...infer R]
   ? R['length'] extends 0
     ? `${F & string}`
     : `${F & string}${U}${Join<R, U>}`
   : never
+
 export type Shift<T extends unknown[]> = T extends [unknown, ...infer U] ? U : never
+
 export type First<T extends unknown[]> = T extends [infer A, ...infer _rest] ? A : never
 type _Last<T extends unknown[]> = [unknown, ...T][T['length']]
+
 export type Length<T extends readonly unknown[]> = T['length']
 type IsEqual<X, Y> =
   (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? true : false
+
 export type All<T extends unknown[], U> = T extends [infer L, ...infer R]
   ? IsEqual<L, U> extends true
     ? All<R, U>
     : false
   : true
+
 export type Push<T extends unknown[], U> = [...T, U]
 export type Includes<T extends unknown[], U> = T extends [infer A, ...infer B]
   ? IsEqual<A, U> extends true
