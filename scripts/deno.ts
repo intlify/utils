@@ -11,7 +11,6 @@ const TARGETS = [
   'index.ts',
   'locale.ts',
   'shared.ts',
-  'shim.d.ts',
   'types.ts',
   'web.ts'
 ]

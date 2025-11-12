@@ -61,7 +61,6 @@ export function toLocale(val: string | Intl.Locale): Intl.Locale {
  */
 export function validateLangTag(lang: string): boolean {
   try {
-    // @ts-ignore NOTE: https://github.com/microsoft/TypeScript/pull/56079
     Intl.getCanonicalLocales(lang)
     return true
   } catch {

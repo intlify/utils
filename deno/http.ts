@@ -126,6 +126,20 @@ export type CookieOptions = CookieSerializeOptions & {
 }
 
 /**
+ * Cookie locale options type
+ */
+export type CookieLocaleOptions = {
+  /**
+   * The default language tag
+   */
+  lang?: string
+  /**
+   * Cookie name
+   */
+  name?: string
+}
+
+/**
  * Header options type
  */
 export type HeaderOptions = {
@@ -154,13 +168,15 @@ export function parseDefaultHeader(input: string): string[] {
  * get languages from header with getter function
  *
  * @param getter - the header string getter function
+ * @param options - the {@link HeaderOptions | header options}
  *
  * @returns The array of language tags
  */
 export function getHeaderLanguagesWithGetter(
   getter: () => string | null | undefined,
-  { name = ACCEPT_LANGUAGE_HEADER, parser = parseDefaultHeader }: HeaderOptions = {}
+  options: HeaderOptions = {}
 ): string[] {
+  const { name = ACCEPT_LANGUAGE_HEADER, parser = parseDefaultHeader } = options
   const langString = getter()
   return langString
     ? name === ACCEPT_LANGUAGE_HEADER
@@ -247,15 +263,12 @@ export type PathOptions = {
  * get the language from the path
  *
  * @param path - the target path
- * @param options.lang - the language tag, which is as default `'en-US'`. optional
- * @param options.parser - the path language parser, optional
+ * @param options - the {@link PathOptions | path options} object
  *
  * @returns the language that is parsed by the path language parser, if the language is not detected, return a `options.lang` value
  */
-export function getPathLanguage(
-  path: string | URL,
-  { lang = DEFAULT_LANG_TAG, parser = pathLanguageParser }: PathOptions = {}
-): string {
+export function getPathLanguage(path: string | URL, options: PathOptions = {}): string {
+  const { lang = DEFAULT_LANG_TAG, parser = pathLanguageParser } = options
   return (parser || pathLanguageParser)(path) || lang
 }
 
@@ -263,18 +276,14 @@ export function getPathLanguage(
  * get the locale from the path
  *
  * @param path - the target path
- * @param options.lang - the language tag, which is as default `'en-US'`. optional
- * @param options.parser - the path language parser, optional
+ * @param options - the {@link PathOptions | path options} object
  *
  * @throws {RangeError} Throws the {@link RangeError} if the language in the path, that is not a well-formed BCP 47 language tag.
  *
  * @returns The locale that resolved from path
  */
-export function getPathLocale(
-  path: string | URL,
-  { lang = DEFAULT_LANG_TAG, parser = pathLanguageParser }: PathOptions = {}
-): Intl.Locale {
-  return new Intl.Locale(getPathLanguage(path, { lang, parser }))
+export function getPathLocale(path: string | URL, options: PathOptions = {}): Intl.Locale {
+  return new Intl.Locale(getPathLanguage(path, options))
 }
 
 function getURLSearchParams(input: string | URL | URLSearchParams): URLSearchParams {
@@ -322,6 +331,7 @@ export function getQueryLanguage(
  * get the locale from the query
  *
  * @param query - the target query
+ * @param options - The {@link QueryOptions | query options}
  * @param options.lang - the language tag, which is as default `'en-US'`. optional
  * @param options.name - the query param name, default `'locale'`. optional
  *
@@ -331,7 +341,8 @@ export function getQueryLanguage(
  */
 export function getQueryLocale(
   query: string | URL | URLSearchParams,
-  { lang = DEFAULT_LANG_TAG, name = 'locale' }: QueryOptions = {}
+  options: QueryOptions = {}
 ): Intl.Locale {
+  const { lang = DEFAULT_LANG_TAG, name = 'locale' } = options
   return new Intl.Locale(getQueryLanguage(query, { lang, name }))
 }
