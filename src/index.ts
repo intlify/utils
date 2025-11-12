@@ -22,6 +22,7 @@ export {
   normalizeLanguageName,
   parseAcceptLanguage,
   registerPathLanguageParser,
+  toLocale,
   validateLangTag
 } from './shared.ts'
 export * from './web.ts'
