@@ -25,6 +25,7 @@ import {
   parseDefaultHeader,
   validateLocale
 } from './http.ts'
+import { warnOnce } from './utils.ts'
 
 import type { Context } from 'hono'
 import type { CookieLocaleOptions, HeaderOptions, PathOptions, QueryOptions } from './http.ts'
@@ -57,6 +58,10 @@ type CookieOptions = Parameters<typeof setCookie>[3] & { name?: string }
  * @returns An array of language tags, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array.
  */
 export function getHeaderLanguages(context: Context, options: HeaderOptions = {}): string[] {
+  warnOnce(
+    '`getHeaderLanguages` of `@intlify/utils/hono` is deprecated in v2. Use `getHeaderLanguages` of `@intlify/utils` instead.'
+  )
+
   const { name = ACCEPT_LANGUAGE_HEADER } = options
   return getHeaderLanguagesWithGetter(() => context.req.header(name), options)
 }
@@ -87,6 +92,10 @@ export function getHeaderLanguages(context: Context, options: HeaderOptions = {}
  * @returns A **first language tag** of header, if header is not exists, or `*` (any language), return empty string.
  */
 export function getHeaderLanguage(context: Context, options: HeaderOptions = {}): string {
+  warnOnce(
+    '`getHeaderLanguage` of `@intlify/utils/hono` is deprecated in v2. Use `getHeaderLanguage` of `@intlify/utils` instead.'
+  )
+
   return getHeaderLanguages(context, options)[0] || ''
 }
 
@@ -118,6 +127,10 @@ export function getHeaderLanguage(context: Context, options: HeaderOptions = {})
  * @returns Some locales that wrapped from header, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array.
  */
 export function getHeaderLocales(context: Context, options: HeaderOptions = {}): Intl.Locale[] {
+  warnOnce(
+    '`getHeaderLocales` of `@intlify/utils/hono` is deprecated in v2. Use `getHeaderLocales` of `@intlify/utils` instead.'
+  )
+
   return mapToLocaleFromLanguageTag(getHeaderLanguages, context, options)
 }
 
@@ -135,6 +148,9 @@ export function tryHeaderLocales(
   context: Context,
   options: HeaderOptions = {}
 ): Intl.Locale[] | null {
+  warnOnce(
+    '`tryHeaderLocales` of `@intlify/utils/hono` is deprecated in v2. Use `tryHeaderLocales` of `@intlify/utils` instead.'
+  )
   try {
     return getHeaderLocales(context, options)
   } catch {
@@ -173,6 +189,10 @@ export function getHeaderLocale(
   context: Context,
   options: HeaderOptions & { lang?: string } = {}
 ): Intl.Locale {
+  warnOnce(
+    '`getHeaderLocale` of `@intlify/utils/hono` is deprecated in v2. Use `getHeaderLocale` of `@intlify/utils` instead.'
+  )
+
   const {
     lang = DEFAULT_LANG_TAG,
     name = ACCEPT_LANGUAGE_HEADER,
@@ -195,6 +215,10 @@ export function tryHeaderLocale(
   context: Context,
   options: HeaderOptions & { lang?: string } = {}
 ): Intl.Locale | null {
+  warnOnce(
+    '`tryHeaderLocale` of `@intlify/utils/hono` is deprecated in v2. Use `tryHeaderLocale` of `@intlify/utils` instead.'
+  )
+
   try {
     return getHeaderLocale(context, options)
   } catch {
@@ -228,6 +252,10 @@ export function tryHeaderLocale(
  * @returns The locale that resolved from cookie
  */
 export function getCookieLocale(context: Context, options: CookieLocaleOptions = {}): Intl.Locale {
+  warnOnce(
+    '`getCookieLocale` of `@intlify/utils/hono` is deprecated in v2. Use `getCookieLocale` of `@intlify/utils` instead.'
+  )
+
   const { lang = DEFAULT_LANG_TAG, name = DEFAULT_COOKIE_NAME } = options
   return getLocaleWithGetter(() => getCookie(context, name) || lang)
 }
@@ -246,6 +274,10 @@ export function tryCookieLocale(
   context: Context,
   options: CookieLocaleOptions = {}
 ): Intl.Locale | null {
+  warnOnce(
+    '`tryCookieLocale` of `@intlify/utils/hono` is deprecated in v2. Use `tryCookieLocale` of `@intlify/utils` instead.'
+  )
+
   try {
     return getCookieLocale(context, options)
   } catch {
@@ -281,6 +313,10 @@ export function setCookieLocale(
   locale: string | Intl.Locale,
   options: CookieOptions = {}
 ): void {
+  warnOnce(
+    '`setCookieLocale` of `@intlify/utils/hono` is deprecated in v2. Use `setCookieLocale` of `@intlify/utils` instead.'
+  )
+
   const { name = DEFAULT_COOKIE_NAME } = options
   validateLocale(locale)
   setCookie(context, name, locale.toString(), options)
@@ -297,6 +333,10 @@ export function setCookieLocale(
  * @returns The locale that resolved from path
  */
 export function getPathLocale(context: Context, options: PathOptions = {}): Intl.Locale {
+  warnOnce(
+    '`getPathLocale` of `@intlify/utils/hono` is deprecated in v2. Use `getPathLocale` of `@intlify/utils` instead.'
+  )
+
   return _getPathLocale(new URL(context.req.url), options)
 }
 
@@ -311,6 +351,10 @@ export function getPathLocale(context: Context, options: PathOptions = {}): Intl
  * @returns The locale that resolved from path. if the language in the path, that is not a well-formed BCP 47 language tag, return `null`.
  */
 export function tryPathLocale(context: Context, options: PathOptions = {}): Intl.Locale | null {
+  warnOnce(
+    '`tryPathLocale` of `@intlify/utils/hono` is deprecated in v2. Use `tryPathLocale` of `@intlify/utils` instead.'
+  )
+
   try {
     return getPathLocale(context, options)
   } catch {
@@ -329,6 +373,10 @@ export function tryPathLocale(context: Context, options: PathOptions = {}): Intl
  * @returns The locale that resolved from query
  */
 export function getQueryLocale(context: Context, options: QueryOptions = {}): Intl.Locale {
+  warnOnce(
+    '`getQueryLocale` of `@intlify/utils/hono` is deprecated in v2. Use `getQueryLocale` of `@intlify/utils` instead.'
+  )
+
   const { lang = DEFAULT_LANG_TAG, name = 'locale' } = options
   return _getQueryLocale(new URL(context.req.url), { lang, name })
 }
@@ -344,6 +392,10 @@ export function getQueryLocale(context: Context, options: QueryOptions = {}): In
  * @returns The locale that resolved from query. if the language in the query, that is not a well-formed BCP 47 language tag, return `null`.
  */
 export function tryQueryLocale(context: Context, options: QueryOptions = {}): Intl.Locale | null {
+  warnOnce(
+    '`tryQueryLocale` of `@intlify/utils/hono` is deprecated in v2. Use `tryQueryLocale` of `@intlify/utils` instead.'
+  )
+
   const { lang = DEFAULT_LANG_TAG, name = 'locale' } = options
   try {
     return getQueryLocale(context, { lang, name })
