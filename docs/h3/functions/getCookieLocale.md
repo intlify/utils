@@ -4,7 +4,7 @@
 
 [@intlify/utils](../../index.md) / [h3](../index.md) / getCookieLocale
 
-# Function: getCookieLocale()
+# ~~Function: getCookieLocale()~~
 
 ```ts
 function getCookieLocale(event, options): Locale;
@@ -43,3 +43,7 @@ app.use(eventHandler(event) => {
 ## Throws
 
 Throws a `RangeError` if `lang` option or cookie name value are not a well-formed BCP 47 language tag.
+
+## Deprecated
+
+since v2. Use `getCookieLocale` of `@intlify/utils` instead.

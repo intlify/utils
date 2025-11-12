@@ -4,7 +4,7 @@
 
 [@intlify/utils](../../index.md) / [h3](../index.md) / getQueryLocale
 
-# Function: getQueryLocale()
+# ~~Function: getQueryLocale()~~
 
 ```ts
 function getQueryLocale(event, options): Locale;
@@ -28,3 +28,7 @@ The locale that resolved from query
 ## Throws
 
 Throws the `RangeError` if the language in the query, that is not a well-formed BCP 47 language tag.
+
+## Deprecated
+
+since v2. Use `getQueryLocale` of `@intlify/utils` instead.

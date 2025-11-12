@@ -4,7 +4,7 @@
 
 [@intlify/utils](../../index.md) / [hono](../index.md) / setCookieLocale
 
-# Function: setCookieLocale()
+# ~~Function: setCookieLocale()~~
 
 ```ts
 function setCookieLocale(
@@ -45,3 +45,7 @@ app.use('/', c => {
 ## Throws
 
 Throws the `SyntaxError` if `locale` is invalid.
+
+## Deprecated
+
+since v2. Use `setCookieLocale` of `@intlify/utils` instead.
