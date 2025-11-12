@@ -8,7 +8,7 @@
 
 `@intlify/utils` default module entry.
 
-`@inlityf/utils` will export javascript runtime agnostic utility functions and types.
+`@intlify/utils` will export javascript runtime agnostic utility functions and types.
 
 ## Example
 
@@ -35,6 +35,7 @@ import { parseAcceptLanguage, isLocale, getHeaderLocale } from '@intlify/utils'
 | [parseAcceptLanguage](functions/parseAcceptLanguage.md) | parse `accept-language` header string |
 | [registerPathLanguageParser](functions/registerPathLanguageParser.md) | register the path language parser |
 | [setCookieLocale](functions/setCookieLocale.md) | set locale to the response `Set-Cookie` header. |
+| [toLocale](functions/toLocale.md) | returns the Intl.Locale \| locale |
 | [tryCookieLocale](functions/tryCookieLocale.md) | try to get locale from cookie |
 | [tryHeaderLocale](functions/tryHeaderLocale.md) | try to get locale from header |
 | [tryHeaderLocales](functions/tryHeaderLocales.md) | try to get locales from header |
