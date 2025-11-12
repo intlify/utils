@@ -1,4 +1,15 @@
 /**
+ * `@intlify/utils` module entry for [H3](https://h3.dev/)
+ *
+ * @example
+ * ```ts
+ * import { getHeaderLocale } from '@intlify/utils/h3'
+ * ```
+ *
+ * @module h3
+ */
+
+/**
  * @author kazuya kawaguchi (a.k.a. kazupon)
  * @license MIT
  */

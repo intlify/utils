@@ -1,4 +1,17 @@
 /**
+ * `@intlify/utils` default module entry.
+ *
+ * `@inlityf/utils` will export javascript runtime agnostic utility functions and types.
+ *
+ * @example
+ * ```ts
+ * import { parseAcceptLanguage, isLocale, getHeaderLocale } from '@intlify/utils'
+ * ```
+ *
+ * @module default
+ */
+
+/**
  * @author kazuya kawaguchi (a.k.a. kazupon)
  * @license MIT
  */

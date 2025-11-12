@@ -74,59 +74,9 @@ You can play the below examples:
 - 🌍 [Browser](https://github.com/intlify/utils/tree/main/examples/browser):
   `npm run play:browser`
 
-## 🔨 Utilities
+## 🤝 API
 
-### Common
-
-- `isLocale`
-- `toLocale`
-- `parseAcceptLanguage`
-- `validateLangTag`
-- `normalizeLanguageName`
-
-You can do `import { ... } from '@intlify/utils'` the above utilities
-
-### Navigator
-
-- `getNavigatorLocales`
-- `getNavigatorLocale`
-
-You can do `import { ... } from '@intlify/utils'` the above utilities
-
-<!-- eslint-disable markdown/no-missing-label-refs -->
-
-> [!NOTE]
-> for Node.js You need to do `import { ... } from '@intlify/utils/node'`
-
-<!-- eslint-enable markdown/no-missing-label-refs -->
-
-### HTTP
-
-- `getHeaderLanguages`
-- `getHeaderLanguage`
-- `getHeaderLocales`
-- `getHeaderLocale`
-- `getCookieLocale`
-- `setCookieLocale`
-- `getPathLocale`
-- `getQueryLocale`
-- `tryHeaderLocales`
-- `tryHeaderLocale`
-- `tryCookieLocale`
-- `tryPathLocale`
-- `tryQueryLocale`
-
-The about utilities functions accept Web APIs such as [Request](https://developer.mozilla.org/en-US/docs/Web/API/Request) and [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response) that is supported by JS environments (such as Deno, Bun, and Browser)
-
-#### Specialized environments
-
-If you will use Node.js and H3, You can do `import { ... } from '@intlify/utils/{ENV}'` the above utilities.
-
-The namespace `{ENV}` is one of the following:
-
-- `node`: accept `IncomingMessage` and `Outgoing` by Node.js [http](https://nodejs.org/api/http.html) module
-- `h3`: accept `H3Event` by HTTP framework [h3](https://github.com/unjs/h3)
-- `hono`: accept `Context` by edge-side web framework [hono](https://github.com/honojs/hono)
+See the [API docs](./docs/index.md)
 
 ## 🙌 Contributing guidelines
 

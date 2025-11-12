@@ -1,4 +1,15 @@
 /**
+ * `@intlify/utils` module entry for [Hono](https://hono.dev/)
+ *
+ * @example
+ * ```ts
+ * import { getHeaderLocale, setCookieLocale } from '@intlify/utils/hono'
+ * ```
+ *
+ * @module hono
+ */
+
+/**
  * @author kazuya kawaguchi (a.k.a. kazupon)
  * @license MIT
  */

@@ -1,4 +1,15 @@
 /**
+ * `@intlify/utils` module entry for [Node.js](https://nodejs.org/)
+ *
+ * @example
+ * ```ts
+ * import { getHeaderLocale, setCookieLocale } from '@intlify/utils/node'
+ * ```
+ *
+ * @module node
+ */
+
+/**
  * @author kazuya kawaguchi (a.k.a. kazupon)
  * @license MIT
  */
