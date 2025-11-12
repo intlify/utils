@@ -2,7 +2,7 @@
   "$id": "https://jsr.io/schema/config-file.v1.json",
   "$schema": "http://json-schema.org/draft-07/schema",
   "name": "@intlify/utils",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "exports": "./deno/mod.ts",
   "license": "MIT",
   "publish": {
