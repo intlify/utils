@@ -67,7 +67,7 @@ jobs:
           commit_message: 'chore: sync changelog'
 
       - name: Publish package for NPM
-        run: pnpm publish --access public --no-git-checks --tag main
+        run: pnpm publish --access public --no-git-checks --tag latest
         env:
           NPM_CONFIG_PROVENANCE: true
 
