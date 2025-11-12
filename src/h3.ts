@@ -14,10 +14,15 @@ import {
   parseDefaultHeader,
   validateLocale
 } from './http.ts'
-import { pathLanguageParser } from './shared.ts'
 
 import type { H3Event } from 'h3'
-import type { CookieOptions, HeaderOptions, PathOptions, QueryOptions } from './http.ts'
+import type {
+  CookieLocaleOptions,
+  CookieOptions,
+  HeaderOptions,
+  PathOptions,
+  QueryOptions
+} from './http.ts'
 
 /**
  * get languages from header
@@ -40,20 +45,17 @@ import type { CookieOptions, HeaderOptions, PathOptions, QueryOptions } from './
  * ```
  *
  * @param event - The {@link H3Event | H3} event
- * @param options.name - The header name, which is as default `accept-language`.
- * @param options.parser - The parser function, which is as default {@linkcode parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
+ * @param options - The {@link HeaderOptions | header options} object. `name` option is `accept-language` as default.
  *
  * @returns The array of language tags, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array.
  */
-export function getHeaderLanguages(
-  event: H3Event,
-  { name = ACCEPT_LANGUAGE_HEADER, parser = parseDefaultHeader }: HeaderOptions = {}
-): string[] {
+export function getHeaderLanguages(event: H3Event, options: HeaderOptions = {}): string[] {
+  const { name = ACCEPT_LANGUAGE_HEADER } = options
   const getter = () => {
     const headers = getHeaders(event)
     return headers[name]
   }
-  return getHeaderLanguagesWithGetter(getter, { name, parser })
+  return getHeaderLanguagesWithGetter(getter, options)
 }
 
 /**
@@ -77,16 +79,12 @@ export function getHeaderLanguages(
  * ```
  *
  * @param event - The {@link H3Event | H3} event
- * @param options.name - The header name, which is as default `accept-language`.
- * @param options.parser - The parser function, which is as default {@linkcode parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
+ * @param options - The {@link HeaderOptions | header options} object
  *
  * @returns The **first language tag** of header, if header is not exists, or `*` (any language), return empty string.
  */
-export function getHeaderLanguage(
-  event: H3Event,
-  { name = ACCEPT_LANGUAGE_HEADER, parser = parseDefaultHeader }: HeaderOptions = {}
-): string {
-  return getHeaderLanguages(event, { name, parser })[0] || ''
+export function getHeaderLanguage(event: H3Event, options: HeaderOptions = {}): string {
+  return getHeaderLanguages(event, options)[0] || ''
 }
 
 /**
@@ -109,19 +107,15 @@ export function getHeaderLanguage(
  * ```
  *
  * @param event - The {@link H3Event | H3} event
- * @param options.name - The header name, which is as default `accept-language`.
- * @param options.parser - The parser function, which is as default {@linkcode parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
+ * @param options - The {@link HeaderOptions | header options} object
  *
  * @throws {RangeError} Throws the {@linkcode RangeError} if header are not a well-formed BCP 47 language tag.
  *
  * @returns The locales that wrapped from header, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array.
  */
-export function getHeaderLocales(
-  event: H3Event,
-  { name = ACCEPT_LANGUAGE_HEADER, parser = parseDefaultHeader }: HeaderOptions = {}
-): Intl.Locale[] {
+export function getHeaderLocales(event: H3Event, options: HeaderOptions = {}): Intl.Locale[] {
   // @ts-expect-error -- FIXME: this type error needs to be fixed
-  return mapToLocaleFromLanguageTag(getHeaderLanguages, event, { name, parser })
+  return mapToLocaleFromLanguageTag(getHeaderLanguages, event, options)
 }
 
 /**
@@ -130,17 +124,16 @@ export function getHeaderLocales(
  * @description wrap language tags with {@link Intl.Locale | locale}, languages tags will be parsed from `accept-language` header as default. Unlike {@link getHeaderLocales}, this function does not throw an error if the locale cannot be obtained, this function returns `null`.
  *
  * @param event - The {@link H3Event | H3} event
- * @param options.name - The header name, which is as default `accept-language`.
- * @param options.parser - The parser function, which is as default {@linkcode parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
+ * @param options - The {@link HeaderOptions | header options} object
  *
  * @returns The locales that wrapped from header, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array. if header are not a well-formed BCP 47 language tag, return `null`.
  */
 export function tryHeaderLocales(
   event: H3Event,
-  { name = ACCEPT_LANGUAGE_HEADER, parser = parseDefaultHeader }: HeaderOptions = {}
+  options: HeaderOptions = {}
 ): Intl.Locale[] | null {
   try {
-    return getHeaderLocales(event, { name, parser })
+    return getHeaderLocales(event, options)
   } catch {
     return null
   }
@@ -166,9 +159,7 @@ export function tryHeaderLocales(
  * ```
  *
  * @param event - The {@link H3Event | H3} event
- * @param options.lang - The default language tag, Optional. default value is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
- * @param options.name - The header name, which is as default `accept-language`.
- * @param options.parser - The parser function, which is as default {@linkcode parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
+ * @param options - The {@link HeaderOptions | header options} object. `lang` option is `en-US` as default, you must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}. `name` option is `accept-language` as default, and `parser` option is {@linkcode parseDefaultHeader} as default.
  *
  * @throws {RangeError} Throws the {@linkcode RangeError} if `lang` option or header are not a well-formed BCP 47 language tag.
  *
@@ -176,12 +167,13 @@ export function tryHeaderLocales(
  */
 export function getHeaderLocale(
   event: H3Event,
-  {
+  options: HeaderOptions & { lang?: string } = {}
+): Intl.Locale {
+  const {
     lang = DEFAULT_LANG_TAG,
     name = ACCEPT_LANGUAGE_HEADER,
     parser = parseDefaultHeader
-  }: HeaderOptions & { lang?: string } = {}
-): Intl.Locale {
+  } = options
   return getLocaleWithGetter(() => getHeaderLanguages(event, { name, parser })[0] || lang)
 }
 
@@ -191,22 +183,16 @@ export function getHeaderLocale(
  * @description wrap language tag with {@link Intl.Locale | locale}, languages tags will be parsed from `accept-language` header as default. Unlike {@link getHeaderLocale}, this function does not throw an error if the locale cannot be obtained, this function returns `null`.
  *
  * @param event - The {@link H3Event | H3} event
- * @param options.lang - The default language tag, Optional. default value is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
- * @param options.name - The header name, which is as default `accept-language`.
- * @param options.parser - The parser function, which is as default {@linkcode parseDefaultHeader}. If you are specifying more than one in your own format, you need a parser.
+ * @param options - The {@link HeaderOptions | header options} object
  *
  * @returns The first locale that resolved from header string. if you use `accept-language` header and `*` (any language) or empty string is detected, return `en-US`. if header are not a well-formed BCP 47 language tag, return `null`.
  */
 export function tryHeaderLocale(
   event: H3Event,
-  {
-    lang = DEFAULT_LANG_TAG,
-    name = ACCEPT_LANGUAGE_HEADER,
-    parser = parseDefaultHeader
-  }: HeaderOptions & { lang?: string } = {}
+  options: HeaderOptions & { lang?: string } = {}
 ): Intl.Locale | null {
   try {
-    return getHeaderLocale(event, { lang, name, parser })
+    return getHeaderLocale(event, options)
   } catch {
     return null
   }
@@ -230,17 +216,14 @@ export function tryHeaderLocale(
  * ```
  *
  * @param event - The {@link H3Event | H3} event
- * @param options.lang - The default language tag, default is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
- * @param options.name - The cookie name, default is `i18n_locale`
+ * @param options - The {@link CookieLocaleOptions | cookie locale options}, `lang` option is `en-US` as default, you must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}. `name` option is `i18n_locale` as default.
  *
  * @throws {RangeError} Throws a {@linkcode RangeError} if `lang` option or cookie name value are not a well-formed BCP 47 language tag.
  *
  * @returns The locale that resolved from cookie
  */
-export function getCookieLocale(
-  event: H3Event,
-  { lang = DEFAULT_LANG_TAG, name = DEFAULT_COOKIE_NAME } = {}
-): Intl.Locale {
+export function getCookieLocale(event: H3Event, options: CookieLocaleOptions = {}): Intl.Locale {
+  const { lang = DEFAULT_LANG_TAG, name = DEFAULT_COOKIE_NAME } = options
   return getLocaleWithGetter(() => getCookie(event, name) || lang)
 }
 
@@ -250,17 +233,16 @@ export function getCookieLocale(
  * @description Unlike {@linkcode getCookieLocale}, this function does not throw an error if the locale cannot be obtained, this function returns `null`.
  *
  * @param event - The {@link H3Event | H3} event
- * @param options.lang - The default language tag, default is `en-US`. You must specify the language tag with the {@link https://datatracker.ietf.org/doc/html/rfc4646#section-2.1 | BCP 47 syntax}.
- * @param options.name - The cookie name, default is `i18n_locale`
+ * @param options - The {@link CookieLocaleOptions | cookie locale options}
  *
  * @returns The locale that resolved from cookie. if `lang` option or cookie name value are not a well-formed BCP 47 language tag, return `null`.
  */
 export function tryCookieLocale(
   event: H3Event,
-  { lang = DEFAULT_LANG_TAG, name = DEFAULT_COOKIE_NAME } = {}
+  options: CookieLocaleOptions = {}
 ): Intl.Locale | null {
   try {
-    return getCookieLocale(event, { lang, name })
+    return getCookieLocale(event, options)
   } catch {
     return null
   }
@@ -284,35 +266,32 @@ export function tryCookieLocale(
  *
  * @param event - The {@link H3Event | H3} event
  * @param locale - The locale value
- * @param options - The cookie options, `name` option is `i18n_locale` as default, and `path` option is `/` as default.
+ * @param options - The {@link CookieOptions | cookie options}, `name` option is `i18n_locale` as default
  *
  * @throws {SyntaxError} Throws the {@linkcode SyntaxError} if `locale` is invalid.
  */
 export function setCookieLocale(
   event: H3Event,
   locale: string | Intl.Locale,
-  options: CookieOptions = { name: DEFAULT_COOKIE_NAME } // eslint-disable-line unicorn/no-object-as-default-parameter -- NOTE: allow
+  options: CookieOptions = {}
 ): void {
+  const { name = DEFAULT_COOKIE_NAME } = options
   validateLocale(locale)
-  setCookie(event, options.name!, locale.toString(), options)
+  setCookie(event, name, locale.toString(), options)
 }
 
 /**
  * get the locale from the path
  *
  * @param event - the {@link H3Event | H3} event
- * @param options.lang - the language tag, which is as default `'en-US'`. optional
- * @param options.parser - the path language parser, default {@linkcode pathLanguageParser}, optional
+ * @param options - the {@link PathOptions | path options} object
  *
  * @throws {RangeError} Throws the {@linkcode RangeError} if the language in the path, that is not a well-formed BCP 47 language tag.
  *
  * @returns The locale that resolved from path
  */
-export function getPathLocale(
-  event: H3Event,
-  { lang = DEFAULT_LANG_TAG, parser = pathLanguageParser }: PathOptions = {}
-): Intl.Locale {
-  return _getPathLocale(getRequestURL(event), { lang, parser })
+export function getPathLocale(event: H3Event, options: PathOptions = {}): Intl.Locale {
+  return _getPathLocale(getRequestURL(event), options)
 }
 
 /**
@@ -321,17 +300,13 @@ export function getPathLocale(
  * @description Unlike {@linkcode getPathLocale}, this function does not throw an error if the locale cannot be obtained, this function returns `null`.
  *
  * @param event - the {@link H3Event | H3} event
- * @param options.lang - the language tag, which is as default `'en-US'`. optional
- * @param options.parser - the path language parser, default {@linkcode pathLanguageParser}, optional
+ * @param options - the {@link PathOptions | path options} object
  *
  * @returns The locale that resolved from path. if the language in the path, that is not a well-formed BCP 47 language tag, return `null`.
  */
-export function tryPathLocale(
-  event: H3Event,
-  { lang = DEFAULT_LANG_TAG, parser = pathLanguageParser }: PathOptions = {}
-): Intl.Locale | null {
+export function tryPathLocale(event: H3Event, options: PathOptions = {}): Intl.Locale | null {
   try {
-    return getPathLocale(event, { lang, parser })
+    return getPathLocale(event, options)
   } catch {
     return null
   }
@@ -341,17 +316,14 @@ export function tryPathLocale(
  * get the locale from the query
  *
  * @param event - the {@link H3Event | H3} event
- * @param options.lang - the language tag, which is as default `'en-US'`. optional
- * @param options.name - the query param name, default `'locale'`. optional
+ * @param options - The {@link QueryOptions | query options}, `lang` option is `en-US` as default, `name` option is `locale` as default.
  *
  * @throws {RangeError} Throws the {@linkcode RangeError} if the language in the query, that is not a well-formed BCP 47 language tag.
  *
  * @returns The locale that resolved from query
  */
-export function getQueryLocale(
-  event: H3Event,
-  { lang = DEFAULT_LANG_TAG, name = 'locale' }: QueryOptions = {}
-): Intl.Locale {
+export function getQueryLocale(event: H3Event, options: QueryOptions = {}): Intl.Locale {
+  const { lang = DEFAULT_LANG_TAG, name = 'locale' } = options
   return _getQueryLocale(getRequestURL(event), { lang, name })
 }
 
@@ -361,15 +333,12 @@ export function getQueryLocale(
  * @description Unlike {@linkcode getQueryLocale}, this function does not throw an error if the locale cannot be obtained, this function returns `null`.
  *
  * @param event - the {@link H3Event | H3} event
- * @param options.lang - the language tag, which is as default `'en-US'`. optional
- * @param options.name - the query param name, default `'locale'`. optional
+ * @param options - The {@link QueryOptions | query options}, `lang` option is `en-US` as default, `name` option is `locale` as default.
  *
  * @returns The locale that resolved from query. if the language in the query, that is not a well-formed BCP 47 language tag, return `null`.
  */
-export function tryQueryLocale(
-  event: H3Event,
-  { lang = DEFAULT_LANG_TAG, name = 'locale' }: QueryOptions = {}
-): Intl.Locale | null {
+export function tryQueryLocale(event: H3Event, options: QueryOptions = {}): Intl.Locale | null {
+  const { lang = DEFAULT_LANG_TAG, name = 'locale' } = options
   try {
     return getQueryLocale(event, { lang, name })
   } catch {
