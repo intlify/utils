@@ -92,7 +92,7 @@ export function parseAcceptLanguage(value: string): string[] {
  * ```ts
  * const oldLangName = 'en_US'
  * const langTag = normalizeLanguageName(oldLangName)
- * conosle.log(langTag) // en-US
+ * console.log(langTag) // en-US
  * ```
  *
  * @param langName - The target language name
