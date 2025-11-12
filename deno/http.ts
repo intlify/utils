@@ -16,7 +16,7 @@ import {
 
 import type { PathLanguageParser } from './shared.ts'
 // import type { CookieSerializeOptions } from 'cookie-es'
-// NOTE: This is a copy of the type definition from `cookie-es` package, we want to avoid building error for this type definition ...
+// NOTE(kazupon): This is a copy of the type definition from `cookie-es` package, we want to avoid building error for this type definition ...
 
 interface CookieSerializeOptions {
   /**
@@ -219,9 +219,9 @@ export function validateLocale(locale: string | Intl.Locale): void {
  *
  * @returns The array of {@linkcode Intl.Locale} objects
  */
-export function mapToLocaleFromLanguageTag(
-  getter: (...args: unknown[]) => string[],
-  ...args: unknown[]
+export function mapToLocaleFromLanguageTag<T extends unknown[]>(
+  getter: (...args: T) => string[],
+  ...args: T
 ): Intl.Locale[] {
   return Reflect.apply(getter, null, args).map(lang => getLocaleWithGetter(() => lang))
 }

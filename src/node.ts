@@ -132,7 +132,6 @@ export function getHeaderLocales(
   request: IncomingMessage,
   options: HeaderOptions = {}
 ): Intl.Locale[] {
-  // @ts-expect-error -- FIXME: this type error needs to be fixed
   return mapToLocaleFromLanguageTag(getHeaderLanguages, request, options)
 }
 

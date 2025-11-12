@@ -113,7 +113,6 @@ export function getHeaderLanguage(request: Request, options: HeaderOptions = {})
  * @returns The locales that wrapped from header, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array.
  */
 export function getHeaderLocales(request: Request, options: HeaderOptions = {}): Intl.Locale[] {
-  // @ts-expect-error -- FIXME: this type error needs to be fixed
   return mapToLocaleFromLanguageTag(getHeaderLanguages, request, options)
 }
 

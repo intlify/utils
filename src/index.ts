@@ -1,7 +1,7 @@
 /**
  * `@intlify/utils` default module entry.
  *
- * `@inlityf/utils` will export javascript runtime agnostic utility functions and types.
+ * `@intlify/utils` will export javascript runtime agnostic utility functions and types.
  *
  * @example
  * ```ts
