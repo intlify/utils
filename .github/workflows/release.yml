@@ -53,7 +53,7 @@ jobs:
 
       - name: Generate changelog
         run: |
-          git restore --source=HEAD --staged --worktree -- package.json bun.lockb
+          git restore --source=HEAD --staged --worktree -- package.json
           pnpm run build
           pnpm run changelog -- --tag=${{ steps.split.outputs._2 }}
         env:
