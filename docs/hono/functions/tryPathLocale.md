@@ -4,7 +4,7 @@
 
 [@intlify/utils](../../index.md) / [hono](../index.md) / tryPathLocale
 
-# Function: tryPathLocale()
+# ~~Function: tryPathLocale()~~
 
 ```ts
 function tryPathLocale(context, options): Locale | null;
@@ -28,3 +28,7 @@ The locale that resolved from path. if the language in the path, that is not a w
 ## Description
 
 Unlike [`getPathLocale`](getPathLocale.md), this function does not throw an error if the locale cannot be obtained, this function returns `null`.
+
+## Deprecated
+
+since v2. Use `tryPathLocale` of `@intlify/utils` instead.

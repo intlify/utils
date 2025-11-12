@@ -4,7 +4,7 @@
 
 [@intlify/utils](../../index.md) / [h3](../index.md) / tryQueryLocale
 
-# Function: tryQueryLocale()
+# ~~Function: tryQueryLocale()~~
 
 ```ts
 function tryQueryLocale(event, options): Locale | null;
@@ -28,3 +28,7 @@ The locale that resolved from query. if the language in the query, that is not a
 ## Description
 
 Unlike [`getQueryLocale`](getQueryLocale.md), this function does not throw an error if the locale cannot be obtained, this function returns `null`.
+
+## Deprecated
+
+since v2. Use `tryQueryLocale` of `@intlify/utils` instead.

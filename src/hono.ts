@@ -56,6 +56,8 @@ type CookieOptions = Parameters<typeof setCookie>[3] & { name?: string }
  * @param options - The {@link HeaderOptions | header options} object. `name` option is `accept-language` as default.
  *
  * @returns An array of language tags, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array.
+ *
+ * @deprecated since v2. Use `getHeaderLanguages` of `@intlify/utils` instead.
  */
 export function getHeaderLanguages(context: Context, options: HeaderOptions = {}): string[] {
   warnOnce(
@@ -90,6 +92,8 @@ export function getHeaderLanguages(context: Context, options: HeaderOptions = {}
  * @param options - The {@link HeaderOptions | header options} object
  *
  * @returns A **first language tag** of header, if header is not exists, or `*` (any language), return empty string.
+ *
+ * @deprecated since v2. Use `getHeaderLanguage` of `@intlify/utils` instead.
  */
 export function getHeaderLanguage(context: Context, options: HeaderOptions = {}): string {
   warnOnce(
@@ -125,6 +129,8 @@ export function getHeaderLanguage(context: Context, options: HeaderOptions = {})
  * @throws {RangeError} Throws the {@linkcode RangeError} if header are not a well-formed BCP 47 language tag.
  *
  * @returns Some locales that wrapped from header, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array.
+ *
+ * @deprecated since v2. Use `getHeaderLocales` of `@intlify/utils` instead.
  */
 export function getHeaderLocales(context: Context, options: HeaderOptions = {}): Intl.Locale[] {
   warnOnce(
@@ -143,6 +149,8 @@ export function getHeaderLocales(context: Context, options: HeaderOptions = {}):
  * @param options - The {@link HeaderOptions | header options} object
  *
  * @returns Some locales that wrapped from header, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array. if header are not a well-formed BCP 47 language tag, return `null`.
+ *
+ * @deprecated since v2. Use `tryHeaderLocales` of `@intlify/utils` instead.
  */
 export function tryHeaderLocales(
   context: Context,
@@ -184,6 +192,8 @@ export function tryHeaderLocales(
  * @throws {RangeError} Throws the {@linkcode RangeError} if `lang` option or header are not a well-formed BCP 47 language tag.
  *
  * @returns A first locale that resolved from header string. if you use `accept-language` header and `*` (any language) or empty string is detected, return `en-US`.
+ *
+ * @deprecated since v2. Use `getHeaderLocale` of `@intlify/utils` instead.
  */
 export function getHeaderLocale(
   context: Context,
@@ -210,6 +220,8 @@ export function getHeaderLocale(
  * @param options - The {@link HeaderOptions | header options} object
  *
  * @returns A first locale that resolved from header string. if you use `accept-language` header and `*` (any language) or empty string is detected, return `en-US`. if `lang` option or header are not a well-formed BCP 47 language tag, return `null`.
+ *
+ * @deprecated since v2. Use `tryHeaderLocale` of `@intlify/utils` instead.
  */
 export function tryHeaderLocale(
   context: Context,
@@ -250,6 +262,8 @@ export function tryHeaderLocale(
  * @throws {RangeError} Throws a {@linkcode RangeError} if `lang` option or cookie name value are not a well-formed BCP 47 language tag.
  *
  * @returns The locale that resolved from cookie
+ *
+ * @deprecated since v2. Use `getCookieLocale` of `@intlify/utils` instead.
  */
 export function getCookieLocale(context: Context, options: CookieLocaleOptions = {}): Intl.Locale {
   warnOnce(
@@ -269,6 +283,8 @@ export function getCookieLocale(context: Context, options: CookieLocaleOptions =
  * @param options - The {@link CookieLocaleOptions | cookie locale options}
  *
  * @returns The locale that resolved from cookie, if `lang` option or cookie name value are not a well-formed BCP 47 language tag, return `null`.
+ *
+ * @deprecated since v2. Use `tryCookieLocale` of `@intlify/utils` instead.
  */
 export function tryCookieLocale(
   context: Context,
@@ -307,6 +323,8 @@ export function tryCookieLocale(
  * @param options - The {@link CookieOptions | cookie options}, `name` option is `i18n_locale` as default
  *
  * @throws {SyntaxError} Throws the {@linkcode SyntaxError} if `locale` is invalid.
+ *
+ * @deprecated since v2. Use `setCookieLocale` of `@intlify/utils` instead.
  */
 export function setCookieLocale(
   context: Context,
@@ -331,6 +349,8 @@ export function setCookieLocale(
  * @throws {RangeError} Throws the {@linkcode RangeError} if the language in the path, that is not a well-formed BCP 47 language tag.
  *
  * @returns The locale that resolved from path
+ *
+ * @deprecated since v2. Use `getPathLocale` of `@intlify/utils` instead.
  */
 export function getPathLocale(context: Context, options: PathOptions = {}): Intl.Locale {
   warnOnce(
@@ -349,6 +369,8 @@ export function getPathLocale(context: Context, options: PathOptions = {}): Intl
  * @param options - the {@link PathOptions | path options} object
  *
  * @returns The locale that resolved from path. if the language in the path, that is not a well-formed BCP 47 language tag, return `null`.
+ *
+ * @deprecated since v2. Use `tryPathLocale` of `@intlify/utils` instead.
  */
 export function tryPathLocale(context: Context, options: PathOptions = {}): Intl.Locale | null {
   warnOnce(
@@ -371,6 +393,8 @@ export function tryPathLocale(context: Context, options: PathOptions = {}): Intl
  * @throws {RangeError} Throws the {@linkcode RangeError} if the language in the query, that is not a well-formed BCP 47 language tag.
  *
  * @returns The locale that resolved from query
+ *
+ * @deprecated since v2. Use `getQueryLocale` of `@intlify/utils` instead.
  */
 export function getQueryLocale(context: Context, options: QueryOptions = {}): Intl.Locale {
   warnOnce(
@@ -390,6 +414,8 @@ export function getQueryLocale(context: Context, options: QueryOptions = {}): In
  * @param options - The {@link QueryOptions | query options}, `lang` option is `en-US` as default, `name` option is `locale` as default.
  *
  * @returns The locale that resolved from query. if the language in the query, that is not a well-formed BCP 47 language tag, return `null`.
+ *
+ * @deprecated since v2. Use `tryQueryLocale` of `@intlify/utils` instead.
  */
 export function tryQueryLocale(context: Context, options: QueryOptions = {}): Intl.Locale | null {
   warnOnce(

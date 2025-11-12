@@ -4,7 +4,7 @@
 
 [@intlify/utils](../../index.md) / [hono](../index.md) / getHeaderLocales
 
-# Function: getHeaderLocales()
+# ~~Function: getHeaderLocales()~~
 
 ```ts
 function getHeaderLocales(context, options): Locale[];
@@ -48,3 +48,7 @@ app.use('/', c => {
 ## Throws
 
 Throws the `RangeError` if header are not a well-formed BCP 47 language tag.
+
+## Deprecated
+
+since v2. Use `getHeaderLocales` of `@intlify/utils` instead.

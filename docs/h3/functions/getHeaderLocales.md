@@ -4,7 +4,7 @@
 
 [@intlify/utils](../../index.md) / [h3](../index.md) / getHeaderLocales
 
-# Function: getHeaderLocales()
+# ~~Function: getHeaderLocales()~~
 
 ```ts
 function getHeaderLocales(event, options): Locale[];
@@ -47,3 +47,7 @@ app.use(eventHandler(event) => {
 ## Throws
 
 Throws the `RangeError` if header are not a well-formed BCP 47 language tag.
+
+## Deprecated
+
+since v2. Use `getHeaderLocales` of `@intlify/utils` instead.

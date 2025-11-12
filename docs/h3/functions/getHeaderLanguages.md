@@ -4,7 +4,7 @@
 
 [@intlify/utils](../../index.md) / [h3](../index.md) / getHeaderLanguages
 
-# Function: getHeaderLanguages()
+# ~~Function: getHeaderLanguages()~~
 
 ```ts
 function getHeaderLanguages(event, options): string[];
@@ -44,3 +44,7 @@ app.use(eventHandler(event) => {
   return `accepted languages: ${acceptLanguages.join(', ')}`
 })
 ```
+
+## Deprecated
+
+since v2. Use `getHeaderLanguages` of `@intlify/utils` instead.

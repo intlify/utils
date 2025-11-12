@@ -4,7 +4,7 @@
 
 [@intlify/utils](../../index.md) / [hono](../index.md) / tryHeaderLocale
 
-# Function: tryHeaderLocale()
+# ~~Function: tryHeaderLocale()~~
 
 ```ts
 function tryHeaderLocale(context, options): Locale | null;
@@ -28,3 +28,7 @@ A first locale that resolved from header string. if you use `accept-language` he
 ## Description
 
 wrap language tag with Intl.Locale \| locale, languages tags will be parsed from `accept-language` header as default. Unlike [getHeaderLocale](getHeaderLocale.md), this function does not throw an error if the locale cannot be obtained, this function returns `null`.
+
+## Deprecated
+
+since v2. Use `tryHeaderLocale` of `@intlify/utils` instead.

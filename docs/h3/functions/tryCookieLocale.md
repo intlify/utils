@@ -4,7 +4,7 @@
 
 [@intlify/utils](../../index.md) / [h3](../index.md) / tryCookieLocale
 
-# Function: tryCookieLocale()
+# ~~Function: tryCookieLocale()~~
 
 ```ts
 function tryCookieLocale(event, options): Locale | null;
@@ -28,3 +28,7 @@ The locale that resolved from cookie. if `lang` option or cookie name value are 
 ## Description
 
 Unlike [`getCookieLocale`](getCookieLocale.md), this function does not throw an error if the locale cannot be obtained, this function returns `null`.
+
+## Deprecated
+
+since v2. Use `tryCookieLocale` of `@intlify/utils` instead.
