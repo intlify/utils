@@ -32,47 +32,16 @@ yarn add @intlify/utils
 pnpm add @intlify/utils
 ```
 
-<details>
-  <summary>Using Edge Releases</summary>
-
-If you are directly using `@intlify/utils` as a dependency:
-
-```json
-{
-  "dependencies": {
-    "@intlify/utils": "npm:@intlify/utils-edge@latest"
-  }
-}
-```
-
-**Note:** Make sure to recreate lockfile and `node_modules` after reinstall to avoid hoisting issues.
-
-</details>
-
 ### 🦕 Deno
 
-You can install via `import`.
-
-in your code:
-
-<!-- eslint-skip -->
-
-```ts
-/**
- * you can install via other CDN URL such as skypack,
- * or, you can also use import maps
- * https://docs.deno.com/runtime/manual/basics/import_maps
- */
-import { ... } from 'https://deno.land/x/intlify_utils/mod.ts'
-
-// something todo
-// ...
+```sh
+deno add jsr:@intlify/utils
 ```
 
 ### 🥟 Bun
 
 ```sh
-bun install @intlify/utils
+bun add @intlify/utils
 ```
 
 ### 🌍 Browser
@@ -91,20 +60,6 @@ in your HTML:
   // ...
 </script>
 ```
-
-<details>
-  <summary>Using Edge Releases</summary>
-
-<!-- eslint-skip -->
-
-```ts
-import { isLocale } from 'https://esm.sh/@intlify/utils-edge'
-
-// something todo
-// ...
-```
-
-</details>
 
 ## 🍭 Playground
 
