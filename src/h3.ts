@@ -25,6 +25,7 @@ import {
   parseDefaultHeader,
   validateLocale
 } from './http.ts'
+import { warnOnce } from './utils.ts'
 
 import type { H3Event } from 'h3'
 import type {
@@ -61,6 +62,10 @@ import type {
  * @returns The array of language tags, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array.
  */
 export function getHeaderLanguages(event: H3Event, options: HeaderOptions = {}): string[] {
+  warnOnce(
+    '`getHeaderLanguages` of `@intlify/utils/h3` is deprecated in v2. Use `getHeaderLanguages` of `@intlify/utils` instead.'
+  )
+
   const { name = ACCEPT_LANGUAGE_HEADER } = options
   const getter = () => {
     const headers = getHeaders(event)
@@ -95,6 +100,10 @@ export function getHeaderLanguages(event: H3Event, options: HeaderOptions = {}):
  * @returns The **first language tag** of header, if header is not exists, or `*` (any language), return empty string.
  */
 export function getHeaderLanguage(event: H3Event, options: HeaderOptions = {}): string {
+  warnOnce(
+    '`getHeaderLanguage` of `@intlify/utils/h3` is deprecated in v2. Use `getHeaderLanguage` of `@intlify/utils` instead.'
+  )
+
   return getHeaderLanguages(event, options)[0] || ''
 }
 
@@ -125,6 +134,10 @@ export function getHeaderLanguage(event: H3Event, options: HeaderOptions = {}): 
  * @returns The locales that wrapped from header, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array.
  */
 export function getHeaderLocales(event: H3Event, options: HeaderOptions = {}): Intl.Locale[] {
+  warnOnce(
+    '`getHeaderLocales` of `@intlify/utils/h3` is deprecated in v2. Use `getHeaderLocales` of `@intlify/utils` instead.'
+  )
+
   return mapToLocaleFromLanguageTag(getHeaderLanguages, event, options)
 }
 
@@ -142,6 +155,10 @@ export function tryHeaderLocales(
   event: H3Event,
   options: HeaderOptions = {}
 ): Intl.Locale[] | null {
+  warnOnce(
+    '`tryHeaderLocales` of `@intlify/utils/h3` is deprecated in v2. Use `tryHeaderLocales` of `@intlify/utils` instead.'
+  )
+
   try {
     return getHeaderLocales(event, options)
   } catch {
@@ -179,6 +196,10 @@ export function getHeaderLocale(
   event: H3Event,
   options: HeaderOptions & { lang?: string } = {}
 ): Intl.Locale {
+  warnOnce(
+    '`getHeaderLocale` of `@intlify/utils/h3` is deprecated in v2. Use `getHeaderLocale` of `@intlify/utils` instead.'
+  )
+
   const {
     lang = DEFAULT_LANG_TAG,
     name = ACCEPT_LANGUAGE_HEADER,
@@ -201,6 +222,10 @@ export function tryHeaderLocale(
   event: H3Event,
   options: HeaderOptions & { lang?: string } = {}
 ): Intl.Locale | null {
+  warnOnce(
+    '`tryHeaderLocale` of `@intlify/utils/h3` is deprecated in v2. Use `tryHeaderLocale` of `@intlify/utils` instead.'
+  )
+
   try {
     return getHeaderLocale(event, options)
   } catch {
@@ -233,6 +258,10 @@ export function tryHeaderLocale(
  * @returns The locale that resolved from cookie
  */
 export function getCookieLocale(event: H3Event, options: CookieLocaleOptions = {}): Intl.Locale {
+  warnOnce(
+    '`getCookieLocale` of `@intlify/utils/h3` is deprecated in v2. Use `getCookieLocale` of `@intlify/utils` instead.'
+  )
+
   const { lang = DEFAULT_LANG_TAG, name = DEFAULT_COOKIE_NAME } = options
   return getLocaleWithGetter(() => getCookie(event, name) || lang)
 }
@@ -251,6 +280,10 @@ export function tryCookieLocale(
   event: H3Event,
   options: CookieLocaleOptions = {}
 ): Intl.Locale | null {
+  warnOnce(
+    '`tryCookieLocale` of `@intlify/utils/h3` is deprecated in v2. Use `tryCookieLocale` of `@intlify/utils` instead.'
+  )
+
   try {
     return getCookieLocale(event, options)
   } catch {
@@ -285,6 +318,10 @@ export function setCookieLocale(
   locale: string | Intl.Locale,
   options: CookieOptions = {}
 ): void {
+  warnOnce(
+    '`setCookieLocale` of `@intlify/utils/h3` is deprecated in v2. Use `setCookieLocale` of `@intlify/utils` instead.'
+  )
+
   const { name = DEFAULT_COOKIE_NAME } = options
   validateLocale(locale)
   setCookie(event, name, locale.toString(), options)
@@ -301,6 +338,10 @@ export function setCookieLocale(
  * @returns The locale that resolved from path
  */
 export function getPathLocale(event: H3Event, options: PathOptions = {}): Intl.Locale {
+  warnOnce(
+    '`getPathLocale` of `@intlify/utils/h3` is deprecated in v2. Use `getPathLocale` of `@intlify/utils` instead.'
+  )
+
   return _getPathLocale(getRequestURL(event), options)
 }
 
@@ -315,6 +356,10 @@ export function getPathLocale(event: H3Event, options: PathOptions = {}): Intl.L
  * @returns The locale that resolved from path. if the language in the path, that is not a well-formed BCP 47 language tag, return `null`.
  */
 export function tryPathLocale(event: H3Event, options: PathOptions = {}): Intl.Locale | null {
+  warnOnce(
+    '`tryPathLocale` of `@intlify/utils/h3` is deprecated in v2. Use `tryPathLocale` of `@intlify/utils` instead.'
+  )
+
   try {
     return getPathLocale(event, options)
   } catch {
@@ -333,6 +378,10 @@ export function tryPathLocale(event: H3Event, options: PathOptions = {}): Intl.L
  * @returns The locale that resolved from query
  */
 export function getQueryLocale(event: H3Event, options: QueryOptions = {}): Intl.Locale {
+  warnOnce(
+    '`getQueryLocale` of `@intlify/utils/h3` is deprecated in v2. Use `getQueryLocale` of `@intlify/utils` instead.'
+  )
+
   const { lang = DEFAULT_LANG_TAG, name = 'locale' } = options
   return _getQueryLocale(getRequestURL(event), { lang, name })
 }
@@ -348,6 +397,10 @@ export function getQueryLocale(event: H3Event, options: QueryOptions = {}): Intl
  * @returns The locale that resolved from query. if the language in the query, that is not a well-formed BCP 47 language tag, return `null`.
  */
 export function tryQueryLocale(event: H3Event, options: QueryOptions = {}): Intl.Locale | null {
+  warnOnce(
+    '`tryQueryLocale` of `@intlify/utils/h3` is deprecated in v2. Use `tryQueryLocale` of `@intlify/utils` instead.'
+  )
+
   const { lang = DEFAULT_LANG_TAG, name = 'locale' } = options
   try {
     return getQueryLocale(event, { lang, name })
