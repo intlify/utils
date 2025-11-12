@@ -1,7 +1,7 @@
 /**
  * `@intlify/utils` default module entry.
  *
- * `@inlityf/utils` will export javascript runtime agnostic utility functions and types.
+ * `@intlify/utils` will export javascript runtime agnostic utility functions and types.
  *
  * @example
  * ```ts
@@ -22,6 +22,7 @@ export {
   normalizeLanguageName,
   parseAcceptLanguage,
   registerPathLanguageParser,
+  toLocale,
   validateLangTag
 } from './shared.ts'
 export * from './web.ts'
