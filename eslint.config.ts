@@ -82,6 +82,7 @@ const config: ReturnType<typeof defineConfig> = defineConfig(
   globalIgnores([
     '.vscode',
     'deno/**',
+    'docs/**',
     'tsconfig.json',
     'src/locale.ts',
     'pnpm-lock.yaml',
