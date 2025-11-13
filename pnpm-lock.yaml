@@ -190,8 +190,8 @@ importers:
         version: 5.9.3
     devDependencies:
       '@types/node':
-        specifier: ^20.6.0
-        version: 20.19.24
+        specifier: ^24.0.0
+        version: 24.10.0
       ofetch:
         specifier: ^1.3.3
         version: 1.5.1
