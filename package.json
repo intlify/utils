@@ -101,7 +101,7 @@
     "@types/supertest": "^2.0.16",
     "@vitest/coverage-v8": "catalog:vitest",
     "@vitest/eslint-plugin": "^1.4.1",
-    "bumpp": "^9.11.1",
+    "bumpp": "^10.0.0",
     "cookie-es": "^1.2.2",
     "deno": "catalog:",
     "eslint": "^9.39.1",
