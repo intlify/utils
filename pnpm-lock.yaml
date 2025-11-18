@@ -103,8 +103,8 @@ importers:
         specifier: ^1.15.4
         version: 1.15.4
       hono:
-        specifier: ^3.12.12
-        version: 3.12.12
+        specifier: ^4.0.0
+        version: 4.10.6
       knip:
         specifier: ^5.68.0
         version: 5.68.0(@types/node@24.10.0)(typescript@5.9.3)
@@ -2615,9 +2615,9 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
-  hono@3.12.12:
-    resolution: {integrity: sha512-5IAMJOXfpA5nT+K0MNjClchzz0IhBHs2Szl7WFAhrFOsbtQsYmNynFyJRg/a3IPsmCfxcrf8txUGiNShXpK5Rg==}
-    engines: {node: '>=16.0.0'}
+  hono@4.10.6:
+    resolution: {integrity: sha512-BIdolzGpDO9MQ4nu3AUuDwHZZ+KViNm+EZ75Ae55eMXMqLVhDFqEMXxtUe9Qh8hjL+pIna/frs2j6Y2yD5Ua/g==}
+    engines: {node: '>=16.9.0'}
 
   hookable@5.5.3:
     resolution: {integrity: sha512-Yc+BQe8SvoXH1643Qez1zqLRmbA5rCL+sSmk6TVos0LWVfNIB7PGncdlId77WzLGSIB5KaWgTaNTs2lNVEI6VQ==}
@@ -6782,7 +6782,7 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  hono@3.12.12: {}
+  hono@4.10.6: {}
 
   hookable@5.5.3: {}
 
