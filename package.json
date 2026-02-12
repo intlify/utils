@@ -98,7 +98,7 @@
     "@kazupon/eslint-config": "^0.38.0",
     "@kazupon/prettier-config": "^0.1.1",
     "@types/node": "^24.10.0",
-    "@types/supertest": "^2.0.16",
+    "@types/supertest": "^6.0.0",
     "@vitest/coverage-v8": "catalog:vitest",
     "@vitest/eslint-plugin": "^1.4.1",
     "bumpp": "^9.11.1",
