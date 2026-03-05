@@ -34,8 +34,8 @@ importers:
         specifier: ^0.45.0
         version: 0.45.0(4861585f8dcf49f65cf25f2c8a82356b)
       '@kazupon/prettier-config':
-        specifier: ^0.1.1
-        version: 0.1.1
+        specifier: ^0.2.0
+        version: 0.2.0
       '@types/node':
         specifier: ^24.10.0
         version: 24.10.0
@@ -709,9 +709,9 @@ packages:
       '@vue/reactivity':
         optional: true
 
-  '@kazupon/prettier-config@0.1.1':
-    resolution: {integrity: sha512-ppcUP2yPVnvl/ZSixn5+bSOWXXRXt+Xi7Xb1dUME4uKUCIJp5/hvU0HAzbw2GbiVyPzJ3bUxhrogRZ8KLRJLEw==}
-    engines: {node: '>= 18'}
+  '@kazupon/prettier-config@0.2.0':
+    resolution: {integrity: sha512-gZfGSt/9zSYVSQUrsi7N/K9oOTA652Bb5F0K3aNZXl6uoPDG9T36iXCZsKCJ5UnWBGgClA2VG3QYRnGyecUpQg==}
+    engines: {node: '>= 20'}
 
   '@miniflare/cache@2.14.4':
     resolution: {integrity: sha512-ayzdjhcj+4mjydbNK7ZGDpIXNliDbQY4GPcY2KrYw0v1OSUdj5kZUkygD09fqoGRfAks0d91VelkyRsAXX8FQA==}
@@ -4505,7 +4505,7 @@ snapshots:
 
   '@kazupon/jts-utils@0.12.0': {}
 
-  '@kazupon/prettier-config@0.1.1': {}
+  '@kazupon/prettier-config@0.2.0': {}
 
   '@miniflare/cache@2.14.4':
     dependencies:
