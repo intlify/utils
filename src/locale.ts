@@ -162,6 +162,12 @@ const localeErrors = /* @__PURE__ */ {
 /**
  * parse unicode language id
  * https://unicode.org/reports/tr35/#unicode_language_id
+ *
+ *  = "root"
+ *  | (unicode_language_subtag (sep unicode_script_subtag)?
+ *    | unicode_script_subtag)
+ *    (sep unicode_region_subtag)?
+ *    (sep unicode_variant_subtag)* ;
  */
 export type ParseUnicodeLanguageId<
   Chunks extends string | unknown[],
@@ -174,8 +180,15 @@ export type ParseUnicodeLanguageId<
   Region extends [string, number, unknown[]] = ParseRegionSubtag<First<Rest2>, Rest2>,
   Rest3 extends unknown[] = Region[2],
   Variants extends [string[], number | never, unknown[]] = ParseVariantsSubtag<Rest3>,
+  // Suppress lang error when script-only pattern matches
+  // (unicode_language_id allows script subtag without language subtag)
+  _LangError = IsNever<Lang[0]> extends true
+    ? IsNever<Script[0]> extends false
+      ? never
+      : ErrorMsg[Lang[1]]
+    : ErrorMsg[Lang[1]],
   Errors extends unknown[] = Filter<
-    [ErrorMsg[Lang[1]], ErrorMsg[Script[1]], ErrorMsg[Region[1]], ErrorMsg[Variants[1]]],
+    [_LangError, ErrorMsg[Script[1]], ErrorMsg[Region[1]], ErrorMsg[Variants[1]]],
     never
   >,
   RestChars = Variants[2]
@@ -360,24 +373,48 @@ type ParseUnicodeVariantsSubtag<
   FirstChar = First<Chars>,
   RemainChars extends unknown[] = Shift<Chars>
 > =
-  Length<Chars> extends 3
+  Length<Chars> extends 4
     ? All<ValidCharacters<[FirstChar], Digits>, true> extends true // check digit at first char
       ? All<ValidCharacters<RemainChars, AlphaNumber>, true> extends true // check alphanum at remain chars
         ? [Chunk, never]
         : [never, never] // ignore
       : [never, never] // ignore
-    : Length<Chars> extends 4
-      ? [never, never] // ignore
-      : CheckRange<Chars, [5, 6, 7, 8]> extends true
-        ? All<ValidCharacters<Chars, AlphaNumber>, true> extends true // capture alphanum
-          ? [Chunk, never]
-          : [never, never] // ignore
+    : CheckRange<Chars, [5, 6, 7, 8]> extends true
+      ? All<ValidCharacters<Chars, AlphaNumber>, true> extends true // capture alphanum
+        ? [Chunk, never]
         : [never, never] // ignore
+      : [never, never] // ignore
 
-// TODO:
-type ParseUnicodeLocaleId<T extends string> = true
+/**
+ * parse unicode locale id
+ * https://unicode.org/reports/tr35/#unicode_locale_id
+ *
+ *  = unicode_language_id
+ *    extensions*
+ *    pu_extensions? ;
+ */
+// deno-fmt-ignore
+export type ParseUnicodeLocaleId<
+  T extends string,
+  Chunks extends unknown[] = Split<T, '-'>,
+  LangResult extends unknown[] = ParseUnicodeLanguageId<Chunks>,
+  LangId = LangResult[0],
+  LangErr = LangResult[1],
+  LangRest extends unknown[] = LangResult[2] extends unknown[] ? LangResult[2] : []
+> =
+  _ParseExtensions<LangRest> extends infer ER
+    ? ER extends [infer ExtData, infer ExtErr, infer ExtRest]
+      ? [
+          {
+            lang: LangId
+            extensions: ExtData extends { extensions: infer E } ? E : []
+          },
+          IsNever<LangErr> extends false ? LangErr : IsNever<ExtErr> extends false ? ExtErr : never,
+          ExtRest
+        ]
+      : [{ lang: LangId; extensions: [] }, LangErr, LangRest]
+    : never
 
-// TODO:
 /**
  * parse unicode locale extensions
  * https://unicode.org/reports/tr35/#extensions
@@ -385,147 +422,229 @@ type ParseUnicodeLocaleId<T extends string> = true
  *  = unicode_locale_extensions
  *  | transformed_extensions
  *  | other_extensions ;
+ *
+ * Supports up to 4 extensions (unrolled to avoid excessive stack depth
+ * when composing multiple recursive parser types).
+ *
+ * All parser calls use `extends infer` pattern (NOT default type parameters)
+ * to defer type evaluation until concrete types are provided.
  */
-type ParseUnicodeExtensions<
-  Chunks extends unknown[],
-  Extensions extends UnicodeLocaleId['extensions'] = [],
-  ResultExtensions extends [Omit<UnicodeLocaleId, 'lang'>, number, unknown[]] =
-    _ParseUnicodeExtensions<Chunks, Extensions>,
-  Result extends [Omit<UnicodeLocaleId, 'lang'>, number, unknown[]] = Length<Chunks> extends 0
-    ? [{ extensions: [] }, never, Chunks]
-    : IsNever<ResultExtensions[1]> extends false
-      ? [{ extensions: [] }, ResultExtensions[1], Chunks]
-      : [ResultExtensions[0], never, ResultExtensions[2]]
-> = Result
+// deno-fmt-ignore
+type _ParseExtensions<Chunks extends unknown[]> =
+  Length<Chunks> extends 0
+    ? [{ extensions: [] }, never, []]
+    : _ParseSingleExtension<Chunks> extends infer R1
+      ? R1 extends [infer Ext, infer Err, infer Rest]
+        ? IsNever<Err> extends false
+          ? [never, Err, Chunks]
+          : IsNever<Ext> extends true
+            ? [{ extensions: [] }, never, Chunks]
+            : _ParseExtensions2<Rest extends unknown[] ? Rest : [], [Ext]>
+        : [{ extensions: [] }, never, Chunks]
+      : [{ extensions: [] }, never, Chunks]
 
-// type p1 = ParseUnicodeExtensions<['x', '1234']>
+// deno-fmt-ignore
+type _ParseExtensions2<Chunks extends unknown[], Acc extends unknown[]> =
+  Length<Chunks> extends 0
+    ? [{ extensions: Acc }, never, []]
+    : _ParseSingleExtension<Chunks> extends infer R2
+      ? R2 extends [infer Ext, infer Err, infer Rest]
+        ? IsNever<Err> extends false
+          ? [never, Err, Chunks]
+          : IsNever<Ext> extends true
+            ? [{ extensions: Acc }, never, Chunks]
+            : _ParseExtensions3<Rest extends unknown[] ? Rest : [], [...Acc, Ext]>
+        : [{ extensions: Acc }, never, Chunks]
+      : [{ extensions: Acc }, never, Chunks]
 
-type _ParseUnicodeExtensions<
-  Chunks extends unknown[],
-  Extensions extends UnicodeLocaleId['extensions'] = [],
-  ExistPuExtension extends PuExtension = never,
-  ExistOtherExtensions extends unknown[] = [],
-  Chunk = First<Chunks>,
-  Type extends string = Chunk extends string ? Chunk : never,
-  RestChunks extends unknown[] = Shift<Chunks>,
-  // UnicodeExtension = Includes<['u', 'U'], Type> extends true,
-  //   ? ParseUnicodeExtension<RestChunks>
-  //   : never,
-  // TransformedExtension = Includes<['t', 'T'], Type> extends true
-  //   ? ParseTransformedExtension<RestChunks>
-  //   : never,
+// deno-fmt-ignore
+type _ParseExtensions3<Chunks extends unknown[], Acc extends unknown[]> =
+  Length<Chunks> extends 0
+    ? [{ extensions: Acc }, never, []]
+    : _ParseSingleExtension<Chunks> extends infer R3
+      ? R3 extends [infer Ext, infer Err, infer Rest]
+        ? IsNever<Err> extends false
+          ? [never, Err, Chunks]
+          : IsNever<Ext> extends true
+            ? [{ extensions: Acc }, never, Chunks]
+            : _ParseExtensions4<Rest extends unknown[] ? Rest : [], [...Acc, Ext]>
+        : [{ extensions: Acc }, never, Chunks]
+      : [{ extensions: Acc }, never, Chunks]
 
-  // parse for PuExtension
-  ResultParsePu extends [PuExtension, number, unknown[]] = _ParseUnicodeExtensionsPu<
-    RestChunks,
-    Type,
-    ExistPuExtension
-  >,
-  _ExtensionsPu extends UnicodeLocaleId['extensions'] = Push<Extensions, ResultParsePu[0]> /*[
-    ...(ResultParsePu[1] extends number ? Extensions
-      : Push<Extensions, ResultParsePu[0]>),
-  ],
-  */,
-  // parse for OtherExtension
-  /*
-  ResultParseOther extends [OtherExtension, number, unknown[]] =
-    _ParseUnicodeExtensionsOther<
-      [...ResultParsePu[2]], // rest chunks
-      Type,
-      ExistOtherExtensions
-    >,
-  _ExtensionsOther extends UnicodeLocaleId['extensions'] =
-    ResultParseOther[1] extends number ? [..._ExtensionsPu]
-      : [...Push<_ExtensionsPu, ResultParseOther[0]>],
-  NextExistOtherExtensions extends unknown[] = ResultParseOther[0] extends
-    OtherExtension ? [...Push<ExistOtherExtensions, Type>]
-    : [...ExistOtherExtensions],
-    */
-  // check error
-  Error extends number = ResultParsePu[1] extends number
-    ? ResultParsePu[1]
-    : // : ResultParseOther[1] extends number ? ResultParseOther[1]
-      never,
-  // tweak shared chunks for next parsing
-  NextChunks extends unknown[] = [...ResultParsePu[2]], // [...ResultParseOther[2]],
-  // tweak extensions
-  NextExtensions extends UnicodeLocaleId['extensions'] = _ExtensionsPu, // _ExtensionsOther,
-  NextExistPuExtension extends PuExtension = ResultParsePu[0]
-> =
-  IsNever<Error> extends false
-    ? [never, Error, Chunks]
-    : Length<RestChunks> extends 0
-      ? [{ extensions: Extensions }, never, Chunks]
-      : Length<NextChunks> extends 0
-        ? [{ extensions: NextExtensions }, never, NextChunks]
-        : _ParseUnicodeExtensions<NextChunks, NextExtensions, NextExistPuExtension> // ResultParsePu[0]
-// NextExistOtherExtensions
+// deno-fmt-ignore
+type _ParseExtensions4<Chunks extends unknown[], Acc extends unknown[]> =
+  Length<Chunks> extends 0
+    ? [{ extensions: Acc }, never, []]
+    : _ParseSingleExtension<Chunks> extends infer R4
+      ? R4 extends [infer Ext, infer Err, infer Rest]
+        ? IsNever<Err> extends false
+          ? [never, Err, Chunks]
+          : IsNever<Ext> extends true
+            ? [{ extensions: Acc }, never, Chunks]
+            : [{ extensions: [...Acc, Ext] }, never, Rest extends unknown[] ? Rest : []]
+        : [{ extensions: Acc }, never, Chunks]
+      : [{ extensions: Acc }, never, Chunks]
 
-// type pp1 = _ParseUnicodeExtensions<['x', '1234']>
+/**
+ * parse a single extension from the front of chunks
+ * returns [Extension | never, error | never, restChunks]
+ *
+ * Uses `Chunks extends [infer ..., ...infer ...]` pattern to defer
+ * parser evaluation until Chunks is concrete.
+ */
+// deno-fmt-ignore
+type _ParseSingleExtension<Chunks extends unknown[]> = Chunks extends [
+  infer _Type extends string,
+  ...infer _Rest
+]
+  ? Length<StringToArray<_Type>> extends 1
+    ? _Type extends 'u' | 'U'
+      ? _ParseUnicodeDirect<_Rest>
+      : _Type extends 't' | 'T'
+        ? _ParseTransformedDirect<_Rest>
+        : _Type extends 'x' | 'X'
+          ? _ParsePuDirect<_Rest>
+          : _ParseOtherDirect<_Type, _Rest, Chunks>
+    : [never, never, Chunks]
+  : [never, never, Chunks]
 
-type _ParseUnicodeExtensionsPu<
-  Chunks extends unknown[],
-  Type extends string,
-  ExistPuExtension extends PuExtension = never,
-  ResultParsePuExtension extends unknown[] = CheckExtensionType<Type, ['x', 'X']> extends true
-    ? ParsePuExtension<[...Chunks]>
-    : never,
-  _PuExtension extends PuExtension = ResultParsePuExtension[0] extends PuExtension
-    ? ResultParsePuExtension[0]
-    : never,
-  RestChunks extends unknown[] = ResultParsePuExtension[2] extends unknown[]
-    ? ResultParsePuExtension[2]
-    : Chunks,
-  Error extends number = IsNever<ExistPuExtension> extends false
-    ? 14
-    : ResultParsePuExtension[1] extends number
-      ? ResultParsePuExtension[1]
-      : never,
-  Result extends [PuExtension, number, unknown[]] = [
-    IsNever<ExistPuExtension> extends true ? _PuExtension : never,
-    Error,
-    RestChunks
-  ]
-> = Result
+/**
+ * Direct Unicode extension parser that bypasses ParseUnicodeExtension's
+ * constrained default parameters to avoid excessive stack depth.
+ * Replicates the logic using `extends infer` for deferred evaluation.
+ */
+// deno-fmt-ignore
+type _ParseUnicodeDirect<Chunks extends unknown[]> =
+  CollectFirstKeywords<Chunks, '-'> extends infer FK
+    ? FK extends [infer FirstKW extends unknown[], infer FKRest]
+      ? Length<FirstKW> extends 0
+        ? _ParseUnicodeDirectAttrs<Chunks>
+        : [
+            { type: 'u'; keywords: FirstKW; attributes: [] },
+            never,
+            FKRest extends unknown[] ? FKRest : Chunks
+          ]
+      : _ParseUnicodeDirectAttrs<Chunks>
+    : _ParseUnicodeDirectAttrs<Chunks>
 
-// type _pu0 = _ParseUnicodeExtensionsPu<
-//   ['1234'],
-//   'x'
-// >
-// type _pu1 = _ParseUnicodeExtensionsPu<
-//   ['1234'],
-//   'x',
-//   { type: 'x'; value: '111' }
-// >
+// deno-fmt-ignore
+type _ParseUnicodeDirectAttrs<Chunks extends unknown[]> =
+  ParseAttribute<Chunks> extends infer AR
+    ? AR extends [infer Attrs extends unknown[], infer ARest extends unknown[]]
+      ? ParseKeyword<ARest, '-'> extends infer KR
+        ? KR extends [infer Key, infer Val, infer KRest extends unknown[]]
+          ? IsNever<Key> extends false
+            ? [{ type: 'u'; keywords: Push<Push<[], Key>, Val>; attributes: Attrs }, never, KRest]
+            : Length<Attrs> extends 0
+              ? [
+                  { type: 'u'; keywords: []; attributes: [] },
+                  never,
+                  KR extends [unknown, infer R extends unknown[]] ? R : Chunks
+                ]
+              : [
+                  { type: 'u'; keywords: []; attributes: Attrs },
+                  never,
+                  KR extends [unknown, infer R extends unknown[]] ? R : ARest
+                ]
+          : Length<Attrs> extends 0
+            ? [
+                { type: 'u'; keywords: []; attributes: [] },
+                never,
+                KR extends [unknown, infer R extends unknown[]] ? R : Chunks
+              ]
+            : [
+                { type: 'u'; keywords: []; attributes: Attrs },
+                never,
+                KR extends [unknown, infer R extends unknown[]] ? R : ARest
+              ]
+        : [{ type: 'u'; keywords: []; attributes: Attrs }, never, ARest]
+      : [never, 9, Chunks]
+    : [never, 9, Chunks]
 
-type _ParseUnicodeExtensionsOther<
-  Chunks extends unknown[],
-  Type extends string,
-  ExistOtherExtensions extends unknown[] = never,
-  MalformedError extends number = Includes<UnionToTuple<OtherExtensions>, Type> extends false
-    ? 16
-    : never,
-  Error extends number = MalformedError extends number
-    ? MalformedError
-    : Includes<ExistOtherExtensions, Type> extends true
-      ? 17
-      : never,
-  ResultParseOtherExtension extends [string, unknown[]] = IsNever<Error> extends true
-    ? ParseOtherExtension<[...Chunks]>
-    : [never, Chunks],
-  RestChunks extends unknown[] = ResultParseOtherExtension[1] extends unknown[]
-    ? ResultParseOtherExtension[1]
-    : Chunks,
-  Result extends [OtherExtension, number, unknown[]] = [
-    ResultParseOtherExtension[0] extends string
-      ? { type: 'a'; value: ResultParseOtherExtension[0] }
-      : never,
-    Error,
-    RestChunks
-  ]
-> = Result
+/**
+ * Direct Transformed extension parser.
+ * Decomposes ParseUnicodeLanguageId into individual subtag parser calls
+ * to keep stack depth low at each step.
+ */
+// deno-fmt-ignore
+type _ParseTransformedDirect<Chunks extends unknown[]> =
+  ParseLangSubtag<First<Chunks>, Chunks> extends infer LangR
+    ? LangR extends [infer Lang, infer _LErr, infer R1 extends unknown[]]
+      ? _TransformedAfterLang<Lang, R1, Chunks>
+      : [never, 11, Chunks]
+    : [never, 11, Chunks]
 
-// type _ou1 = _ParseUnicodeExtensionsOther<['abc'], 'z'>
+// deno-fmt-ignore
+type _TransformedAfterLang<Lang, R1 extends unknown[], Orig extends unknown[]> =
+  ParseScriptSubtag<First<R1>, R1> extends infer ScriptR
+    ? ScriptR extends [infer Script, infer _SErr, infer R2 extends unknown[]]
+      ? _TransformedAfterScript<Lang, Script, R2, Orig>
+      : [never, 11, Orig]
+    : [never, 11, Orig]
+
+// deno-fmt-ignore
+type _TransformedAfterScript<Lang, Script, R2 extends unknown[], Orig extends unknown[]> =
+  ParseRegionSubtag<First<R2>, R2> extends infer RegionR
+    ? RegionR extends [infer Region, infer _RErr, infer R3 extends unknown[]]
+      ? _TransformedAfterRegion<Lang, Script, Region, R3, Orig>
+      : [never, 11, Orig]
+    : [never, 11, Orig]
+
+// deno-fmt-ignore
+type _TransformedAfterRegion<Lang, Script, Region, R3 extends unknown[], Orig extends unknown[]> =
+  ParseVariantsSubtag<R3> extends infer VarR
+    ? VarR extends [infer Variants extends string[], infer _VErr, infer R4 extends unknown[]]
+      ? _TransformedAfterVariants<
+          { lang: Lang; script: Script; region: Region; variants: Variants },
+          R4,
+          Orig
+        >
+      : [never, 11, Orig]
+    : [never, 11, Orig]
+
+// deno-fmt-ignore
+type _TransformedAfterVariants<LangId, FieldsChunks extends unknown[], Orig extends unknown[]> =
+  ParseTransformedExtensionFields<FieldsChunks> extends infer FR
+    ? FR extends [infer Fields extends unknown[], infer FErr, infer FRest extends unknown[]]
+      ? IsNever<FErr> extends false
+        ? [{ type: 't'; lang: LangId; fields: Fields }, FErr, FieldsChunks]
+        : Length<Fields> extends 0
+          ? [never, 11, Orig]
+          : [{ type: 't'; lang: LangId; fields: Fields }, never, FRest]
+      : [never, 11, Orig]
+    : [never, 11, Orig]
+
+/**
+ * Direct PU extension parser that calls _ParsePuExtension directly
+ * (bypasses ParsePuExtension's default parameter chain to avoid excessive stack depth)
+ */
+// deno-fmt-ignore
+type _ParsePuDirect<Chunks extends unknown[]> =
+  _ParsePuExtension<Chunks> extends infer R
+    ? R extends [infer Exts extends unknown[], infer RestChunks extends unknown[]]
+      ? Length<Exts> extends 0
+        ? [never, 12, RestChunks]
+        : [{ type: 'x'; value: Join<Exts, '-'> }, never, RestChunks]
+      : [never, 12, Chunks]
+    : [never, 12, Chunks]
+
+/**
+ * Direct Other extension parser that calls _ParseOtherExtension directly
+ * (bypasses ParseOtherExtension's default parameter chain to avoid excessive stack depth)
+ */
+// deno-fmt-ignore
+type _ParseOtherDirect<_Type extends string, _Rest extends unknown[], Orig extends unknown[]> =
+  Includes<UnionToTuple<OtherExtensions>, _Type> extends true
+    ? _ParseOtherExtension<_Rest> extends infer R
+      ? R extends [infer Exts extends unknown[], infer NextChunks extends unknown[]]
+        ? Length<Exts> extends 0
+          ? [never, never, Orig]
+          : _Type extends OtherExtension['type']
+            ? [{ type: _Type; value: Join<Exts, '-'> }, never, NextChunks]
+            : [never, never, Orig]
+        : [never, never, Orig]
+      : [never, never, Orig]
+    : [never, never, Orig]
 
 type CheckExtensionType<
   Type extends string,
@@ -811,7 +930,7 @@ type ParseTransformedExtensionFieldsValue<
 export type ParsePuExtension<
   Chunks extends unknown[],
   Sep extends string = '-',
-  ResultExts extends [unknown[], unknown[]] = _ParsePuExtension<Chunks>,
+  ResultExts extends unknown[] = _ParsePuExtension<Chunks>,
   // NOTE: workaround for `Excessive stack depth comparing types`
   ResultExts0 extends unknown[] = ResultExts[0] extends unknown[] ? ResultExts[0] : never,
   ResultExts1 extends unknown[] = ResultExts[1] extends unknown[] ? ResultExts[1] : never,
@@ -846,10 +965,12 @@ type _ParsePuExtension<
 export type ParseOtherExtension<
   Chunks extends unknown[],
   Sep extends string = '-',
-  ResultExts extends [unknown[], unknown[]] = _ParseOtherExtension<Chunks>,
-  Result extends [string, unknown[]] = Length<ResultExts[0]> extends 0
-    ? ['', ResultExts[1]]
-    : [Join<ResultExts[0], Sep>, ResultExts[1]]
+  ResultExts extends unknown[] = _ParseOtherExtension<Chunks>,
+  ResultExts0 extends unknown[] = ResultExts[0] extends unknown[] ? ResultExts[0] : never,
+  ResultExts1 extends unknown[] = ResultExts[1] extends unknown[] ? ResultExts[1] : never,
+  Result extends [string, unknown[]] = Length<ResultExts0> extends 0
+    ? ['', ResultExts1]
+    : [Join<ResultExts0, Sep>, ResultExts1]
 > = Result
 
 // type o1 = ParseOtherExtension<['foo', 'bar', 'co', 'standard']>
