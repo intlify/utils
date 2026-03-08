@@ -389,11 +389,8 @@ type ParseUnicodeLocaleId<T extends string> = true
 type ParseUnicodeExtensions<
   Chunks extends unknown[],
   Extensions extends UnicodeLocaleId['extensions'] = [],
-  ResultExtensions extends [
-    Omit<UnicodeLocaleId, 'lang'>,
-    number,
-    unknown[]
-  ] = _ParseUnicodeExtensions<Chunks, Extensions>,
+  ResultExtensions extends [Omit<UnicodeLocaleId, 'lang'>, number, unknown[]] =
+    _ParseUnicodeExtensions<Chunks, Extensions>,
   Result extends [Omit<UnicodeLocaleId, 'lang'>, number, unknown[]] = Length<Chunks> extends 0
     ? [{ extensions: [] }, never, Chunks]
     : IsNever<ResultExtensions[1]> extends false
