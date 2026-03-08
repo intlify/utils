@@ -18,6 +18,7 @@ import type {
   ParseTransformedExtension,
   ParseUnicodeExtension,
   ParseUnicodeLanguageId,
+  ParseUnicodeLocaleId,
   ParseVariantsSubtag
 } from './locale.ts'
 
@@ -156,10 +157,10 @@ test('ParseVariantsSubtag', () => {
    * Success cases
    */
 
-  // 3 chars, all digits
-  expectTypeOf<ParseVariantsSubtag<['123']>>().toMatchTypeOf<[['123'], never, []]>()
-  // 3 chars, first digit and alphabets
-  expectTypeOf<ParseVariantsSubtag<['1ab']>>().toMatchTypeOf<[['1ab'], never, []]>()
+  // 4 chars, digit + alphanum{3} (digit alphanum{3} per LDML spec)
+  expectTypeOf<ParseVariantsSubtag<['1abc']>>().toMatchTypeOf<[['1abc'], never, []]>()
+  // 4 chars, all digits (digit + digits{3})
+  expectTypeOf<ParseVariantsSubtag<['1234']>>().toMatchTypeOf<[['1234'], never, []]>()
   // 5 chars, all alphabets
   expectTypeOf<ParseVariantsSubtag<['abcde']>>().toMatchTypeOf<[['abcde'], never, []]>()
   // 7 chars, alphabets and digits
@@ -175,15 +176,19 @@ test('ParseVariantsSubtag', () => {
   expectTypeOf<ParseVariantsSubtag<['1']>>().toMatchTypeOf<[[], never, ['1']]>()
   // range 2
   expectTypeOf<ParseVariantsSubtag<['12']>>().toMatchTypeOf<[[], never, ['12']]>()
-  // range 4
-  expectTypeOf<ParseVariantsSubtag<['1234']>>().toMatchTypeOf<[[], never, ['1234']]>()
+  // range 3
+  expectTypeOf<ParseVariantsSubtag<['123']>>().toMatchTypeOf<[[], never, ['123']]>()
   // range 9
   expectTypeOf<ParseVariantsSubtag<['123456789']>>().toMatchTypeOf<[[], never, ['123456789']]>()
 
+  // 3 chars, first digit and alphabets (too short for digit alphanum{3})
+  expectTypeOf<ParseVariantsSubtag<['1ab']>>().toMatchTypeOf<[[], never, ['1ab']]>()
   // 3 chars, first alphabet and digits
   expectTypeOf<ParseVariantsSubtag<['a12']>>().toMatchTypeOf<[[], never, ['a12']]>()
   // 3 chars, all alphabets
   expectTypeOf<ParseVariantsSubtag<['abc']>>().toMatchTypeOf<[[], never, ['abc']]>()
+  // 4 chars, first alphabet (not digit alphanum{3})
+  expectTypeOf<ParseVariantsSubtag<['abcd']>>().toMatchTypeOf<[[], never, ['abcd']]>()
 
   // not string
   expectTypeOf<ParseVariantsSubtag<[1]>>().toMatchTypeOf<[[], never, [1]]>()
@@ -201,6 +206,15 @@ test('ParseUnicodeLanguageId', () => {
   >()
   expectTypeOf<ParseUnicodeLanguageId<'ja-Kana-jp-jauer'>>().toMatchTypeOf<
     [{ lang: 'ja'; script: 'Kana'; region: 'jp'; variants: ['jauer'] }, never, []]
+  >()
+
+  // script-only (unicode_language_id allows script subtag without language subtag)
+  expectTypeOf<ParseUnicodeLanguageId<['Kana', 'JP']>>().toMatchTypeOf<
+    [{ lang: never; script: 'Kana'; region: 'JP'; variants: [] }, never, []]
+  >()
+  // script-only without region
+  expectTypeOf<ParseUnicodeLanguageId<['Latn']>>().toMatchTypeOf<
+    [{ lang: never; script: 'Latn'; region: never; variants: [] }, never, []]
   >()
 
   /** Errors */
@@ -325,6 +339,108 @@ test('ParsePuExtension', () => {
 
   // not alphabet or digit
   expectTypeOf<ParsePuExtension<['1あ']>>().toMatchTypeOf<[never, 12, ['1あ']]>()
+})
+
+test('ParseUnicodeLocaleId', () => {
+  /**
+   * Success cases
+   */
+
+  // simple language
+  expectTypeOf<ParseUnicodeLocaleId<'ja'>>().toMatchTypeOf<
+    [{ lang: { lang: 'ja'; variants: [] }; extensions: [] }, never, []]
+  >()
+
+  // language with region
+  expectTypeOf<ParseUnicodeLocaleId<'en-US'>>().toMatchTypeOf<
+    [{ lang: { lang: 'en'; region: 'US'; variants: [] }; extensions: [] }, never, []]
+  >()
+
+  // language with script and region
+  expectTypeOf<ParseUnicodeLocaleId<'ja-Kana-JP'>>().toMatchTypeOf<
+    [
+      {
+        lang: { lang: 'ja'; script: 'Kana'; region: 'JP'; variants: [] }
+        extensions: []
+      },
+      never,
+      []
+    ]
+  >()
+
+  // script-only
+  expectTypeOf<ParseUnicodeLocaleId<'Kana-JP'>>().toMatchTypeOf<
+    [
+      {
+        lang: { lang: never; script: 'Kana'; region: 'JP'; variants: [] }
+        extensions: []
+      },
+      never,
+      []
+    ]
+  >()
+
+  // language with unicode extension
+  expectTypeOf<ParseUnicodeLocaleId<'en-US-u-co-standard'>>().toMatchTypeOf<
+    [
+      {
+        lang: { lang: 'en'; region: 'US'; variants: [] }
+        extensions: [{ type: 'u'; keywords: ['co', 'standard']; attributes: [] }]
+      },
+      never,
+      []
+    ]
+  >()
+
+  // language with PU extension
+  expectTypeOf<ParseUnicodeLocaleId<'en-US-x-private'>>().toMatchTypeOf<
+    [
+      {
+        lang: { lang: 'en'; region: 'US'; variants: [] }
+        extensions: [{ type: 'x'; value: 'private' }]
+      },
+      never,
+      []
+    ]
+  >()
+
+  // language with transformed extension
+  expectTypeOf<ParseUnicodeLocaleId<'en-US-t-ja-h0-hybrid'>>().toMatchTypeOf<
+    [
+      {
+        lang: { lang: 'en'; region: 'US'; variants: [] }
+        extensions: [
+          {
+            type: 't'
+            lang: { lang: 'ja'; variants: [] }
+            fields: [['h0', 'hybrid']]
+          }
+        ]
+      },
+      never,
+      []
+    ]
+  >()
+
+  // full locale with script, region, variant, and multiple extensions
+  expectTypeOf<ParseUnicodeLocaleId<'ja-Kana-JP-jauer-u-co-standard-x-private'>>().toMatchTypeOf<
+    [
+      {
+        lang: {
+          lang: 'ja'
+          script: 'Kana'
+          region: 'JP'
+          variants: ['jauer']
+        }
+        extensions: [
+          { type: 'u'; keywords: ['co', 'standard']; attributes: [] },
+          { type: 'x'; value: 'private' }
+        ]
+      },
+      never,
+      []
+    ]
+  >()
 })
 
 test('ParseOtherExtension', () => {
