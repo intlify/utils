@@ -123,7 +123,7 @@
     "knip": "^5.86.0",
     "lint-staged": "^15.5.2",
     "miniflare": "^3.20250718.3",
-    "pkg-pr-new": "^0.0.65",
+    "pkg-pr-new": "^0.0.66",
     "pkg-types": "^1.3.1",
     "playwright": "^1.58.2",
     "prettier": "^3.8.1",
