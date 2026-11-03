@@ -9,6 +9,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -18,15 +21,18 @@ jobs:
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Install pnpm
         uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4.4.0
 
       - name: Setup node
+        # This workflow publishes preview packages, so do not restore a cache.
+        # setup-node caches by the `packageManager` field by default.
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
         with:
           node-version: 20
-          cache: pnpm
+          package-manager-cache: false
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -35,4 +41,5 @@ jobs:
         run: pnpm build
 
       - name: Release with pkg-pr-new
+        # zizmor: ignore[use-trusted-publishing] pkg-pr-new authenticates with its GitHub App, not with a registry token
         run: pnpm exec pkg-pr-new publish
