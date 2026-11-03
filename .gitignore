@@ -4,6 +4,8 @@ coverage
 .DS_Store
 .idea
 .eslintcache
+.notes
+.plans
 
 *.log
 *.swp
