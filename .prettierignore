@@ -1,5 +1,5 @@
 pnpm-lock.yaml
-deno
+playground/deno
 docs
 tsconfig.json
 CHANGELOG.md
