@@ -9,6 +9,9 @@ on:
       - synchronize
       - reopened
 
+permissions:
+  contents: read
+
 jobs:
   run:
     name: Spell check with Typos
@@ -18,6 +21,7 @@ jobs:
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Spell check
         uses: crate-ci/typos@bee27e3a4fd1ea2111cf90ab89cd076c870fce14 # v1.48.0
