@@ -125,7 +125,7 @@
     "lint-staged": "^15.5.2",
     "miniflare": "^3.20250718.3",
     "pkg-pr-new": "^0.0.92",
-    "playwright": "^1.58.2",
+    "playwright": "^1.64.1",
     "prettier": "^3.8.1",
     "supertest": "^6.3.3",
     "typedoc": "^0.28.17",
