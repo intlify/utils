@@ -1,75 +1,195 @@
 name: Release
 
+# Triggers:
+#   - tag push (v*): publish to npm and JSR in parallel, then create the
+#     GitHub Release once both succeed.
+#   - workflow_dispatch: recover an existing tag by running one job
+#     (npm-publish / jsr-publish / release-notes) or all of them. A version
+#     that is already published is skipped, so `all` is safe to re-run.
+#
+# CHANGELOG.md is already part of the tagged release commit made by
+# `pnpm release` (see bump.config.ts), and JSR gets src/ of the tag as is.
+# This workflow never writes or commits files.
 on:
   push:
     branches-ignore:
       - '**'
     tags:
       - 'v*'
-permissions:
-  contents: write
-  id-token: write
+  workflow_dispatch:
+    inputs:
+      job:
+        description: Which job to run
+        type: choice
+        required: true
+        default: all
+        options:
+          - all
+          - npm-publish
+          - jsr-publish
+          - release-notes
+      tag:
+        description: Existing tag to release (e.g. v2.0.0 or v2.0.0-beta.0)
+        type: string
+        required: true
+
+env:
+  TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+
+permissions: {}
 
 jobs:
-  release:
-    name: Release
+  npm-publish:
+    if: >-
+      github.event_name == 'push' || (github.event_name == 'workflow_dispatch' &&
+        (inputs.job == 'all' || inputs.job == 'npm-publish'))
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # npm trusted publisher (OIDC)
     steps:
-      - name: Checkout codes
+      - name: Checkout tag
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ env.TAG }}
+          persist-credentials: false
+
+      - name: Resolve dist-tag from tag
+        id: meta
+        # A prerelease goes to its first identifier (`beta` for v2.0.0-beta.0), or to
+        # `next` when that starts with a digit, since npm rejects a dist-tag that looks
+        # like a semver range. Only a stable release moves `latest`.
+        run: |
+          if [[ "$TAG" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+-([A-Za-z][0-9A-Za-z-]*) ]]; then
+            echo "dist_tag=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
+          elif [[ "$TAG" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+- ]]; then
+            echo "dist_tag=next" >> "$GITHUB_OUTPUT"
+          else
+            echo "dist_tag=latest" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Install pnpm
         uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4.4.0
 
-      - name: Setup bun
-        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-
       - name: Setup Node
+        # Node 24 bundles npm 11.5.1+, which OIDC trusted publishing needs
+        # (pnpm 10 runs the npm CLI for the upload). setup-node caches by the
+        # `packageManager` field by default, so turn it off for a release.
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
         with:
-          node-version: 20
-          cache: pnpm
-
-      - name: Update npm
-        run: npm install -g npm@latest
+          node-version: 24
+          package-manager-cache: false
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Extract version tag
-        if: startsWith( github.ref, 'refs/tags/v' )
-        uses: jungwinter/split@7f51d99e7cc1f147f6f99be75acf5e641930af88 # v2.1.0
-        id: split
-        with:
-          msg: ${{ github.ref }}
-          separator: /
+      - name: Build
+        run: pnpm run build
 
-      - name: Create Github Release
-        run: gh release create ${{ steps.split.outputs._2 }} --generate-notes
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Generate changelog
+      - name: Publish to npm
+        # pnpm publish replaces `catalog:` specifiers in the packed package.json.
+        # Skip a version that is already on npm, so that a retry is idempotent.
+        # npm does not serve a new version until its malware scan ends, so do not
+        # retry this job right after a publish.
         run: |
-          git restore --source=HEAD --staged --worktree -- package.json
-          pnpm run build
-          pnpm run changelog -- --tag=${{ steps.split.outputs._2 }}
+          version=$(node -p "require('./package.json').version")
+          if npm view "@intlify/utils@$version" version > /dev/null 2>&1; then
+            echo "↺ @intlify/utils@$version is already on npm, skipping"
+          else
+            pnpm publish --access public --no-git-checks --tag "$DIST_TAG"
+          fi
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Commit changelog
-        uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d # v7.2.0
-        with:
-          branch: main
-          file_pattern: '*.md'
-          commit_message: 'chore: sync changelog'
-
-      - name: Publish package for NPM
-        run: pnpm publish --access public --no-git-checks --tag latest
-        env:
+          DIST_TAG: ${{ steps.meta.outputs.dist_tag }}
           NPM_CONFIG_PROVENANCE: true
 
-      - name: Publish package for JSR
-        run: pnpx jsr publish
+  jsr-publish:
+    if: >-
+      github.event_name == 'push' || (github.event_name == 'workflow_dispatch' &&
+        (inputs.job == 'all' || inputs.job == 'jsr-publish'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # JSR OIDC
+    steps:
+      - name: Checkout tag
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          ref: ${{ env.TAG }}
+          persist-credentials: false
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4.4.0
+
+      - name: Setup Node
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Install dependencies
+        # The jsr CLI is a devDependency, and Deno type-checks src/ against
+        # node_modules/cookie-es.
+        run: pnpm install --frozen-lockfile
+
+      - name: Check the npm dependency for JSR
+        # JSR rewrites the bare `cookie-es` import to `npm:cookie-es@<range>` from
+        # package.json. A `catalog:` value or a missing entry breaks the import,
+        # while `jsr publish --dry-run` still passes, so check it before publishing.
+        run: |
+          node -e '
+            const range = require("./package.json").devDependencies?.["cookie-es"]
+            if (!range || /^(catalog|workspace):/.test(range)) {
+              console.log("::error::cookie-es in package.json must be a plain semver range for JSR, got " + range)
+              process.exit(1)
+            }
+          '
+
+      - name: Publish to JSR
+        # src/ of the tagged commit is published as is: no build and no rewrite.
+        # Skip a version that is already on JSR, so that a retry is idempotent.
+        run: |
+          version=$(node -p "require('./jsr.json').version")
+          if pnpm exec jsr show "@intlify/utils@$version" > /dev/null 2>&1; then
+            echo "↺ @intlify/utils@$version is already on JSR, skipping"
+          else
+            pnpm exec jsr publish
+          fi
+
+  release-notes:
+    needs:
+      - npm-publish
+      - jsr-publish
+    if: >-
+      always() && (
+        (github.event_name == 'push' &&
+          needs.npm-publish.result == 'success' &&
+          needs.jsr-publish.result == 'success') ||
+        (github.event_name == 'workflow_dispatch' && inputs.job == 'release-notes') ||
+        (github.event_name == 'workflow_dispatch' && inputs.job == 'all' &&
+          needs.npm-publish.result == 'success' &&
+          needs.jsr-publish.result == 'success')
+      )
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # create GitHub Release
+    steps:
+      - name: Checkout tag
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          ref: ${{ env.TAG }}
+          persist-credentials: false
+
+      - name: Create GitHub Release (idempotent)
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists, skipping creation"
+          else
+            FLAGS=(--verify-tag --generate-notes)
+            # SemVer prerelease: '-' right after major.minor.patch, not build metadata
+            if [[ "$TAG" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+- ]]; then
+              FLAGS+=(--prerelease)
+            fi
+            gh release create "$TAG" "${FLAGS[@]}"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
