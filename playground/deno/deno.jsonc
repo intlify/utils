@@ -1,7 +1,7 @@
 {
   "imports": {
     "@std/assert": "jsr:@std/assert@1",
-    "@intlify/utils": "jsr:@intlify/utils@^0.14.1"
+    "@intlify/utils": "jsr:@intlify/utils@^1.0.0"
   },
   "nodeModulesDir": "auto",
   "tasks": {
