@@ -28,13 +28,7 @@ const config: ReturnType<typeof defineConfig> = defineConfig(
   stylistic(),
   comments({
     kazupon: {
-      ignores: [
-        './scripts/**',
-        './deno/**',
-        './playground/**',
-        './src/**/*.test-d.ts',
-        './src/**/*.test.ts'
-      ]
+      ignores: ['./scripts/**', './playground/**', './src/**/*.test-d.ts', './src/**/*.test.ts']
     }
   }),
   jsdoc({
@@ -81,7 +75,6 @@ const config: ReturnType<typeof defineConfig> = defineConfig(
   includeIgnoreFile(gitignorePath),
   globalIgnores([
     '.vscode',
-    'deno/**',
     'docs/**',
     'tsconfig.json',
     'src/locale.ts',

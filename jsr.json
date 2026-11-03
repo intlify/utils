@@ -3,9 +3,20 @@
   "$schema": "http://json-schema.org/draft-07/schema",
   "name": "@intlify/utils",
   "version": "1.0.1",
-  "exports": "./deno/mod.ts",
+  "exports": "./src/index.ts",
   "license": "MIT",
   "publish": {
-    "include": ["deno", "jsr.json"]
+    "include": [
+      "src/index.ts",
+      "src/shared.ts",
+      "src/web.ts",
+      "src/http.ts",
+      "src/constants.ts",
+      "package.json",
+      "jsr.json",
+      "README.md",
+      "CHANGELOG.md",
+      "LICENSE"
+    ]
   }
 }
