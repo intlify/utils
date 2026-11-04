@@ -27,50 +27,24 @@
   ],
   "type": "module",
   "sideEffects": false,
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.cts",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "browser": "./dist/index.mjs",
-      "import": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
-      },
-      "require": {
-        "types": "./dist/index.d.cts",
-        "default": "./dist/index.cjs"
-      }
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./h3": {
-      "import": {
-        "types": "./dist/h3.d.mts",
-        "default": "./dist/h3.mjs"
-      },
-      "require": {
-        "types": "./dist/h3.d.cts",
-        "default": "./dist/h3.cjs"
-      }
+      "types": "./dist/h3.d.ts",
+      "default": "./dist/h3.js"
     },
     "./hono": {
-      "import": {
-        "types": "./dist/hono.d.mts",
-        "default": "./dist/hono.mjs"
-      },
-      "require": {
-        "types": "./dist/hono.d.cts",
-        "default": "./dist/hono.cjs"
-      }
+      "types": "./dist/hono.d.ts",
+      "default": "./dist/hono.js"
     },
     "./node": {
-      "import": {
-        "types": "./dist/node.d.mts",
-        "default": "./dist/node.mjs"
-      },
-      "require": {
-        "types": "./dist/node.d.cts",
-        "default": "./dist/node.cjs"
-      }
+      "types": "./dist/node.d.ts",
+      "default": "./dist/node.js"
     },
     "./package.json": "./package.json"
   },
@@ -116,7 +90,7 @@
     "vitest": "catalog:vitest"
   },
   "engines": {
-    "node": ">= 22"
+    "node": ">= 22.12.0"
   },
   "packageManager": "pnpm@10.34.9"
 }

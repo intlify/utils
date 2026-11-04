@@ -12,8 +12,8 @@ export default defineConfig({
   pack: {
     entry: ['src/index.ts', 'src/h3.ts', 'src/hono.ts', 'src/node.ts'],
     outDir: 'dist',
-    format: ['esm', 'cjs'],
-    fixedExtension: true,
+    format: ['esm'],
+    fixedExtension: false,
     dts: true,
     clean: true,
     deps: {

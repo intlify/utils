@@ -8,7 +8,7 @@ Collection of i18n utilities
 
 ✅️ &nbsp;**Modern:** ES Modules first and respect Web Standard and ECMAScript Internationalization APIs
 
-✅️ &nbsp;**Compatible:** support CommonJS and various JS environments
+✅️ &nbsp;**Compatible:** ships ES Modules only, which you can also `require()` on Node.js 22.12+, and supports various JS environments
 
 ✅️️ &nbsp;**Minimal:** Small and fully tree-shakable
 
