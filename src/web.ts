@@ -278,6 +278,7 @@ export function tryCookieLocale(
  * @param options - The {@link CookieOptions | cookie options}, `name` option is `i18n_locale` as default
  *
  * @throws {SyntaxError} Throws the {@linkcode SyntaxError} if `locale` is invalid.
+ * @throws {TypeError} Throws the {@linkcode TypeError} if the cookie attributes are invalid for RFC 6265bis, e.g. `sameSite: 'none'` without `secure`.
  */
 export function setCookieLocale(
   response: Response,

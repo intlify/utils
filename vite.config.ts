@@ -19,8 +19,8 @@ export default defineConfig({
     deps: {
       // the h3 and hono adapters use the h3 and hono of the user, though they are devDependencies here
       neverBundle: ['h3', 'hono', /^hono\//],
-      // cookie-es is bundled on purpose. Fail if any other package of node_modules is bundled
-      onlyBundle: ['cookie-es']
+      // nothing of node_modules is bundled. cookie-es is a dependency
+      onlyBundle: []
     },
     // strip the in-source tests of src/node.ts
     define: {
