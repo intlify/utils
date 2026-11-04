@@ -9,6 +9,24 @@ export default defineConfig({
   staged: {
     '*': 'vp check --fix'
   },
+  pack: {
+    entry: ['src/index.ts', 'src/h3.ts', 'src/hono.ts', 'src/node.ts'],
+    outDir: 'dist',
+    format: ['esm', 'cjs'],
+    fixedExtension: true,
+    dts: true,
+    clean: true,
+    deps: {
+      // the h3 and hono adapters use the h3 and hono of the user, though they are devDependencies here
+      neverBundle: ['h3', 'hono', /^hono\//],
+      // cookie-es is bundled on purpose. Fail if any other package of node_modules is bundled
+      onlyBundle: ['cookie-es']
+    },
+    // strip the in-source tests of src/node.ts
+    define: {
+      'import.meta.vitest': 'undefined'
+    }
+  },
   test: {
     // Vitest v4 compatibility: preserve mock call history.
     // Remove after tests no longer rely on calls from setup or earlier tests.
