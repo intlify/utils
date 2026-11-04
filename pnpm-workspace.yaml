@@ -7,9 +7,6 @@ catalogs:
     '@vitest/coverage-v8': ^4.0.18
 
 minimumReleaseAge: 1440
-minimumReleaseAgeExclude:
-  - '@cloudflare/workers-types'
 
 onlyBuiltDependencies:
   - esbuild
-  - workerd
