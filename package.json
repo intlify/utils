@@ -108,7 +108,7 @@
     "eslint-plugin-markdown-preferences": "^0.42.0",
     "eslint-plugin-module-interop": "^0.4.0",
     "eslint-plugin-promise": "^7.2.1",
-    "eslint-plugin-regexp": "^2.10.0",
+    "eslint-plugin-regexp": "^3.0.0",
     "eslint-plugin-unicorn": "^62.0.0",
     "eslint-plugin-unused-imports": "^4.4.1",
     "eslint-plugin-yml": "^1.19.1",
