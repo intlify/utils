@@ -98,7 +98,7 @@
     "@vitest/coverage-v8": "catalog:vitest",
     "@vitest/eslint-plugin": "^1.6.9",
     "bumpp": "^9.11.1",
-    "cookie-es": "^1.2.2",
+    "cookie-es": "^1.2.3",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.4",
