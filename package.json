@@ -77,7 +77,7 @@
     "test:unit": "vp test"
   },
   "devDependencies": {
-    "@kazupon/vp-config": "^1.0.0",
+    "@kazupon/vp-config": "^1.1.0",
     "@types/node": "^24.12.0",
     "@types/supertest": "^7.2.1",
     "@vitest/coverage-v8": "catalog:vitest",
