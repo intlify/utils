@@ -62,12 +62,12 @@ $ pnpm install # install the dependencies of the project
 A high level overview of tools used:
 
 - [TypeScript](https://www.typescriptlang.org/) as the development language
-- [Vite+](https://viteplus.dev/) as the toolchain: `vp check` formats (Oxfmt), lints (Oxlint) and type-checks, `vp test` runs Vitest, and `vp staged` runs the pre-commit hook
+- [Vite+](https://viteplus.dev/) as the toolchain: `vp check` checks formatting (Oxfmt), lints (Oxlint) and type-checks, `vp check --fix` applies the formatting and autofixes, `vp test` runs Vitest, and `vp staged` runs the pre-commit hook
 
 ### Commonly used NPM scripts
 
 ```sh
-# format, lint and type-check source codes
+# check formatting, lint and type-check source codes
 $ pnpm lint
 
 # fix source codes
