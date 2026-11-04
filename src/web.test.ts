@@ -299,6 +299,46 @@ describe('setCookieLocale', () => {
       `${DEFAULT_COOKIE_NAME}=ja-JP; Max-Age=34560000; Path=/`
     ])
   })
+
+  test('keep the existing Set-Cookie header', () => {
+    const res = new Response('hello world!')
+    res.headers.append('set-cookie', 'session=abc; Path=/; HttpOnly')
+    setCookieLocale(res, 'ja-JP')
+    expect(res.headers.getSetCookie()).toEqual([
+      'session=abc; Path=/; HttpOnly',
+      `${DEFAULT_COOKIE_NAME}=ja-JP; Path=/`
+    ])
+  })
+
+  test('keep the existing Set-Cookie headers', () => {
+    const res = new Response('hello world!')
+    res.headers.append('set-cookie', 'a=1')
+    res.headers.append('set-cookie', 'b=2')
+    setCookieLocale(res, 'ja-JP')
+    expect(res.headers.getSetCookie()).toEqual([
+      'a=1',
+      'b=2',
+      `${DEFAULT_COOKIE_NAME}=ja-JP; Path=/`
+    ])
+  })
+
+  test('keep only the last locale when it is set twice', () => {
+    const res = new Response('hello world!')
+    res.headers.append('set-cookie', 'session=abc; Path=/; HttpOnly')
+    setCookieLocale(res, 'ja-JP')
+    setCookieLocale(res, 'en-US')
+    expect(res.headers.getSetCookie()).toEqual([
+      'session=abc; Path=/; HttpOnly',
+      `${DEFAULT_COOKIE_NAME}=en-US; Path=/`
+    ])
+  })
+
+  test('replace the existing locale cookie', () => {
+    const res = new Response('hello world!')
+    res.headers.append('set-cookie', `${DEFAULT_COOKIE_NAME}=fr-FR; Path=/`)
+    setCookieLocale(res, 'ja-JP')
+    expect(res.headers.getSetCookie()).toEqual([`${DEFAULT_COOKIE_NAME}=ja-JP; Path=/`])
+  })
 })
 
 test('getPathLocale', () => {

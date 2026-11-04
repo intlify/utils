@@ -292,7 +292,11 @@ export function setCookieLocale(
     path: '/',
     ...options
   })
-  response.headers.set('set-cookie', [...setCookies, target].join('; '))
+  // a Set-Cookie header has only one cookie, so append each cookie as its own header
+  response.headers.delete('set-cookie')
+  for (const cookie of [...setCookies, target]) {
+    response.headers.append('set-cookie', cookie)
+  }
 }
 
 /**
