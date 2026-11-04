@@ -9,6 +9,9 @@ catalogs:
     vite-plus: 1.4.0
 
 minimumReleaseAge: 1440
+minimumReleaseAgeExclude:
+  # the shared lint and format config of the maintainer
+  - '@kazupon/vp-config'
 
 onlyBuiltDependencies:
   - esbuild
