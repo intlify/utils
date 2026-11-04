@@ -89,7 +89,6 @@
     "test:unit": "vitest run --typecheck"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260307.1",
     "@eslint/compat": "^2.0.0",
     "@eslint/markdown": "^8.0.0",
     "@kazupon/eslint-config": "^0.45.0",
@@ -118,7 +117,6 @@
     "hono": "^4.0.0",
     "knip": "^5.86.0",
     "lint-staged": "^15.5.2",
-    "miniflare": "^3.20250718.3",
     "pkg-pr-new": "^0.0.92",
     "playwright": "^1.64.1",
     "prettier": "^3.8.1",
@@ -128,8 +126,7 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.56.1",
     "unbuild": "^3.6.1",
-    "vitest": "catalog:vitest",
-    "vitest-environment-miniflare": "^2.14.1"
+    "vitest": "catalog:vitest"
   },
   "prettier": "@kazupon/prettier-config",
   "lint-staged": {

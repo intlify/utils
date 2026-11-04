@@ -1,4 +1,3 @@
-// @vitest-environment miniflare
 import { Hono } from 'hono'
 import { describe, expect, test } from 'vitest'
 import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
@@ -441,7 +440,7 @@ test('getPathLocale', async () => {
     return c.json({ locale: getPathLocale(c).toString() })
   })
   const res = await app.request('http://localhost/en/foo')
-  const result = await res.json()
+  const result: unknown = await res.json()
   expect(result).toEqual({ locale: 'en' })
 })
 
@@ -452,7 +451,7 @@ describe('tryPathLocale', () => {
       return c.json({ locale: tryPathLocale(c)!.toString() })
     })
     const res = await app.request('http://localhost/en/foo')
-    const result = await res.json()
+    const result: unknown = await res.json()
     expect(result).toEqual({ locale: 'en' })
   })
 
@@ -462,7 +461,7 @@ describe('tryPathLocale', () => {
       return c.json({ locale: tryPathLocale(c) })
     })
     const res = await app.request('http://localhost/e/foo')
-    const result = await res.json()
+    const result: unknown = await res.json()
     expect(result).toEqual({ locale: null })
   })
 })
@@ -473,7 +472,7 @@ test('getQueryLocale', async () => {
     return c.json({ locale: getQueryLocale(c).toString() })
   })
   const res = await app.request('http://localhost/?locale=ja')
-  const result = await res.json()
+  const result: unknown = await res.json()
   expect(result).toEqual({ locale: 'ja' })
 })
 
@@ -484,7 +483,7 @@ describe('tryQueryLocale', () => {
       return c.json({ locale: tryQueryLocale(c)!.toString() })
     })
     const res = await app.request('http://localhost/?locale=ja')
-    const result = await res.json()
+    const result: unknown = await res.json()
     expect(result).toEqual({ locale: 'ja' })
   })
 
@@ -494,7 +493,7 @@ describe('tryQueryLocale', () => {
       return c.json({ locale: tryQueryLocale(c) })
     })
     const res = await app.request('http://localhost/?locale=s')
-    const result = await res.json()
+    const result: unknown = await res.json()
     expect(result).toEqual({ locale: null })
   })
 })
