@@ -272,6 +272,12 @@ describe('setCookieLocale', () => {
     expect(res.headers.getSetCookie()).toEqual(['intlify_locale=ja-JP; Path=/'])
   })
 
+  test('specify an object that has headers', () => {
+    const res = { headers: new Headers() }
+    setCookieLocale(res, 'ja-JP')
+    expect(res.headers.getSetCookie()).toEqual([`${DEFAULT_COOKIE_NAME}=ja-JP; Path=/`])
+  })
+
   test('Syntax Error', () => {
     const res = new Response('hello world!')
     expect(() => setCookieLocale(res, 'j')).toThrowError(/locale is invalid: j/)

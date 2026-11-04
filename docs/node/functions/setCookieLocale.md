@@ -44,3 +44,7 @@ const server = createServer((req, res) => {
 ## Throws
 
 Throws the `SyntaxError` if `locale` is invalid.
+
+## Throws
+
+Throws the `TypeError` if the cookie attributes are invalid for RFC 6265bis, e.g. `sameSite: 'none'` without `secure`.

@@ -19,7 +19,8 @@ set locale to the response `Set-Cookie` header.
 
 | Parameter | Type | Description |
 | ------ | ------ | ------ |
-| `response` | `Response` | The Response \| response |
+| `response` | \{ `headers`: `Headers`; \} | The Response \| response, or an object that has the Headers \| headers, e.g. `event.res` of h3 v2 |
+| `response.headers` | `Headers` | - |
 | `locale` | `string` \| `Locale` | The locale value |
 | `options` | `CookieOptions` | The CookieOptions \| cookie options, `name` option is `i18n_locale` as default |
 
@@ -27,7 +28,7 @@ set locale to the response `Set-Cookie` header.
 
 `void`
 
-## Example
+## Examples
 
 example for Web API response on Bun:
 
@@ -45,6 +46,22 @@ Bun.serve({
 })
 ```
 
+example for the response of h3 v2:
+
+```ts
+import { H3 } from 'h3'
+import { setCookieLocale } from '@intlify/utils'
+
+const app = new H3().get('/', event => {
+  setCookieLocale(event.res, 'ja-JP')
+  return 'こんにちは、世界！'
+})
+```
+
 ## Throws
 
 Throws the `SyntaxError` if `locale` is invalid.
+
+## Throws
+
+Throws the `TypeError` if the cookie attributes are invalid for RFC 6265bis, e.g. `sameSite: 'none'` without `secure`.

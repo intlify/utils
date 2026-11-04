@@ -273,7 +273,20 @@ export function tryCookieLocale(
  * })
  * ```
  *
- * @param response - The {@link Response | response}
+ * @example
+ * example for the response of h3 v2:
+ *
+ * ```ts
+ * import { H3 } from 'h3'
+ * import { setCookieLocale } from '@intlify/utils'
+ *
+ * const app = new H3().get('/', event => {
+ *   setCookieLocale(event.res, 'ja-JP')
+ *   return 'こんにちは、世界！'
+ * })
+ * ```
+ *
+ * @param response - The {@link Response | response}, or an object that has the {@link Headers | headers}, e.g. `event.res` of h3 v2
  * @param locale - The locale value
  * @param options - The {@link CookieOptions | cookie options}, `name` option is `i18n_locale` as default
  *
@@ -281,7 +294,7 @@ export function tryCookieLocale(
  * @throws {TypeError} Throws the {@linkcode TypeError} if the cookie attributes are invalid for RFC 6265bis, e.g. `sameSite: 'none'` without `secure`.
  */
 export function setCookieLocale(
-  response: Response,
+  response: { readonly headers: Headers },
   locale: string | Intl.Locale,
   options: CookieOptions = {}
 ): void {

@@ -21,7 +21,7 @@ set locale to the response `Set-Cookie` header.
 | ------ | ------ | ------ |
 | `context` | `Context` | A Context \| Hono context |
 | `locale` | `string` \| `Locale` | A locale value |
-| `options` | `CookieOptions` & `object` | The CookieOptions \| cookie options, `name` option is `i18n_locale` as default |
+| `options` | `CookieOptions` | The CookieOptions \| cookie options, `name` option is `i18n_locale` as default |
 
 ## Returns
 
