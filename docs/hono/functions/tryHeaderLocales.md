@@ -7,7 +7,7 @@
 # ~~Function: tryHeaderLocales()~~
 
 ```ts
-function tryHeaderLocales(context, options): Locale[] | null;
+function tryHeaderLocales(context, options?): Locale[] | null;
 ```
 
 try to get locales from header

@@ -7,7 +7,7 @@
 # Function: getHeaderLanguage()
 
 ```ts
-function getHeaderLanguage(request, options): string;
+function getHeaderLanguage(request, options?): string;
 ```
 
 get language from header
@@ -31,16 +31,16 @@ parse header string, default `accept-language`. if you use `accept-language`, th
 
 ## Example
 
-example for Web API request on Deno:
+example for Web API request on Cloudflare Workers:
 
 ```ts
-import { getAcceptLanguage } from 'https://esm.sh/@intlify/utils/web'
+import { getHeaderLanguage } from '@intlify/utils'
 
-Deno.serve({
-  port: 8080,
-}, (req) => {
-  const langTag = getHeaderLanguage(req)
-  // ...
-  return new Response(`accepted language: ${langTag}`
-})
+export default {
+  fetch(request: Request) {
+    const langTag = getHeaderLanguage(request)
+    // ...
+    return new Response(`accepted language: ${langTag}`)
+  }
+}
 ```

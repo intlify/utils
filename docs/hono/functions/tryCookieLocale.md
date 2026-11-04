@@ -7,7 +7,7 @@
 # ~~Function: tryCookieLocale()~~
 
 ```ts
-function tryCookieLocale(context, options): Locale | null;
+function tryCookieLocale(context, options?): Locale | null;
 ```
 
 try to get locale from cookie

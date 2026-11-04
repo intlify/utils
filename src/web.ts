@@ -30,18 +30,18 @@ import type {
  * @description parse header string, default `accept-language` header
  *
  * @example
- * example for Web API request on Deno:
+ * example for Web API request on Cloudflare Workers:
  *
  * ```ts
- * import { getHeaderLanguages } from 'https://esm.sh/@intlify/utils/web'
+ * import { getHeaderLanguages } from '@intlify/utils'
  *
- * Deno.serve({
- *   port: 8080,
- * }, (req) => {
- *   const langTags = getHeaderLanguages(req)
- *   // ...
- *   return new Response(`accepted languages: ${langTags.join(', ')}`
- * })
+ * export default {
+ *   fetch(request: Request) {
+ *     const langTags = getHeaderLanguages(request)
+ *     // ...
+ *     return new Response(`accepted languages: ${langTags.join(', ')}`)
+ *   }
+ * }
  * ```
  *
  * @param request - The {@link Request | request}
@@ -61,18 +61,18 @@ export function getHeaderLanguages(request: Request, options: HeaderOptions = {}
  * @description parse header string, default `accept-language`. if you use `accept-language`, this function returns the **first language tag** of `accept-language` header.
  *
  * @example
- * example for Web API request on Deno:
+ * example for Web API request on Cloudflare Workers:
  *
  * ```ts
- * import { getAcceptLanguage } from 'https://esm.sh/@intlify/utils/web'
+ * import { getHeaderLanguage } from '@intlify/utils'
  *
- * Deno.serve({
- *   port: 8080,
- * }, (req) => {
- *   const langTag = getHeaderLanguage(req)
- *   // ...
- *   return new Response(`accepted language: ${langTag}`
- * })
+ * export default {
+ *   fetch(request: Request) {
+ *     const langTag = getHeaderLanguage(request)
+ *     // ...
+ *     return new Response(`accepted language: ${langTag}`)
+ *   }
+ * }
  * ```
  *
  * @param request - The {@link Request | request}
@@ -93,7 +93,7 @@ export function getHeaderLanguage(request: Request, options: HeaderOptions = {})
  * example for Web API request on Bun:
  *
  * ```ts
- * import { getHeaderLocales } from '@intlify/utils/web'
+ * import { getHeaderLocales } from '@intlify/utils'
  *
  * Bun.serve({
  *   port: 8080,
@@ -145,7 +145,7 @@ export function tryHeaderLocales(
  * @example
  * example for Web API request on Bun:
  *
- * import { getHeaderLocale } from '@intlify/utils/web'
+ * import { getHeaderLocale } from '@intlify/utils'
  *
  * Bun.serve({
  *   port: 8080,
@@ -200,18 +200,19 @@ export function tryHeaderLocale(
  * get locale from cookie
  *
  * @example
- * example for Web API request on Deno:
+ * example for Web API request on Cloudflare Workers:
  *
  * ```ts
- * import { getCookieLocale } from 'https://esm.sh/@intlify/utils/web'
+ * import { getCookieLocale } from '@intlify/utils'
  *
- * Deno.serve({
- *   port: 8080,
- * }, (req) => {
- *   const locale = getCookieLocale(req)
- *   console.log(locale) // output `Intl.Locale` instance
- *   // ...
- * })
+ * export default {
+ *   fetch(request: Request) {
+ *     const locale = getCookieLocale(request)
+ *     console.log(locale) // output `Intl.Locale` instance
+ *     // ...
+ *     return new Response(`locale: ${locale.toString()}`)
+ *   }
+ * }
  * ```
  *
  * @param request - The {@link Request | request}
@@ -259,7 +260,7 @@ export function tryCookieLocale(
  * example for Web API response on Bun:
  *
  * ```ts
- * import { setCookieLocale } from '@intlify/utils/web'
+ * import { setCookieLocale } from '@intlify/utils'
  *
  * Bun.serve({
  *   port: 8080,
@@ -363,7 +364,7 @@ export function tryQueryLocale(request: Request, options: QueryOptions = {}): In
  * get navigator languages
  *
  * @description
- * The value depends on the environments. if you use this function on the browser, you can get the languages, that are set in the browser, else if you use this function on the server side (Deno only), that value is the languages set in the server.
+ * The value depends on the environment. On the browser, you get the languages set in the browser. On the server side, it works only on a runtime that provides `navigator.languages` (such as Node.js), and you get the languages set in the server.
  *
  * @throws {TypeError} Throws the {@linkcode TypeError} if the `navigator` is not exists.
  *
@@ -380,7 +381,7 @@ function getNavigatorLanguages(): readonly string[] {
  * get navigator language
  *
  * @description
- * The value depends on the environments. if you use this function on the browser, you can get the languages, that are set in the browser, else if you use this function on the server side (Deno only), that value is the language set in the server.
+ * The value depends on the environment. On the browser, you get the language set in the browser. On the server side, it works only on a runtime that provides `navigator.language` (such as Node.js), and you get the language set in the server.
  *
  * @throws {TypeError} Throws the {@link TypeError} if the `navigator` is not exists.
  *
@@ -398,7 +399,7 @@ function getNavigatorLanguage(): string {
  *
  * @description
  * This function is a wrapper that maps in {@linkcode Intl.Locale} in `navigator.languages`.
- * This function return values depends on the environments. if you use this function on the browser, you can get the languages, that are set in the browser, else if you use this function on the server side (Deno only), that value is the languages set in the server.
+ * The value depends on the environment. On the browser, you get the languages set in the browser. On the server side, it works only on a runtime that provides `navigator.languages` (such as Node.js), and you get the languages set in the server.
  *
  * @returns The array of {@link Intl.Locale | locales}
  */
@@ -411,7 +412,7 @@ export function getNavigatorLocales(): readonly Intl.Locale[] {
  *
  * @description
  * This function is the {@linkcode Intl.Locale} wrapper of `navigator.language`.
- * The value depends on the environments. if you use this function on the browser, you can get the languages, that are set in the browser, else if you use this function on the server side (Deno only), that value is the language set in the server.
+ * The value depends on the environment. On the browser, you get the language set in the browser. On the server side, it works only on a runtime that provides `navigator.language` (such as Node.js), and you get the language set in the server.
  *
  * @returns The {@link Intl.Locale | locale}
  */

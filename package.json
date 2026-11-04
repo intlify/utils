@@ -78,7 +78,6 @@
     "lint:typecheck": "tsc --noEmit --diagnostics",
     "play:browser": "pnpm run --filter example-browser dev",
     "play:bun": "pnpm run --filter example-bun dev",
-    "play:deno": "pnpm run --filter example-deno dev",
     "play:node": "pnpm run --filter example-node dev",
     "prepare": "git config --local core.hooksPath .githooks",
     "release": "bumpp",
@@ -87,7 +86,6 @@
     "test:e2e": "pnpm run --color \"/^test:e2e:/\"",
     "test:e2e:browser": "pnpm run --filter example-browser test",
     "test:e2e:bun": "pnpm run --filter example-bun test",
-    "test:e2e:deno": "pnpm run --filter example-deno test",
     "test:e2e:node": "pnpm run --filter example-node test",
     "test:unit": "vitest run --typecheck"
   },
@@ -103,7 +101,6 @@
     "@vitest/eslint-plugin": "^1.6.9",
     "bumpp": "^9.11.1",
     "cookie-es": "^1.2.2",
-    "deno": "catalog:",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.4",

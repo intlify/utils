@@ -1,8 +1,6 @@
 packages:
   - playground/**
 
-catalog:
-  deno: ^2.7.4
 catalogs:
   vitest:
     vitest: ^4.0.18
@@ -13,6 +11,5 @@ minimumReleaseAgeExclude:
   - '@cloudflare/workers-types'
 
 onlyBuiltDependencies:
-  - deno
   - esbuild
   - workerd

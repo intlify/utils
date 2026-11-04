@@ -67,8 +67,6 @@ You can play the below examples:
 
 - 🐢 [Node.js](https://github.com/intlify/utils/tree/main/examples/node):
   `npm run play:node`
-- 🦕 [Deno](https://github.com/intlify/utils/tree/main/examples/deno):
-  `npm run play:deno`
 - 🥟 [Bun](https://github.com/intlify/utils/tree/main/examples/bun):
   `npm run play:bun`
 - 🌍 [Browser](https://github.com/intlify/utils/tree/main/examples/browser):

@@ -5,10 +5,6 @@ settings:
   excludeLinksFromLockfile: false
 
 catalogs:
-  default:
-    deno:
-      specifier: ^2.7.4
-      version: 2.7.4
   vitest:
     '@vitest/coverage-v8':
       specifier: ^4.0.18
@@ -54,9 +50,6 @@ importers:
       cookie-es:
         specifier: ^1.2.2
         version: 1.2.2
-      deno:
-        specifier: 'catalog:'
-        version: 2.7.4
       eslint:
         specifier: ^9.39.4
         version: 9.39.4(jiti@2.6.1)
@@ -174,12 +167,6 @@ importers:
         specifier: latest
         version: 1.4.4
 
-  playground/deno:
-    devDependencies:
-      deno:
-        specifier: 'catalog:'
-        version: 2.7.4
-
   playground/node:
     dependencies:
       '@intlify/utils':
@@ -262,38 +249,6 @@ packages:
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
     engines: {node: '>=12'}
-
-  '@deno/darwin-arm64@2.7.4':
-    resolution: {integrity: sha512-PmO7ZtaZWCcPMGOXCi2l6T9Y+ok8V5C4uQer13PWGhOpiicuAF37CSH41vVOu/Yfv8EtUy0oBkG38l1TcEcyGg==}
-    cpu: [arm64]
-    os: [darwin]
-
-  '@deno/darwin-x64@2.7.4':
-    resolution: {integrity: sha512-tYkk6ph2MlzqTJHpXt2U4mrRlnwJjF2ol2QmhjZAtKyIha2c1x5xMMGGJcHqljfZCJDV+fPTDsL11Dq0YSGLqA==}
-    cpu: [x64]
-    os: [darwin]
-
-  '@deno/linux-arm64-glibc@2.7.4':
-    resolution: {integrity: sha512-ni+3pPa/3wZwFrJkXutdK8TZsUHFt0kV2hNa6guyTRF5LTL1HzvIRnHmqUDmurLn09ZK+nhxGvEfGNIl8TQx5A==}
-    cpu: [arm64]
-    os: [linux]
-    libc: [glibc]
-
-  '@deno/linux-x64-glibc@2.7.4':
-    resolution: {integrity: sha512-bhwwGHskOHbJMkvQYnEvLzzDKJ3iZCQD9331wBCI3eS6oiOMxqk0AxXfN5rxginCmRAa09SpIIIben7x7CHbBw==}
-    cpu: [x64]
-    os: [linux]
-    libc: [glibc]
-
-  '@deno/win32-arm64@2.7.4':
-    resolution: {integrity: sha512-rGPkxGe/a/bT38vBnLxirP9FnLUUo8AMjhGGy4miOWWVxjhIMZkj9Q57Fzk0IHULSOiEVKgo2WNZMAc9XVuRlg==}
-    cpu: [arm64]
-    os: [win32]
-
-  '@deno/win32-x64@2.7.4':
-    resolution: {integrity: sha512-GUoOTDOqu38LMMJ35OQ/9K++D7HHcqUEaP3DybrHw2mGqoOtv88mV6y8l6iZyY/YjpfgadooGhFOO/j6Jv2D4w==}
-    cpu: [x64]
-    os: [win32]
 
   '@emnapi/core@1.7.0':
     resolution: {integrity: sha512-pJdKGq/1iquWYtv1RRSljZklxHCOCAJFJrImO5ZLKPJVJlVUcs8yFwNQlqS0Lo8xT1VAXXTCZocF9n26FWEKsw==}
@@ -1810,10 +1765,6 @@ packages:
   delayed-stream@1.0.0:
     resolution: {integrity: sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ==}
     engines: {node: '>=0.4.0'}
-
-  deno@2.7.4:
-    resolution: {integrity: sha512-PuD97c34jTVecN85U4KiMtzxcS5U0RvryT3gpYoT5iW+GB5wOE149ntXNzaYDd9USE68/J8CsNORWSTdNEc03g==}
-    hasBin: true
 
   dequal@2.0.3:
     resolution: {integrity: sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==}
@@ -4104,24 +4055,6 @@ snapshots:
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
 
-  '@deno/darwin-arm64@2.7.4':
-    optional: true
-
-  '@deno/darwin-x64@2.7.4':
-    optional: true
-
-  '@deno/linux-arm64-glibc@2.7.4':
-    optional: true
-
-  '@deno/linux-x64-glibc@2.7.4':
-    optional: true
-
-  '@deno/win32-arm64@2.7.4':
-    optional: true
-
-  '@deno/win32-x64@2.7.4':
-    optional: true
-
   '@emnapi/core@1.7.0':
     dependencies:
       '@emnapi/wasi-threads': 1.1.0
@@ -5480,15 +5413,6 @@ snapshots:
   defu@6.1.4: {}
 
   delayed-stream@1.0.0: {}
-
-  deno@2.7.4:
-    optionalDependencies:
-      '@deno/darwin-arm64': 2.7.4
-      '@deno/darwin-x64': 2.7.4
-      '@deno/linux-arm64-glibc': 2.7.4
-      '@deno/linux-x64-glibc': 2.7.4
-      '@deno/win32-arm64': 2.7.4
-      '@deno/win32-x64': 2.7.4
 
   dequal@2.0.3: {}
 

@@ -65,7 +65,6 @@ You will need to install the below JavaScript runtime:
 
 - [Node.js](http://nodejs.org) **version 18+**
 - [Bun](https://bun.sh/) **version 2.0+**
-- [Deno](https://deno.com/) **version 1.36+**
 
 After cloning the repo, run:
 

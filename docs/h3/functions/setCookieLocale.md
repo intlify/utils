@@ -10,7 +10,7 @@
 function setCookieLocale(
    event, 
    locale, 
-   options): void;
+   options?): void;
 ```
 
 set locale to the response `Set-Cookie` header.

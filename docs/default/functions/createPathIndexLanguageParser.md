@@ -7,7 +7,7 @@
 # Function: createPathIndexLanguageParser()
 
 ```ts
-function createPathIndexLanguageParser(index): PathLanguageParser;
+function createPathIndexLanguageParser(index?): PathLanguageParser;
 ```
 
 create a parser, which can split with slash `/`
