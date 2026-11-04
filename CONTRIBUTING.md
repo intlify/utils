@@ -63,7 +63,7 @@
 
 You will need to install the below JavaScript runtime:
 
-- [Node.js](http://nodejs.org) **version 18+**
+- [Node.js](http://nodejs.org) **version 22+**
 - [Bun](https://bun.sh/) **version 2.0+**
 
 After cloning the repo, run:
