@@ -47,7 +47,7 @@ jobs:
       id-token: write # npm trusted publisher (OIDC)
     steps:
       - name: Checkout tag
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ env.TAG }}
           persist-credentials: false
@@ -73,7 +73,7 @@ jobs:
         # Node 24 bundles npm 11.5.1+, which OIDC trusted publishing needs
         # (pnpm 10 runs the npm CLI for the upload). setup-node caches by the
         # `packageManager` field by default, so turn it off for a release.
-        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
           package-manager-cache: false
@@ -115,7 +115,7 @@ jobs:
       contents: write # create GitHub Release
     steps:
       - name: Checkout tag
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ env.TAG }}
           persist-credentials: false
