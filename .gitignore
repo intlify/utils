@@ -6,6 +6,7 @@ coverage
 .eslintcache
 .notes
 .plans
+.issues
 .vite-hooks/_
 
 *.log
