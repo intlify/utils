@@ -20,7 +20,6 @@ import { parseAcceptLanguage } from './shared.ts'
 import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 
 import type { App, H3Event } from 'h3'
-import type { SuperTest, Test } from 'supertest'
 
 describe('getHeaderLanguages', () => {
   test('basic', () => {
@@ -502,7 +501,7 @@ describe('tryCookieLocale', () => {
 
 describe('setCookieLocale', () => {
   let app: App
-  let request: SuperTest<Test>
+  let request: ReturnType<typeof supertest>
 
   beforeEach(() => {
     app = createApp({ debug: false })
