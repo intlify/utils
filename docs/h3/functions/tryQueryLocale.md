@@ -7,7 +7,7 @@
 # ~~Function: tryQueryLocale()~~
 
 ```ts
-function tryQueryLocale(event, options): Locale | null;
+function tryQueryLocale(event, options?): Locale | null;
 ```
 
 try to get the locale from the query

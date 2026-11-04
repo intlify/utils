@@ -127,7 +127,6 @@ type OtherExtensions = TupleToUnion<
 export type CheckRange<T extends unknown[], Indexes extends number[]> =
   Includes<Indexes, Length<T>> extends true ? true : false
 
-// deno-fmt-ignore
 type ValidCharacters<
   T extends unknown[],
   UnionChars = Alphabets, // default alphabets
@@ -207,7 +206,6 @@ export type ParseUnicodeLanguageId<
  * parse unicode language subtag
  * https://unicode.org/reports/tr35/#unicode_language_subtag
  */
-// deno-fmt-ignore
 export type ParseLangSubtag<
   Chunk,
   RestChunks extends unknown[] = [],
@@ -227,7 +225,6 @@ export type ParseLangSubtag<
  * https://unicode.org/reports/tr35/#unicode_language_subtag
  */
 // TODO: Check if the language subtag is in CLDR
-// deno-fmt-ignore
 type ParseUnicodeLanguageSubtag<
   Chunk extends string,
   RestChunks extends unknown[] = [],
@@ -243,7 +240,6 @@ type ParseUnicodeLanguageSubtag<
  * parse unicode script subtag
  * https://unicode.org/reports/tr35/#unicode_script_subtag
  */
-// deno-fmt-ignore
 export type ParseScriptSubtag<
   Chunk,
   RestChunks extends unknown[] = [],
@@ -261,7 +257,6 @@ export type ParseScriptSubtag<
  * https://unicode.org/reports/tr35/#unicode_script_subtag
  */
 // TODO: Check if the script subtag is in CLDR
-// deno-fmt-ignore
 type ParseUnicodeScriptSubtag<
   Chunk extends string,
   RestChunks extends unknown[] = [],
@@ -279,7 +274,6 @@ type ParseUnicodeScriptSubtag<
  * parse unicode region subtag
  * https://unicode.org/reports/tr35/#unicode_region_subtag
  */
-// deno-fmt-ignore
 export type ParseRegionSubtag<
   Chunk,
   RestChunks extends unknown[] = [],
@@ -297,7 +291,6 @@ export type ParseRegionSubtag<
  * https://unicode.org/reports/tr35/#unicode_region_subtag
  */
 // TODO: Check if the region subtag is in CLDR
-// deno-fmt-ignore
 type ParseUnicodeRegionSubtag<
   Chunk extends string,
   RestChunks extends unknown[] = [],
@@ -333,7 +326,6 @@ export type ParseVariantsSubtag<
   Result extends [string[], number | never, unknown[]] = _ParseVariantsSubtag<Chunks>
 > = Result
 
-// deno-fmt-ignore
 type _ParseVariantsSubtag<
   Chunks extends unknown[] = [],
   Accumrator extends [string[], number | never] = [[], never],
@@ -366,7 +358,6 @@ type _ParseVariantsSubtag<
  * parse unicode variant subtag (= (alphanum{5,8} | digit alphanum{3}) ;)
  * https://unicode.org/reports/tr35/#unicode_variant_subtag
  */
-// deno-fmt-ignore
 type ParseUnicodeVariantsSubtag<
   Chunk extends string,
   Chars extends unknown[] = StringToArray<Chunk>,
@@ -393,7 +384,6 @@ type ParseUnicodeVariantsSubtag<
  *    extensions*
  *    pu_extensions? ;
  */
-// deno-fmt-ignore
 export type ParseUnicodeLocaleId<
   T extends string,
   Chunks extends unknown[] = Split<T, '-'>,
@@ -429,7 +419,6 @@ export type ParseUnicodeLocaleId<
  * All parser calls use `extends infer` pattern (NOT default type parameters)
  * to defer type evaluation until concrete types are provided.
  */
-// deno-fmt-ignore
 type _ParseExtensions<Chunks extends unknown[]> =
   Length<Chunks> extends 0
     ? [{ extensions: [] }, never, []]
@@ -443,7 +432,6 @@ type _ParseExtensions<Chunks extends unknown[]> =
         : [{ extensions: [] }, never, Chunks]
       : [{ extensions: [] }, never, Chunks]
 
-// deno-fmt-ignore
 type _ParseExtensions2<Chunks extends unknown[], Acc extends unknown[]> =
   Length<Chunks> extends 0
     ? [{ extensions: Acc }, never, []]
@@ -457,7 +445,6 @@ type _ParseExtensions2<Chunks extends unknown[], Acc extends unknown[]> =
         : [{ extensions: Acc }, never, Chunks]
       : [{ extensions: Acc }, never, Chunks]
 
-// deno-fmt-ignore
 type _ParseExtensions3<Chunks extends unknown[], Acc extends unknown[]> =
   Length<Chunks> extends 0
     ? [{ extensions: Acc }, never, []]
@@ -471,7 +458,6 @@ type _ParseExtensions3<Chunks extends unknown[], Acc extends unknown[]> =
         : [{ extensions: Acc }, never, Chunks]
       : [{ extensions: Acc }, never, Chunks]
 
-// deno-fmt-ignore
 type _ParseExtensions4<Chunks extends unknown[], Acc extends unknown[]> =
   Length<Chunks> extends 0
     ? [{ extensions: Acc }, never, []]
@@ -492,7 +478,6 @@ type _ParseExtensions4<Chunks extends unknown[], Acc extends unknown[]> =
  * Uses `Chunks extends [infer ..., ...infer ...]` pattern to defer
  * parser evaluation until Chunks is concrete.
  */
-// deno-fmt-ignore
 type _ParseSingleExtension<Chunks extends unknown[]> = Chunks extends [
   infer _Type extends string,
   ...infer _Rest
@@ -513,7 +498,6 @@ type _ParseSingleExtension<Chunks extends unknown[]> = Chunks extends [
  * constrained default parameters to avoid excessive stack depth.
  * Replicates the logic using `extends infer` for deferred evaluation.
  */
-// deno-fmt-ignore
 type _ParseUnicodeDirect<Chunks extends unknown[]> =
   CollectFirstKeywords<Chunks, '-'> extends infer FK
     ? FK extends [infer FirstKW extends unknown[], infer FKRest]
@@ -527,7 +511,6 @@ type _ParseUnicodeDirect<Chunks extends unknown[]> =
       : _ParseUnicodeDirectAttrs<Chunks>
     : _ParseUnicodeDirectAttrs<Chunks>
 
-// deno-fmt-ignore
 type _ParseUnicodeDirectAttrs<Chunks extends unknown[]> =
   ParseAttribute<Chunks> extends infer AR
     ? AR extends [infer Attrs extends unknown[], infer ARest extends unknown[]]
@@ -566,7 +549,6 @@ type _ParseUnicodeDirectAttrs<Chunks extends unknown[]> =
  * Decomposes ParseUnicodeLanguageId into individual subtag parser calls
  * to keep stack depth low at each step.
  */
-// deno-fmt-ignore
 type _ParseTransformedDirect<Chunks extends unknown[]> =
   ParseLangSubtag<First<Chunks>, Chunks> extends infer LangR
     ? LangR extends [infer Lang, infer _LErr, infer R1 extends unknown[]]
@@ -574,7 +556,6 @@ type _ParseTransformedDirect<Chunks extends unknown[]> =
       : [never, 11, Chunks]
     : [never, 11, Chunks]
 
-// deno-fmt-ignore
 type _TransformedAfterLang<Lang, R1 extends unknown[], Orig extends unknown[]> =
   ParseScriptSubtag<First<R1>, R1> extends infer ScriptR
     ? ScriptR extends [infer Script, infer _SErr, infer R2 extends unknown[]]
@@ -582,7 +563,6 @@ type _TransformedAfterLang<Lang, R1 extends unknown[], Orig extends unknown[]> =
       : [never, 11, Orig]
     : [never, 11, Orig]
 
-// deno-fmt-ignore
 type _TransformedAfterScript<Lang, Script, R2 extends unknown[], Orig extends unknown[]> =
   ParseRegionSubtag<First<R2>, R2> extends infer RegionR
     ? RegionR extends [infer Region, infer _RErr, infer R3 extends unknown[]]
@@ -590,7 +570,6 @@ type _TransformedAfterScript<Lang, Script, R2 extends unknown[], Orig extends un
       : [never, 11, Orig]
     : [never, 11, Orig]
 
-// deno-fmt-ignore
 type _TransformedAfterRegion<Lang, Script, Region, R3 extends unknown[], Orig extends unknown[]> =
   ParseVariantsSubtag<R3> extends infer VarR
     ? VarR extends [infer Variants extends string[], infer _VErr, infer R4 extends unknown[]]
@@ -602,7 +581,6 @@ type _TransformedAfterRegion<Lang, Script, Region, R3 extends unknown[], Orig ex
       : [never, 11, Orig]
     : [never, 11, Orig]
 
-// deno-fmt-ignore
 type _TransformedAfterVariants<LangId, FieldsChunks extends unknown[], Orig extends unknown[]> =
   ParseTransformedExtensionFields<FieldsChunks> extends infer FR
     ? FR extends [infer Fields extends unknown[], infer FErr, infer FRest extends unknown[]]
@@ -618,7 +596,6 @@ type _TransformedAfterVariants<LangId, FieldsChunks extends unknown[], Orig exte
  * Direct PU extension parser that calls _ParsePuExtension directly
  * (bypasses ParsePuExtension's default parameter chain to avoid excessive stack depth)
  */
-// deno-fmt-ignore
 type _ParsePuDirect<Chunks extends unknown[]> =
   _ParsePuExtension<Chunks> extends infer R
     ? R extends [infer Exts extends unknown[], infer RestChunks extends unknown[]]
@@ -632,7 +609,6 @@ type _ParsePuDirect<Chunks extends unknown[]> =
  * Direct Other extension parser that calls _ParseOtherExtension directly
  * (bypasses ParseOtherExtension's default parameter chain to avoid excessive stack depth)
  */
-// deno-fmt-ignore
 type _ParseOtherDirect<_Type extends string, _Rest extends unknown[], Orig extends unknown[]> =
   Includes<UnionToTuple<OtherExtensions>, _Type> extends true
     ? _ParseOtherExtension<_Rest> extends infer R
@@ -658,7 +634,6 @@ type CheckExtensionType<
  *
  *  = ((sep keyword)+ | (sep attribute)+ (sep keyword)*) ;
  */
-// deno-fmt-ignore
 export type ParseUnicodeExtension<
   Chunks extends unknown[],
   Sep extends string = '-',
@@ -693,7 +668,6 @@ type t0 = ParseUnicodeExtension<['c']>
 type t1 = ParseUnicodeExtension<['co', 'standard']>
 type t2 = ParseUnicodeExtension<['foo', 'bar', 'co', 'standard']>
 
-// deno-fmt-ignore
 type CollectFirstKeywords<
   Chunks extends unknown[],
   Sep extends string = '-',
@@ -722,7 +696,6 @@ type CollectFirstKeywords<
  *
  * (= alphanum{3,8} ;)
  */
-// deno-fmt-ignore
 type ParseAttribute<
   Chunks extends unknown[],
   Attributes extends unknown[] = [],
@@ -751,7 +724,6 @@ type ParseAttribute<
  *
  * (= key (sep type)? ;)
  */
-// deno-fmt-ignore
 export type ParseKeyword<
   Chunks extends unknown[],
   Sep extends string = '-',
@@ -772,7 +744,6 @@ export type ParseKeyword<
  *
  * (= alphanum alpha ;)
  */
-// deno-fmt-ignore
 type ParseKeywordKey<
   Chunks extends unknown[],
   _Chunk = First<Chunks>,
@@ -790,7 +761,6 @@ type ParseKeywordKey<
     : never
   : never
 
-// deno-fmt-ignore
 type ParseKeywordValue<
   Chunks extends unknown[],
   Sep extends string = '-',
@@ -806,7 +776,6 @@ type ParseKeywordValue<
  *
  * (= alphanum{3,8} (sep alphanum{3,8})* ;)
  */
-// deno-fmt-ignore
 type ParseKeywordType<
   Chunks extends unknown[],
   Types extends unknown[] = [],
@@ -830,7 +799,6 @@ type ParseKeywordType<
  *
  * 	= sep [tT] ((sep tlang (sep tfield)*) | (sep tfield)+) ;
  */
-// deno-fmt-ignore
 export type ParseTransformedExtension<
   Chunks extends unknown[],
   /* Excessive stack depth comparing types ...
@@ -875,7 +843,6 @@ export type ParseTransformedExtension<
  * parse `tfield` at unicode transformed extension
  * https://unicode.org/reports/tr35/#transformed_extensions
  */
-// deno-fmt-ignore
 type ParseTransformedExtensionFields<
   Chunks extends unknown[],
   Sep extends string = '-',
@@ -904,7 +871,6 @@ type ParseTransformedExtensionFields<
 //   ['h0']
 // >
 
-// deno-fmt-ignore
 type ParseTransformedExtensionFieldsValue<
   Chunks extends unknown[],
   Value extends unknown[] = [],
@@ -926,7 +892,6 @@ type ParseTransformedExtensionFieldsValue<
  *
  * 	= sep [xX] (sep alphanum{1,8})+ ;
  */
-// deno-fmt-ignore
 export type ParsePuExtension<
   Chunks extends unknown[],
   Sep extends string = '-',
@@ -961,7 +926,6 @@ type _ParsePuExtension<
  *  = sep [alphanum-[tTuUxX]]
  *    (sep alphanum{2,8})+ ;
  */
-// deno-fmt-ignore
 export type ParseOtherExtension<
   Chunks extends unknown[],
   Sep extends string = '-',

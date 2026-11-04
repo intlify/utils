@@ -7,7 +7,7 @@
 # ~~Function: getQueryLocale()~~
 
 ```ts
-function getQueryLocale(context, options): Locale;
+function getQueryLocale(context, options?): Locale;
 ```
 
 get the locale from the query

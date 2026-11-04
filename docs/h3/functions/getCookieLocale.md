@@ -7,7 +7,7 @@
 # ~~Function: getCookieLocale()~~
 
 ```ts
-function getCookieLocale(event, options): Locale;
+function getCookieLocale(event, options?): Locale;
 ```
 
 get locale from cookie

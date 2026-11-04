@@ -1,6 +1,5 @@
 coverage
 playground
-deno.lock
 .*
 *.log
 *.swp

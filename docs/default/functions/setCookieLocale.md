@@ -10,7 +10,7 @@
 function setCookieLocale(
    response, 
    locale, 
-   options): void;
+   options?): void;
 ```
 
 set locale to the response `Set-Cookie` header.
@@ -32,7 +32,7 @@ set locale to the response `Set-Cookie` header.
 example for Web API response on Bun:
 
 ```ts
-import { setCookieLocale } from '@intlify/utils/web'
+import { setCookieLocale } from '@intlify/utils'
 
 Bun.serve({
   port: 8080,

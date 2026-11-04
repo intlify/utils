@@ -7,7 +7,7 @@
 # Function: getCookieLocale()
 
 ```ts
-function getCookieLocale(request, options): Locale;
+function getCookieLocale(request, options?): Locale;
 ```
 
 get locale from cookie
@@ -27,18 +27,19 @@ The locale that resolved from cookie
 
 ## Example
 
-example for Web API request on Deno:
+example for Web API request on Cloudflare Workers:
 
 ```ts
-import { getCookieLocale } from 'https://esm.sh/@intlify/utils/web'
+import { getCookieLocale } from '@intlify/utils'
 
-Deno.serve({
-  port: 8080,
-}, (req) => {
-  const locale = getCookieLocale(req)
-  console.log(locale) // output `Intl.Locale` instance
-  // ...
-})
+export default {
+  fetch(request: Request) {
+    const locale = getCookieLocale(request)
+    console.log(locale) // output `Intl.Locale` instance
+    // ...
+    return new Response(`locale: ${locale.toString()}`)
+  }
+}
 ```
 
 ## Throws

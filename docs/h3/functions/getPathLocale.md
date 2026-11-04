@@ -7,7 +7,7 @@
 # ~~Function: getPathLocale()~~
 
 ```ts
-function getPathLocale(event, options): Locale;
+function getPathLocale(event, options?): Locale;
 ```
 
 get the locale from the path

@@ -21,4 +21,4 @@ The Intl.Locale \| locale
 ## Description
 
 This function is the `Intl.Locale` wrapper of `navigator.language`.
-The value depends on the environments. if you use this function on the browser, you can get the languages, that are set in the browser, else if you use this function on the server side (Deno only), that value is the language set in the server.
+The value depends on the environment. On the browser, you get the language set in the browser. On the server side, it works only on a runtime that provides `navigator.language` (such as Node.js), and you get the language set in the server.

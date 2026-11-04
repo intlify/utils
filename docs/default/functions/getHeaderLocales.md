@@ -7,7 +7,7 @@
 # Function: getHeaderLocales()
 
 ```ts
-function getHeaderLocales(request, options): Locale[];
+function getHeaderLocales(request, options?): Locale[];
 ```
 
 get locales from header
@@ -34,7 +34,7 @@ wrap language tags with Intl.Locale \| locale, languages tags will be parsed fro
 example for Web API request on Bun:
 
 ```ts
-import { getHeaderLocales } from '@intlify/utils/web'
+import { getHeaderLocales } from '@intlify/utils'
 
 Bun.serve({
   port: 8080,

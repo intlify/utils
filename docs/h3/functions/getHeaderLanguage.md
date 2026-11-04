@@ -7,7 +7,7 @@
 # ~~Function: getHeaderLanguage()~~
 
 ```ts
-function getHeaderLanguage(event, options): string;
+function getHeaderLanguage(event, options?): string;
 ```
 
 get language from header

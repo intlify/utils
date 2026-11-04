@@ -7,7 +7,7 @@
 # ~~Function: getHeaderLocale()~~
 
 ```ts
-function getHeaderLocale(event, options): Locale;
+function getHeaderLocale(event, options?): Locale;
 ```
 
 get locale from header
