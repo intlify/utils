@@ -5,7 +5,7 @@
  *  when we will find out that cannot support locale validation
  */
 
-import { expectTypeOf, test } from 'vitest'
+import { expectTypeOf, test } from 'vite-plus/test'
 
 import type {
   CheckRange,

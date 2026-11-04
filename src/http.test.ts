@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test } from 'vite-plus/test'
 import { getPathLanguage, getPathLocale, getQueryLanguage, getQueryLocale } from './http.ts'
 
 describe('getPathLanguage', () => {

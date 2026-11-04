@@ -1,20 +1,7 @@
 {
   "name": "@intlify/utils",
-  "description": "Collection of i18n utilities",
   "version": "1.2.0",
-  "author": {
-    "name": "kazuya kawaguchi",
-    "email": "kawakazu80@gmail.com"
-  },
-  "license": "MIT",
-  "funding": "https://github.com/sponsors/kazupon",
-  "bugs": {
-    "url": "https://github.com/intlify/utils/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/intlify/utils.git"
-  },
+  "description": "Collection of i18n utilities",
   "keywords": [
     "i18n",
     "internationalization",
@@ -22,20 +9,27 @@
     "utilities"
   ],
   "homepage": "https://github.com/intlify/utils#readme",
-  "publishConfig": {
-    "access": "public"
+  "bugs": {
+    "url": "https://github.com/intlify/utils/issues"
   },
-  "packageManager": "pnpm@10.34.9",
-  "engines": {
-    "node": ">= 22"
+  "license": "MIT",
+  "author": {
+    "name": "kazuya kawaguchi",
+    "email": "kawakazu80@gmail.com"
   },
-  "type": "module",
-  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/intlify/utils.git"
+  },
+  "funding": "https://github.com/sponsors/kazupon",
   "files": [
     "dist"
   ],
+  "type": "module",
+  "sideEffects": false,
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -61,85 +55,50 @@
     "./dist/*": "./dist/*",
     "./package.json": "./package.json"
   },
-  "types": "dist/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "unbuild",
     "build:docs": "typedoc --excludeInternal",
-    "dev:eslint": "pnpx @eslint/config-inspector --config eslint.config.ts",
-    "fix": "pnpm run --color \"/^fix:/\"",
-    "fix:eslint": "eslint . --fix",
-    "fix:knip": "knip --fix --no-exit-code",
-    "fix:prettier": "prettier . --write --experimental-cli",
-    "lint": "pnpm run --color \"/^lint:/\"",
-    "lint:eslint": "eslint . --cache",
-    "lint:knip": "knip",
-    "lint:prettier": "prettier . --check --experimental-cli",
-    "lint:typecheck": "tsc --noEmit --diagnostics",
+    "fix": "vp check --fix && knip --fix --no-exit-code",
+    "lint": "vp check && knip",
     "play:browser": "pnpm run --filter example-browser dev",
     "play:bun": "pnpm run --filter example-bun dev",
     "play:node": "pnpm run --filter example-node dev",
-    "prepare": "git config --local core.hooksPath .githooks",
+    "prepare": "vp config --no-agent",
     "release": "bumpp",
     "test": "pnpm run test:unit",
-    "test:coverage": "pnpm test -- --reporter verbose --coverage",
+    "test:coverage": "vp test run --coverage",
     "test:e2e": "pnpm run --color \"/^test:e2e:/\"",
     "test:e2e:browser": "pnpm run --filter example-browser test",
     "test:e2e:bun": "pnpm run --filter example-bun test",
     "test:e2e:node": "pnpm run --filter example-node test",
-    "test:unit": "vitest run --typecheck"
+    "test:unit": "vp test"
   },
   "devDependencies": {
-    "@eslint/compat": "^2.0.0",
-    "@eslint/markdown": "^8.0.0",
-    "@kazupon/eslint-config": "^0.45.0",
-    "@kazupon/prettier-config": "^0.2.0",
+    "@kazupon/vp-config": "^1.1.0",
     "@types/node": "^24.12.0",
     "@types/supertest": "^7.2.1",
     "@vitest/coverage-v8": "catalog:vitest",
-    "@vitest/eslint-plugin": "^1.6.9",
     "bumpp": "^12.0.0",
     "cookie-es": "^1.2.3",
-    "eslint": "^9.39.4",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-import-resolver-typescript": "^4.4.4",
-    "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-jsdoc": "^61.7.1",
-    "eslint-plugin-jsonc": "^2.21.1",
-    "eslint-plugin-markdown-preferences": "^0.42.0",
-    "eslint-plugin-module-interop": "^0.4.0",
-    "eslint-plugin-promise": "^7.2.1",
-    "eslint-plugin-regexp": "^2.10.0",
-    "eslint-plugin-unicorn": "^62.0.0",
-    "eslint-plugin-unused-imports": "^4.4.1",
-    "eslint-plugin-yml": "^1.19.1",
     "gh-changelogen": "^2.0.2",
     "h3": "^1.15.5",
     "hono": "^4.0.0",
     "knip": "^6.44.1",
-    "lint-staged": "^15.5.2",
     "pkg-pr-new": "^0.0.92",
     "playwright": "^1.64.1",
-    "prettier": "^3.8.1",
     "supertest": "^7.3.1",
     "typedoc": "^0.28.17",
     "typedoc-plugin-markdown": "^4.10.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.56.1",
     "unbuild": "^3.6.1",
+    "vite-plus": "catalog:vitest",
     "vitest": "catalog:vitest"
   },
-  "prettier": "@kazupon/prettier-config",
-  "lint-staged": {
-    "*.ts?(x)": [
-      "prettier --parser=typescript --write",
-      "eslint --fix"
-    ],
-    "*.{js,mjs,cjs}": [
-      "prettier --write",
-      "eslint --fix"
-    ],
-    "*.{json,jsonc,json5,md,yml,yaml}": [
-      "prettier --write"
-    ]
-  }
+  "engines": {
+    "node": ">= 22"
+  },
+  "packageManager": "pnpm@10.34.9"
 }

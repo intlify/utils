@@ -1,19 +1,19 @@
 {
   "name": "example-bun",
   "private": true,
-  "module": "index.ts",
   "type": "module",
+  "module": "index.ts",
   "scripts": {
     "dev": "bun run index.ts",
     "test": "bun test"
+  },
+  "dependencies": {
+    "@intlify/utils": "workspace:*"
   },
   "devDependencies": {
     "bun-types": "latest"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "@intlify/utils": "workspace:*"
   }
 }
