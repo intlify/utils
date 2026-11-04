@@ -27,39 +27,58 @@
   ],
   "type": "module",
   "sideEffects": false,
-  "main": "dist/index.cjs",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.cts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "browser": "./dist/index.mjs",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     },
     "./h3": {
-      "types": "./dist/h3.d.ts",
-      "import": "./dist/h3.mjs",
-      "require": "./dist/h3.cjs"
+      "import": {
+        "types": "./dist/h3.d.mts",
+        "default": "./dist/h3.mjs"
+      },
+      "require": {
+        "types": "./dist/h3.d.cts",
+        "default": "./dist/h3.cjs"
+      }
     },
     "./hono": {
-      "types": "./dist/hono.d.ts",
-      "import": "./dist/hono.mjs",
-      "require": "./dist/hono.cjs"
+      "import": {
+        "types": "./dist/hono.d.mts",
+        "default": "./dist/hono.mjs"
+      },
+      "require": {
+        "types": "./dist/hono.d.cts",
+        "default": "./dist/hono.cjs"
+      }
     },
     "./node": {
-      "types": "./dist/node.d.ts",
-      "import": "./dist/node.mjs",
-      "require": "./dist/node.cjs"
+      "import": {
+        "types": "./dist/node.d.mts",
+        "default": "./dist/node.mjs"
+      },
+      "require": {
+        "types": "./dist/node.d.cts",
+        "default": "./dist/node.cjs"
+      }
     },
-    "./dist/*": "./dist/*",
     "./package.json": "./package.json"
   },
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "build": "unbuild",
+    "build": "vp pack",
     "build:docs": "typedoc --excludeInternal",
     "fix": "vp check --fix && knip --fix --no-exit-code",
     "lint": "vp check && knip",
@@ -93,7 +112,6 @@
     "typedoc": "^0.28.17",
     "typedoc-plugin-markdown": "^4.10.0",
     "typescript": "^5.9.3",
-    "unbuild": "^3.6.1",
     "vite-plus": "catalog:vitest",
     "vitest": "catalog:vitest"
   },
