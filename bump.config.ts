@@ -2,7 +2,7 @@ import { defineConfig } from 'bumpp'
 import { updateChangelog } from 'gh-changelogen'
 
 export default defineConfig({
-  files: ['package.json', 'jsr.json'],
+  files: ['package.json'],
   all: true,
   commit: 'release: v%s',
   tag: true,
