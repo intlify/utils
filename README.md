@@ -34,9 +34,8 @@ pnpm add @intlify/utils
 
 ### 🦕 Deno
 
-```sh
-deno add jsr:@intlify/utils
-```
+> **Note:** Deno is no longer supported, and `@intlify/utils` is not published to [JSR](https://jsr.io/@intlify/utils) after 1.1.0.
+> On Deno, you can still import the npm package with `npm:@intlify/utils`, but it is not tested.
 
 ### 🥟 Bun
 

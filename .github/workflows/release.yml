@@ -1,15 +1,14 @@
 name: Release
 
 # Triggers:
-#   - tag push (v*): publish to npm and JSR in parallel, then create the
-#     GitHub Release once both succeed.
+#   - tag push (v*): publish to npm, then create the GitHub Release once it
+#     succeeds.
 #   - workflow_dispatch: recover an existing tag by running one job
-#     (npm-publish / jsr-publish / release-notes) or all of them. A version
-#     that is already published is skipped, so `all` is safe to re-run.
+#     (npm-publish / release-notes) or both. A version that is already
+#     published is skipped, so `all` is safe to re-run.
 #
 # CHANGELOG.md is already part of the tagged release commit made by
-# `pnpm release` (see bump.config.ts), and JSR gets src/ of the tag as is.
-# This workflow never writes or commits files.
+# `pnpm release` (see bump.config.ts). This workflow never writes or commits files.
 on:
   push:
     branches-ignore:
@@ -26,7 +25,6 @@ on:
         options:
           - all
           - npm-publish
-          - jsr-publish
           - release-notes
       tag:
         description: Existing tag to release (e.g. v2.0.0 or v2.0.0-beta.0)
@@ -102,72 +100,15 @@ jobs:
           DIST_TAG: ${{ steps.meta.outputs.dist_tag }}
           NPM_CONFIG_PROVENANCE: true
 
-  jsr-publish:
-    if: >-
-      github.event_name == 'push' || (github.event_name == 'workflow_dispatch' &&
-        (inputs.job == 'all' || inputs.job == 'jsr-publish'))
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write # JSR OIDC
-    steps:
-      - name: Checkout tag
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
-        with:
-          ref: ${{ env.TAG }}
-          persist-credentials: false
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4.4.0
-
-      - name: Setup Node
-        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
-        with:
-          node-version: 24
-          package-manager-cache: false
-
-      - name: Install dependencies
-        # The jsr CLI is a devDependency, and Deno type-checks src/ against
-        # node_modules/cookie-es.
-        run: pnpm install --frozen-lockfile
-
-      - name: Check the npm dependency for JSR
-        # JSR rewrites the bare `cookie-es` import to `npm:cookie-es@<range>` from
-        # package.json. A `catalog:` value or a missing entry breaks the import,
-        # while `jsr publish --dry-run` still passes, so check it before publishing.
-        run: |
-          node -e '
-            const range = require("./package.json").devDependencies?.["cookie-es"]
-            if (!range || /^(catalog|workspace):/.test(range)) {
-              console.log("::error::cookie-es in package.json must be a plain semver range for JSR, got " + range)
-              process.exit(1)
-            }
-          '
-
-      - name: Publish to JSR
-        # src/ of the tagged commit is published as is: no build and no rewrite.
-        # Skip a version that is already on JSR, so that a retry is idempotent.
-        run: |
-          version=$(node -p "require('./jsr.json').version")
-          if pnpm exec jsr show "@intlify/utils@$version" > /dev/null 2>&1; then
-            echo "↺ @intlify/utils@$version is already on JSR, skipping"
-          else
-            pnpm exec jsr publish
-          fi
-
   release-notes:
     needs:
       - npm-publish
-      - jsr-publish
     if: >-
       always() && (
-        (github.event_name == 'push' &&
-          needs.npm-publish.result == 'success' &&
-          needs.jsr-publish.result == 'success') ||
+        (github.event_name == 'push' && needs.npm-publish.result == 'success') ||
         (github.event_name == 'workflow_dispatch' && inputs.job == 'release-notes') ||
         (github.event_name == 'workflow_dispatch' && inputs.job == 'all' &&
-          needs.npm-publish.result == 'success' &&
-          needs.jsr-publish.result == 'success')
+          needs.npm-publish.result == 'success')
       )
     runs-on: ubuntu-latest
     permissions:
