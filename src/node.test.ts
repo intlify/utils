@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test } from 'vite-plus/test'
 import supertest from 'supertest'
 import {
   getCookieLocale,
@@ -15,7 +15,8 @@ import {
   tryPathLocale,
   tryQueryLocale
 } from './node.ts'
-import { createServer, type IncomingMessage, type OutgoingMessage } from 'node:http'
+import { createServer } from 'node:http'
+import type { IncomingMessage, OutgoingMessage } from 'node:http'
 import { DEFAULT_COOKIE_NAME, DEFAULT_LANG_TAG } from './constants.ts'
 
 describe('getHeaderLanguages', () => {

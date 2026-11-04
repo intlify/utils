@@ -6,6 +6,7 @@ coverage
 .eslintcache
 .notes
 .plans
+.vite-hooks/_
 
 *.log
 *.swp
@@ -13,3 +14,4 @@ coverage
 *.zip
 *~
 .env
+.vitest/

@@ -1,15 +1,12 @@
 # @intilfy/utils
 
-[![npm version][npm-version-src]][npm-version-href]
-[![npm downloads][npm-downloads-src]][npm-downloads-href]
-[![CI][ci-src]][ci-href]
+[![npm version][npm-version-src]][npm-version-href] [![npm downloads][npm-downloads-src]][npm-downloads-href] [![CI][ci-src]][ci-href]
 
 Collection of i18n utilities
 
 ## 🌟 Features
 
-✅️ &nbsp;**Modern:** ES Modules first and respect Web Standard and ECMAScript
-Internationalization APIs
+✅️ &nbsp;**Modern:** ES Modules first and respect Web Standard and ECMAScript Internationalization APIs
 
 ✅️ &nbsp;**Compatible:** support CommonJS and various JS environments
 
@@ -34,8 +31,7 @@ pnpm add @intlify/utils
 
 ### 🦕 Deno
 
-> **Note:** Deno is no longer supported, and `@intlify/utils` is not published to [JSR](https://jsr.io/@intlify/utils) after 1.1.0.
-> On Deno, you can still import the npm package with `npm:@intlify/utils`, but it is not tested.
+> **Note:** Deno is no longer supported, and `@intlify/utils` is not published to [JSR](https://jsr.io/@intlify/utils) after 1.1.0. On Deno, you can still import the npm package with `npm:@intlify/utils`, but it is not tested.
 
 ### 🥟 Bun
 
@@ -64,12 +60,9 @@ in your HTML:
 
 You can play the below examples:
 
-- 🐢 [Node.js](https://github.com/intlify/utils/tree/main/examples/node):
-  `npm run play:node`
-- 🥟 [Bun](https://github.com/intlify/utils/tree/main/examples/bun):
-  `npm run play:bun`
-- 🌍 [Browser](https://github.com/intlify/utils/tree/main/examples/browser):
-  `npm run play:browser`
+- 🐢 [Node.js](https://github.com/intlify/utils/tree/main/examples/node): `npm run play:node`
+- 🥟 [Bun](https://github.com/intlify/utils/tree/main/examples/bun): `npm run play:bun`
+- 🌍 [Browser](https://github.com/intlify/utils/tree/main/examples/browser): `npm run play:browser`
 
 ## 🤝 API
 

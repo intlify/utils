@@ -3,10 +3,22 @@ packages:
 
 catalogs:
   vitest:
-    vitest: ^4.1.12
-    '@vitest/coverage-v8': ^4.1.12
+    vitest: 5.0.5
+    '@vitest/coverage-v8': 5.0.5
+    vite: npm:@voidzero-dev/vite-plus-core@1.4.0
+    vite-plus: 1.4.0
 
 minimumReleaseAge: 1440
 
 onlyBuiltDependencies:
   - esbuild
+overrides:
+  vite@*: catalog:vitest
+  vitest@*: catalog:vitest
+peerDependencyRules:
+  allowAny:
+    - vite
+    - vitest
+  allowedVersions:
+    vite: '*'
+    vitest: '*'

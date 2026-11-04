@@ -1,13 +1,22 @@
 {
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "npm.scriptRunner": "vp",
+  "editor.defaultFormatter": "oxc.oxc-vscode",
+  "[javascript]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "oxc.fmt.configPath": "./vite.config.ts",
+  "oxc.disableNestedConfig": true,
+  "oxc.fmt.disableNestedConfig": true,
+  "oxc.typeAware": true,
   "editor.formatOnSave": true,
-  "editor.formatOnType": true,
+  "editor.formatOnSaveMode": "file",
   "editor.codeActionsOnSave": {
     "source.organizeImports": "always",
-    "source.fixAll.eslint": "explicit"
+    "source.fixAll.oxc": "always"
   },
-  "eslint.useFlatConfig": true,
-  "eslint.validate": ["javascript", "typescript"],
   "files.associations": {
     "*.json": "jsonc"
   },
