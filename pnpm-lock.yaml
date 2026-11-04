@@ -23,6 +23,10 @@ overrides:
 importers:
 
   .:
+    dependencies:
+      cookie-es:
+        specifier: ^3.1.1
+        version: 3.1.1
     devDependencies:
       '@kazupon/vp-config':
         specifier: ^1.1.0
@@ -39,9 +43,6 @@ importers:
       bumpp:
         specifier: ^12.0.0
         version: 12.3.0
-      cookie-es:
-        specifier: ^1.2.3
-        version: 1.2.3
       gh-changelogen:
         specifier: ^2.0.2
         version: 2.0.2
@@ -1567,6 +1568,9 @@ packages:
 
   cookie-es@1.2.3:
     resolution: {integrity: sha512-lXVyvUvrNXblMqzIRrxHb57UUVmqsSWlxqt3XIjCkUP0wDAf6uicO6KMbEgYrMNtEvWgWHwe42CKxPu9MYAnWw==}
+
+  cookie-es@3.1.1:
+    resolution: {integrity: sha512-UaXxwISYJPTr9hwQxMFYZ7kNhSXboMXP+Z3TRX6f1/NyaGPfuNUZOWP1pUEb75B2HjfklIYLVRfWiFZJyC6Npg==}
 
   cookie-signature@1.2.2:
     resolution: {integrity: sha512-D76uU73ulSXrD1UXF4KE2TMxVVwhsnCgfAyTg9k8P6KGZjlXKrOLe4dJQKI3Bxi5wjesZoFXJWElNWBjPZMbhg==}
@@ -3631,6 +3635,8 @@ snapshots:
   convert-source-map@2.0.0: {}
 
   cookie-es@1.2.3: {}
+
+  cookie-es@3.1.1: {}
 
   cookie-signature@1.2.2: {}
 

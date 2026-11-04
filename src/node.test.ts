@@ -379,6 +379,45 @@ describe('setCookieLocale', () => {
 
     expect(() => setCookieLocale(mockRes, 'j')).toThrowError(/locale is invalid: j/)
   })
+
+  test('Type Error for the cookie attributes that RFC 6265bis rejects', () => {
+    const mockRes = {
+      getHeader: () => undefined,
+      setHeader: () => mockRes
+    } as unknown as OutgoingMessage
+
+    expect(() => setCookieLocale(mockRes, 'ja-JP', { sameSite: 'none' })).toThrowError(TypeError)
+    expect(() => setCookieLocale(mockRes, 'ja-JP', { name: '__Host-locale' })).toThrowError(
+      TypeError
+    )
+    expect(() => setCookieLocale(mockRes, 'ja-JP', { maxAge: 1.5 })).toThrowError(TypeError)
+  })
+
+  test('SameSite=None with Secure', async () => {
+    const server = createServer((_req, res) => {
+      setCookieLocale(res, 'ja-JP', { sameSite: 'none', secure: true })
+      res.writeHead(200)
+      res.end('hello world!')
+    })
+    const request = supertest(server)
+    const result = await request.get('/')
+    expect(result.headers['set-cookie']).toEqual([
+      `${DEFAULT_COOKIE_NAME}=ja-JP; Path=/; Secure; SameSite=None`
+    ])
+  })
+
+  test('clamp maxAge to 400 days', async () => {
+    const server = createServer((_req, res) => {
+      setCookieLocale(res, 'ja-JP', { maxAge: 500 * 24 * 60 * 60 })
+      res.writeHead(200)
+      res.end('hello world!')
+    })
+    const request = supertest(server)
+    const result = await request.get('/')
+    expect(result.headers['set-cookie']).toEqual([
+      `${DEFAULT_COOKIE_NAME}=ja-JP; Max-Age=34560000; Path=/`
+    ])
+  })
 })
 
 test('getPathLocale', async () => {

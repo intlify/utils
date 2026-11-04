@@ -276,6 +276,29 @@ describe('setCookieLocale', () => {
     const res = new Response('hello world!')
     expect(() => setCookieLocale(res, 'j')).toThrowError(/locale is invalid: j/)
   })
+
+  test('Type Error for the cookie attributes that RFC 6265bis rejects', () => {
+    const res = new Response('hello world!')
+    expect(() => setCookieLocale(res, 'ja-JP', { sameSite: 'none' })).toThrowError(TypeError)
+    expect(() => setCookieLocale(res, 'ja-JP', { name: '__Host-locale' })).toThrowError(TypeError)
+    expect(() => setCookieLocale(res, 'ja-JP', { maxAge: 1.5 })).toThrowError(TypeError)
+  })
+
+  test('SameSite=None with Secure', () => {
+    const res = new Response('hello world!')
+    setCookieLocale(res, 'ja-JP', { sameSite: 'none', secure: true })
+    expect(res.headers.getSetCookie()).toEqual([
+      `${DEFAULT_COOKIE_NAME}=ja-JP; Path=/; Secure; SameSite=None`
+    ])
+  })
+
+  test('clamp maxAge to 400 days', () => {
+    const res = new Response('hello world!')
+    setCookieLocale(res, 'ja-JP', { maxAge: 500 * 24 * 60 * 60 })
+    expect(res.headers.getSetCookie()).toEqual([
+      `${DEFAULT_COOKIE_NAME}=ja-JP; Max-Age=34560000; Path=/`
+    ])
+  })
 })
 
 test('getPathLocale', () => {
