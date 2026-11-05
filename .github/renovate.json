@@ -6,5 +6,12 @@
   "major": {
     "automerge": false
   },
-  "minimumReleaseAge": "7 days"
+  "minimumReleaseAge": "7 days",
+  "packageRules": [
+    {
+      "description": "keep @types/node on the minimum Node.js of engines.node",
+      "matchPackageNames": ["@types/node"],
+      "allowedVersions": "<23"
+    }
+  ]
 }
