@@ -1,24 +1,17 @@
-[**@intlify/utils**](../../index.md)
-
-***
-
-[@intlify/utils](../../index.md) / [default](../index.md) / getNavigatorLocale
-
 # Function: getNavigatorLocale()
-
-```ts
-function getNavigatorLocale(): Locale;
-```
 
 get navigator locale
 
+## Signature
+
+```ts
+export function getNavigatorLocale(): Intl.Locale
+```
+
 ## Returns
 
-`Locale`
+`Intl.Locale` — The locale
 
-The Intl.Locale \| locale
+## Tags
 
-## Description
-
-This function is the `Intl.Locale` wrapper of `navigator.language`.
-The value depends on the environment. On the browser, you get the language set in the browser. On the server side, it works only on a runtime that provides `navigator.language` (such as Node.js), and you get the language set in the server.
+- `@description` — This function is the `Intl.Locale` wrapper of `navigator.language`. The value depends on the environment. On the browser, you get the language set in the browser. On the server side, it works only on a runtime that provides `navigator.language` (such as Node.js), and you get the language set in the server.

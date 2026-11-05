@@ -1,29 +1,23 @@
-[**@intlify/utils**](../../index.md)
-
-***
-
-[@intlify/utils](../../index.md) / [default](../index.md) / toLocale
-
 # Function: toLocale()
 
-```ts
-function toLocale(val): Locale;
-```
+returns the locale
 
-returns the Intl.Locale \| locale
+## Signature
+
+```ts
+export function toLocale(val: string | Intl.Locale): Intl.Locale
+```
 
 ## Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `val` | `string` \| `Locale` | The value for which the 'locale' is requested. |
+| Name | Type | Description |
+| --- | --- | --- |
+| `val` | `string \| Intl.Locale` | The value for which the 'locale' is requested. |
 
 ## Returns
 
-`Locale`
-
-The locale
+`Intl.Locale` — The locale
 
 ## Throws
 
-Throws the `RangeError` if `val` is not a well-formed BCP 47 language tag.
+- `RangeError` — Throws the `RangeError` if `val` is not a well-formed BCP 47 language tag.

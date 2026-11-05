@@ -1,30 +1,24 @@
-[**@intlify/utils**](../../index.md)
-
-***
-
-[@intlify/utils](../../index.md) / [node](../index.md) / getPathLocale
-
 # Function: getPathLocale()
-
-```ts
-function getPathLocale(request, options?): Locale;
-```
 
 get the locale from the path
 
+## Signature
+
+```ts
+export function getPathLocale(request: IncomingMessage, options: PathOptions = {}): Intl.Locale
+```
+
 ## Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `request` | `IncomingMessage` | the IncomingMessage \| request |
-| `options` | `PathOptions` | the PathOptions \| path options object |
+| Name | Type | Description |
+| --- | --- | --- |
+| `request` | `IncomingMessage` | the request |
+| `options` | `PathOptions` | the path options object _(optional, default: {})_ |
 
 ## Returns
 
-`Locale`
-
-The locale that resolved from path
+`Intl.Locale` — The locale that resolved from path
 
 ## Throws
 
-Throws the `RangeError` if the language in the path, that is not a well-formed BCP 47 language tag.
+- `RangeError` — Throws the `RangeError` if the language in the path, that is not a well-formed BCP 47 language tag.

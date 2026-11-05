@@ -1,25 +1,19 @@
-[**@intlify/utils**](../../index.md)
-
-***
-
-[@intlify/utils](../../index.md) / [default](../index.md) / isLocale
-
 # Function: isLocale()
-
-```ts
-function isLocale(val): val is Locale;
-```
 
 check whether the value is a `Intl.Locale` instance
 
+## Signature
+
+```ts
+export function isLocale(val: unknown): val is Intl.Locale
+```
+
 ## Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
+| Name | Type | Description |
+| --- | --- | --- |
 | `val` | `unknown` | The locale value |
 
 ## Returns
 
-`val is Locale`
-
-Returns `true` if the value is a `Intl.Locale` instance, else `false`.
+`val is Intl.Locale` — Returns `true` if the value is a `Intl.Locale` instance, else `false`.

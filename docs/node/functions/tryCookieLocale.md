@@ -1,30 +1,24 @@
-[**@intlify/utils**](../../index.md)
-
-***
-
-[@intlify/utils](../../index.md) / [node](../index.md) / tryCookieLocale
-
 # Function: tryCookieLocale()
-
-```ts
-function tryCookieLocale(request, options?): Locale | null;
-```
 
 try to get locale from cookie
 
+## Signature
+
+```ts
+export function tryCookieLocale(request: IncomingMessage, options: CookieLocaleOptions = {}): Intl.Locale | null
+```
+
 ## Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `request` | `IncomingMessage` | The IncomingMessage \| request |
-| `options` | `CookieLocaleOptions` | The CookieLocaleOptions \| cookie locale options |
+| Name | Type | Description |
+| --- | --- | --- |
+| `request` | `IncomingMessage` | The request |
+| `options` | `CookieLocaleOptions` | The cookie locale options _(optional, default: {})_ |
 
 ## Returns
 
-`Locale` \| `null`
+`Intl.Locale | null` — The locale that resolved from cookie. if `lang` option or cookie name value are not a well-formed BCP 47 language tag, return `null`.
 
-The locale that resolved from cookie. if `lang` option or cookie name value are not a well-formed BCP 47 language tag, return `null`.
+## Tags
 
-## Description
-
-Unlike [getCookieLocale](getCookieLocale.md), this function does not throw an error if the locale cannot be obtained, this function returns `null`.
+- `@description` — Unlike [getCookieLocale](/docs/node/functions/getCookieLocale.md), this function does not throw an error if the locale cannot be obtained, this function returns `null`.

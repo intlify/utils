@@ -1,35 +1,25 @@
-[**@intlify/utils**](../../index.md)
-
-***
-
-[@intlify/utils](../../index.md) / [node](../index.md) / getHeaderLanguages
-
 # Function: getHeaderLanguages()
-
-```ts
-function getHeaderLanguages(request, options?): string[];
-```
 
 get languages from header
 
+## Signature
+
+```ts
+export function getHeaderLanguages(request: IncomingMessage, options: HeaderOptions = {}): string[]
+```
+
 ## Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `request` | `IncomingMessage` | The IncomingMessage \| request |
-| `options` | `HeaderOptions` | The HeaderOptions \| header options object. `name` option is `accept-language` as default. |
+| Name | Type | Description |
+| --- | --- | --- |
+| `request` | `IncomingMessage` | The request |
+| `options` | `HeaderOptions` | The header options object. `name` option is `accept-language` as default. _(optional, default: {})_ |
 
 ## Returns
 
-`string`[]
+`string[]` — The array of language tags, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array.
 
-The array of language tags, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array.
-
-## Description
-
-parse header string, default `accept-language` header
-
-## Example
+## Examples
 
 example for Node.js request:
 
@@ -44,3 +34,7 @@ const server = createServer((req, res) => {
   res.end(`detect accpect-languages: ${langTags.join(', ')}`)
 })
 ```
+
+## Tags
+
+- `@description` — parse header string, default `accept-language` header

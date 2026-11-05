@@ -1,35 +1,25 @@
-[**@intlify/utils**](../../index.md)
-
-***
-
-[@intlify/utils](../../index.md) / [default](../index.md) / getHeaderLanguage
-
 # Function: getHeaderLanguage()
-
-```ts
-function getHeaderLanguage(request, options?): string;
-```
 
 get language from header
 
+## Signature
+
+```ts
+export function getHeaderLanguage(request: Request, options: HeaderOptions = {}): string
+```
+
 ## Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `request` | `Request` | The Request \| request |
-| `options` | `HeaderOptions` | The HeaderOptions \| header options object |
+| Name | Type | Description |
+| --- | --- | --- |
+| `request` | `Request` | The request |
+| `options` | `HeaderOptions` | The header options object _(optional, default: {})_ |
 
 ## Returns
 
-`string`
+`string` — The **first language tag** of header, if header is not exists, or `*` (any language), return empty string.
 
-The **first language tag** of header, if header is not exists, or `*` (any language), return empty string.
-
-## Description
-
-parse header string, default `accept-language`. if you use `accept-language`, this function returns the **first language tag** of `accept-language` header.
-
-## Example
+## Examples
 
 example for Web API request on Cloudflare Workers:
 
@@ -44,3 +34,7 @@ export default {
   }
 }
 ```
+
+## Tags
+
+- `@description` — parse header string, default `accept-language`. if you use `accept-language`, this function returns the **first language tag** of `accept-language` header.

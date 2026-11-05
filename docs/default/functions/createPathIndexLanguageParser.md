@@ -1,25 +1,19 @@
-[**@intlify/utils**](../../index.md)
-
-***
-
-[@intlify/utils](../../index.md) / [default](../index.md) / createPathIndexLanguageParser
-
 # Function: createPathIndexLanguageParser()
-
-```ts
-function createPathIndexLanguageParser(index?): PathLanguageParser;
-```
 
 create a parser, which can split with slash `/`
 
+## Signature
+
+```ts
+export function createPathIndexLanguageParser(index = 0): PathLanguageParser
+```
+
 ## Parameters
 
-| Parameter | Type | Default value | Description |
-| ------ | ------ | ------ | ------ |
-| `index` | `number` | `0` | An index of locale, which is included in path |
+| Name | Type | Description |
+| --- | --- | --- |
+| `index` | `unknown` | An index of locale, which is included in path _(optional, default: 0)_ |
 
 ## Returns
 
-`PathLanguageParser`
-
-A return a parser, which has `PathLanguageParser` interface
+`PathLanguageParser` — A return a parser, which has `PathLanguageParser` interface
