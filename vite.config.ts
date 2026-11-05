@@ -10,15 +10,13 @@ export default defineConfig({
     '*': 'vp check --fix'
   },
   pack: {
-    entry: ['src/index.ts', 'src/h3.ts', 'src/hono.ts', 'src/node.ts'],
+    entry: ['src/index.ts', 'src/node.ts'],
     outDir: 'dist',
     format: ['esm'],
     fixedExtension: false,
     dts: true,
     clean: true,
     deps: {
-      // the h3 and hono adapters use the h3 and hono of the user, though they are devDependencies here
-      neverBundle: ['h3', 'hono', /^hono\//],
       // nothing of node_modules is bundled. cookie-es is a dependency
       onlyBundle: []
     },

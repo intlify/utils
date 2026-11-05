@@ -56,6 +56,52 @@ in your HTML:
 </script>
 ```
 
+## 🧩 Using with h3 and Hono
+
+The functions of `@intlify/utils` take the Web standard `Request` and `Response`, so you can use them with [h3](https://h3.dev/) and [Hono](https://hono.dev/). Pass the `Request` of the framework as the first argument.
+
+> **Note:** `@intlify/utils/h3` and `@intlify/utils/hono` are removed in v2. The functions of `@intlify/utils` have the same names and parameters, so replace the import and the first argument. If you use [`@intlify/h3`](https://github.com/intlify/h3) or [`@intlify/hono`](https://github.com/intlify/hono), you don't need to use `@intlify/utils` directly.
+
+h3 v2: pass `event.req`, and `event.res` to set the cookie.
+
+```ts
+import { H3 } from 'h3'
+import { getHeaderLocale, setCookieLocale } from '@intlify/utils'
+
+const app = new H3().get('/', event => {
+  const locale = getHeaderLocale(event.req)
+  setCookieLocale(event.res, locale)
+  return locale.toString()
+})
+```
+
+h3 v1: pass `toWebRequest(event)`, and use `setCookie` of h3 to set the cookie.
+
+```ts
+import { eventHandler, setCookie, toWebRequest } from 'h3'
+import { getHeaderLocale } from '@intlify/utils'
+
+export default eventHandler(event => {
+  const locale = getHeaderLocale(toWebRequest(event))
+  setCookie(event, 'i18n_locale', locale.toString(), { path: '/' })
+  return locale.toString()
+})
+```
+
+Hono: pass `c.req.raw` (`c.req` is not a Web standard `Request`), and use `setCookie` of Hono to set the cookie.
+
+```ts
+import { Hono } from 'hono'
+import { setCookie } from 'hono/cookie'
+import { getHeaderLocale } from '@intlify/utils'
+
+const app = new Hono().get('/', c => {
+  const locale = getHeaderLocale(c.req.raw)
+  setCookie(c, 'i18n_locale', locale.toString(), { path: '/' })
+  return c.text(locale.toString())
+})
+```
+
 ## 🍭 Playground
 
 You can play the below examples:

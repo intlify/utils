@@ -34,14 +34,6 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
-    "./h3": {
-      "types": "./dist/h3.d.ts",
-      "default": "./dist/h3.js"
-    },
-    "./hono": {
-      "types": "./dist/hono.d.ts",
-      "default": "./dist/hono.js"
-    },
     "./node": {
       "types": "./dist/node.d.ts",
       "default": "./dist/node.js"
@@ -79,8 +71,6 @@
     "@vitest/coverage-v8": "catalog:vitest",
     "bumpp": "^12.0.0",
     "gh-changelogen": "^2.0.2",
-    "h3": "^1.15.5",
-    "hono": "^4.0.0",
     "knip": "^6.44.1",
     "pkg-pr-new": "^0.0.92",
     "playwright": "^1.64.1",
