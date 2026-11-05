@@ -45,10 +45,6 @@ export default defineConfig({
       'dist',
       'docs/**',
       'tsconfig.json',
-      'src/locale.ts',
-      // the type-level parser of src/locale.ts hits the instantiation depth limit of
-      // TypeScript 7 (tsgolint). `vp test` still type-checks it with the TypeScript of the project
-      'src/locale.test-d.ts',
       'pnpm-lock.yaml',
       'playground/**',
       'CHANGELOG.md'
@@ -72,14 +68,7 @@ export default defineConfig({
       'unicorn/no-null': 'off',
       'unicorn/consistent-function-scoping': 'off',
       'unicorn/prefer-string-replace-all': 'off'
-    },
-    overrides: [
-      {
-        // type utilities for the type-level parser, without JSDoc
-        files: ['src/types.ts'],
-        rules: { 'ox-jsdoc/require-jsdoc': 'off' }
-      }
-    ]
+    }
   }),
   fmt: defineFmtConfig({
     printWidth: 100,
