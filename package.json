@@ -75,7 +75,7 @@
     "pkg-pr-new": "^0.0.92",
     "playwright": "^1.64.1",
     "supertest": "^7.3.1",
-    "typescript": "^5.9.3",
+    "typescript": "^7.0.0",
     "vite-plus": "catalog:vitest",
     "vitepress-api-references": "^0.4.0",
     "vitest": "catalog:vitest"
