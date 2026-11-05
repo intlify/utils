@@ -25,3 +25,9 @@ peerDependencyRules:
   allowedVersions:
     vite: '*'
     vitest: '*'
+packageExtensions:
+  # the API docs generation of vitepress-api-references does not load vitepress
+  vitepress-api-references:
+    peerDependenciesMeta:
+      vitepress:
+        optional: true

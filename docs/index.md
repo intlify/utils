@@ -1,12 +1,8 @@
-**@intlify/utils**
-
-***
-
-# @intlify/utils
+# API Documentation
 
 ## Modules
 
 | Module | Description |
 | ------ | ------ |
-| [default](default/index.md) | `@intlify/utils` default module entry. |
-| [node](node/index.md) | `@intlify/utils` module entry for [Node.js](https://nodejs.org/) |
+| [default](/docs/default/index.md) | `@intlify/utils` default module entry. |
+| [node](/docs/node/index.md) | `@intlify/utils` module entry for [Node.js](https://nodejs.org/) |

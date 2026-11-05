@@ -1,23 +1,17 @@
-[**@intlify/utils**](../../index.md)
-
-***
-
-[@intlify/utils](../../index.md) / [node](../index.md) / getNavigatorLocale
-
 # Function: getNavigatorLocale()
-
-```ts
-function getNavigatorLocale(): Locale;
-```
 
 get navigator locale
 
+## Signature
+
+```ts
+export function getNavigatorLocale(): Intl.Locale
+```
+
 ## Returns
 
-`Locale`
+`Intl.Locale` — The `Intl.Locale` object
 
-The `Intl.Locale` object
+## Tags
 
-## Description
-
-You can get the `Intl.Locale` from system environment variables.
+- `@description` — You can get the `Intl.Locale` from system environment variables.

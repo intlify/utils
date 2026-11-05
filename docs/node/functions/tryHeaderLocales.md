@@ -1,30 +1,24 @@
-[**@intlify/utils**](../../index.md)
-
-***
-
-[@intlify/utils](../../index.md) / [node](../index.md) / tryHeaderLocales
-
 # Function: tryHeaderLocales()
-
-```ts
-function tryHeaderLocales(request, options?): Locale[] | null;
-```
 
 try to get locales from header
 
+## Signature
+
+```ts
+export function tryHeaderLocales(request: IncomingMessage, options: HeaderOptions = {}): Intl.Locale[] | null
+```
+
 ## Parameters
 
-| Parameter | Type | Description |
-| ------ | ------ | ------ |
-| `request` | `IncomingMessage` | The IncomingMessage \| request |
-| `options` | `HeaderOptions` | The HeaderOptions \| header options object |
+| Name | Type | Description |
+| --- | --- | --- |
+| `request` | `IncomingMessage` | The request |
+| `options` | `HeaderOptions` | The header options object _(optional, default: {})_ |
 
 ## Returns
 
-`Locale`[] \| `null`
+`Intl.Locale[] | null` — The locales that wrapped from header, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array. if header are not a well-formed BCP 47 language tag, return `null`.
 
-The locales that wrapped from header, if you use `accept-language` header and `*` (any language) or empty string is detected, return an empty array. if header are not a well-formed BCP 47 language tag, return `null`.
+## Tags
 
-## Description
-
-wrap language tags with Intl.Locale \| locale, languages tags will be parsed from `accept-language` header as default. Unlike [getHeaderLocales](getHeaderLocales.md), this function does not throw an error if the locale cannot be obtained, this function returns `null`.
+- `@description` — wrap language tags with locale, languages tags will be parsed from `accept-language` header as default. Unlike [getHeaderLocales](/docs/node/functions/getHeaderLocales.md), this function does not throw an error if the locale cannot be obtained, this function returns `null`.
